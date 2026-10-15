@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · Grid 网格布局</title>
+    <style>
+        :root {
+            --chen_bg: #eef4f8;
+            --chen_card: #ffffff;
+            --chen_text: #24324a;
+            --chen_muted: #697791;
+            --chen_line: #ccdce9;
+            --chen_blue: #4ca9d9;
+            --chen_deep: #145a8d;
+            --chen_cyan: #79d6ce;
+            --chen_orange: #ffc46b;
+            --chen_soft: #eef6fb;
+            --chen_shadow: rgba(32, 60, 85, 0.12);
+            --chen_radius: 18px;
+            --chen_font: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            font-size: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0px;
+            padding: 32px 20px 64px;
+            min-height: 100vh;
+            color: var(--chen_text);
+            font-family: var(--chen_font);
+            background:
+                radial-gradient(circle at 85% 8%, rgba(121, 214, 206, 0.16), transparent 22%),
+                radial-gradient(circle at 10% 90%, rgba(76, 169, 217, 0.14), transparent 22%),
+                var(--chen_bg);
+        }
+
+        .chen_wrap {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+        }
+
+        .chen_back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: 1px solid var(--chen_line);
+            background: var(--chen_card);
+            color: var(--chen_deep);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 8px 16px var(--chen_shadow);
+            transition: transform 0.25s ease;
+        }
+
+        .chen_back:hover {
+            transform: translateX(-4px);
+        }
+
+        .chen_head {
+            display: grid;
+            grid-template-columns: 1.4fr 0.6fr;
+            gap: 32px;
+            align-items: center;
+            margin: 26px 0 8px;
+        }
+
+        .chen_title {
+            margin: 0 0 12px;
+            font-size: clamp(30px, 4vw, 46px);
+            line-height: 1.2;
+            color: var(--chen_deep);
+        }
+
+        .chen_intro {
+            margin: 0px;
+            color: var(--chen_muted);
+            font-size: 16px;
+            line-height: 1.9;
+        }
+
+        .chen_intro code {
+            color: var(--chen_deep);
+            background: var(--chen_soft);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        /* ---------- CSS3 3D 立方体 ---------- */
+        .chen_stage {
+            display: flex;
+            justify-content: center;
+            perspective: 900px;
+        }
+
+        .chen_cube {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(0deg);
+            animation: chen_spin 12s linear infinite;
+        }
+
+        .chen_face {
+            position: absolute;
+            inset: 0px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: #062033;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.35);
+        }
+
+        .chen_f1 { background: linear-gradient(135deg, #4ca9d9, #79d6ce); transform: translateZ(70px); }
+        .chen_f2 { background: linear-gradient(135deg, #145a8d, #4ca9d9); transform: rotateY(180deg) translateZ(70px); color: #eaf3ff; }
+        .chen_f3 { background: linear-gradient(135deg, #ffc46b, #ff9f43); transform: rotateY(90deg) translateZ(70px); }
+        .chen_f4 { background: linear-gradient(135deg, #79d6ce, #3fbfae); transform: rotateY(-90deg) translateZ(70px); }
+        .chen_f5 { background: linear-gradient(135deg, #a9e8ff, #4ca9d9); transform: rotateX(90deg) translateZ(70px); }
+        .chen_f6 { background: linear-gradient(135deg, #145a8d, #10233a); transform: rotateX(-90deg) translateZ(70px); color: #eaf3ff; }
+
+        @keyframes chen_spin {
+            from { transform: rotateX(-20deg) rotateY(0deg); }
+            to   { transform: rotateX(-20deg) rotateY(360deg); }
+        }
+
+        .chen_subtitle {
+            margin: 40px 0 16px;
+            font-size: 24px;
+            color: var(--chen_deep);
+        }
+
+        /* ---------- 网格容器 ---------- */
+        .chen_grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 110px);
+            grid-template-areas:
+                "a b b"
+                "c b b"
+                "c d e"
+                "c d f";
+            gap: 14px;
+        }
+
+        .chen_area {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 16px;
+            border-radius: var(--chen_radius);
+            color: #ffffff;
+            text-align: center;
+            box-shadow: 0 10px 22px var(--chen_shadow);
+            transform-style: preserve-3d;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+
+        .chen_area strong {
+            font-size: 34px;
+            font-family: Consolas, "Courier New", monospace;
+            line-height: 1;
+        }
+
+        .chen_area span {
+            font-size: 13px;
+            opacity: 0.92;
+        }
+
+        .chen_area:hover {
+            transform: translateZ(30px) rotateX(6deg);
+            box-shadow: 0 22px 40px rgba(32, 60, 85, 0.28);
+            z-index: 2;
+        }
+
+        .chen_a { grid-area: a; background: linear-gradient(135deg, #4ca9d9, #79d6ce); }
+        .chen_b { grid-area: b; background: linear-gradient(135deg, #145a8d, #4ca9d9); }
+        .chen_c { grid-area: c; background: linear-gradient(135deg, #ffc46b, #ff9f43); color: #3a2600; }
+        .chen_d { grid-area: d; background: linear-gradient(135deg, #79d6ce, #3fbfae); }
+        .chen_e { grid-area: e; background: linear-gradient(135deg, #6c7bd9, #4ca9d9); }
+        .chen_f { grid-area: f; background: linear-gradient(135deg, #145a8d, #10233a); }
+
+        .chen_b strong,
+        .chen_a strong { font-size: 44px; }
+
+        /* ---------- 代码说明 ---------- */
+        .chen_code {
+            margin: 0px;
+            padding: 20px 22px;
+            border-radius: var(--chen_radius);
+            border: 1px solid var(--chen_line);
+            background: #10233a;
+            color: #cfe6f3;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+            line-height: 1.9;
+            overflow-x: auto;
+        }
+
+        .chen_code b {
+            color: var(--chen_orange);
+            font-weight: 700;
+        }
+
+        /* ---------- 3D 翻转卡片 ---------- */
+        .chen_flips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .chen_flip {
+            perspective: 900px;
+            height: 170px;
+        }
+
+        .chen_flip_in {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.7s ease;
+        }
+
+        .chen_flip:hover .chen_flip_in {
+            transform: rotateY(180deg);
+        }
+
+        .chen_flip_face {
+            position: absolute;
+            inset: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px;
+            border-radius: var(--chen_radius);
+            backface-visibility: hidden;
+            text-align: center;
+        }
+
+        .chen_flip_front {
+            background: var(--chen_deep);
+            color: #ffffff;
+        }
+
+        .chen_flip_front strong {
+            font-size: 26px;
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .chen_flip_back {
+            transform: rotateY(180deg);
+            background: var(--chen_card);
+            color: var(--chen_text);
+            border: 1px solid var(--chen_line);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .chen_sign {
+            margin: 36px 0 0;
+            text-align: center;
+            font-size: 14px;
+            color: var(--chen_muted);
+        }
+
+        .chen_sign strong {
+            color: var(--chen_deep);
+            font-size: 16px;
+        }
+
+        @media (max-width: 820px) {
+            .chen_head {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .chen_stage {
+                order: -1;
+            }
+
+            .chen_grid {
+                grid-template-columns: repeat(2, 1fr);
+                grid-template-rows: repeat(5, 100px);
+                grid-template-areas:
+                    "a a"
+                    "b b"
+                    "b b"
+                    "c d"
+                    "e f";
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chen_wrap">
+        <a class="chen_back" href="./index.html">← 返回首页 index.html</a>
+
+        <header class="chen_head">
+            <div>
+                <h1 class="chen_title">Grid 网格布局</h1>
+                <p class="chen_intro">
+                    CSS Grid 通过 <code>display: grid</code> 把容器划分成行列，
+                    再用 <code>grid-template-areas</code> 为每个网格区域命名，
+                    子元素只写 <code>grid-area: 名称</code> 即可自动落位。
+                    本页使用的正是 <code>'a b b' / 'c b b' / 'c d e' / 'c d f'</code> 这一套区域布局。
+                </p>
+            </div>
+            <div class="chen_stage">
+                <div class="chen_cube">
+                    <div class="chen_face chen_f1">Grid</div>
+                    <div class="chen_face chen_f2">1fr</div>
+                    <div class="chen_face chen_f3">area</div>
+                    <div class="chen_face chen_f4">gap</div>
+                    <div class="chen_face chen_f5">行</div>
+                    <div class="chen_face chen_f6">列</div>
+                </div>
+            </div>
+        </header>
+
+        <h2 class="chen_subtitle">区域效果预览</h2>
+        <section class="chen_grid">
+            <div class="chen_area chen_a"><strong>a</strong><span>第 1 行第 1 列</span></div>
+            <div class="chen_area chen_b"><strong>b</strong><span>跨 2 行 2 列的 2×2 大区块</span></div>
+            <div class="chen_area chen_c"><strong>c</strong><span>纵跨 4 行的左侧竖条</span></div>
+            <div class="chen_area chen_d"><strong>d</strong><span>纵跨 2 行</span></div>
+            <div class="chen_area chen_e"><strong>e</strong><span>单格</span></div>
+            <div class="chen_area chen_f"><strong>f</strong><span>单格</span></div>
+        </section>
+
+        <h2 class="chen_subtitle">对应的 CSS 代码</h2>
+        <pre class="chen_code"><b>.chen_grid</b> {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(4, 110px);
+    grid-template-areas:
+        "a b b"
+        "c b b"
+        "c d e"
+        "c d f";
+    gap: 14px;
+}
+
+<b>.chen_a</b> { grid-area: a; }
+<b>.chen_b</b> { grid-area: b; }
+<b>.chen_c</b> { grid-area: c; }
+<b>.chen_d</b> { grid-area: d; }
+<b>.chen_e</b> { grid-area: e; }
+<b>.chen_f</b> { grid-area: f; }</pre>
+
+        <h2 class="chen_subtitle">要点提示</h2>
+        <section class="chen_flips">
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><strong>areas</strong><span>命名区域</span></div>
+                    <div class="chen_flip_face chen_flip_back">相同名称的相邻单元格会合并成一个区域，因此 b 会自动变成 2×2、c 会纵跨 4 行。</div>
+                </div>
+            </div>
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><strong>fr</strong><span>弹性列宽</span></div>
+                    <div class="chen_flip_face chen_flip_back">repeat(3, 1fr) 表示三列平分剩余空间，改动容器宽度时各列等比缩放。</div>
+                </div>
+            </div>
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><strong>gap</strong><span>行列间距</span></div>
+                    <div class="chen_flip_face chen_flip_back">gap 统一设置行与列之间的空隙，比逐个 margin 更直观，也不会破坏区域合并。</div>
+                </div>
+            </div>
+        </section>
+
+        <p class="chen_sign">本页面由 <strong>陈卓然</strong> 制作 · 1012 陈卓然 · 高级网页设计</p>
+    </div>
+</body>
+</html>
