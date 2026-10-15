@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · CSS3 3D 动画</title>
+    <style>
+        :root {
+            --chen_bg2: #0d1726;
+            --chen_text2: #eaf3ff;
+            --chen_muted2: #9fb3cc;
+            --chen_line2: rgba(255, 255, 255, 0.16);
+            --chen_accent2: #79d6ce;
+            --chen_font2: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            padding: 48px 20px;
+            color: var(--chen_text2);
+            font-family: var(--chen_font2);
+            background:
+                radial-gradient(circle at 20% 20%, rgba(76, 169, 217, 0.18), transparent 26%),
+                radial-gradient(circle at 85% 80%, rgba(121, 214, 206, 0.16), transparent 24%),
+                var(--chen_bg2);
+        }
+
+        .chen_wrap {
+            width: min(1000px, 100%);
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .chen_back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: 1px solid var(--chen_line2);
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--chen_text2);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            transition: transform 0.25s ease, background 0.25s ease;
+        }
+
+        .chen_back:hover {
+            transform: translateX(-4px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .chen_h1 {
+            margin: 26px 0 10px;
+            font-size: clamp(32px, 4vw, 48px);
+            color: #ffffff;
+        }
+
+        .chen_hint {
+            margin: 0 0 40px;
+            color: var(--chen_muted2);
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* ---------- CSS3 3D 旋转画廊 ---------- */
+        .chen_stage2 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 320px;
+            perspective: 1200px;
+        }
+
+        .chen_ring {
+            position: relative;
+            width: 200px;
+            height: 260px;
+            transform-style: preserve-3d;
+            animation: chen_rotate 18s linear infinite;
+        }
+
+        .chen_panel {
+            position: absolute;
+            inset: 0px;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+            backface-visibility: hidden;
+        }
+
+        .chen_img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .chen_cap {
+            position: absolute;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+            padding: 8px 10px;
+            font-size: 13px;
+            font-weight: 800;
+            color: #ffffff;
+            text-align: left;
+            background: linear-gradient(transparent, rgba(6, 20, 35, 0.85));
+        }
+
+        .chen_p1 { transform: rotateY(0deg) translateZ(190px); }
+        .chen_p2 { transform: rotateY(60deg) translateZ(190px); }
+        .chen_p3 { transform: rotateY(120deg) translateZ(190px); }
+        .chen_p4 { transform: rotateY(180deg) translateZ(190px); }
+        .chen_p5 { transform: rotateY(240deg) translateZ(190px); }
+        .chen_p6 { transform: rotateY(300deg) translateZ(190px); }
+
+        @keyframes chen_rotate {
+            from { transform: rotateX(-8deg) rotateY(0deg); }
+            to   { transform: rotateX(-8deg) rotateY(360deg); }
+        }
+
+        @media (max-width: 820px) {
+            .chen_stage2 {
+                height: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="chen_wrap">
+        <a class="chen_back" href="./index.html">← 返回首页 index.html</a>
+        <h1 class="chen_h1">CSS3 3D 旋转画廊</h1>
+        <p class="chen_hint">
+            下面的 6 张卡片围成一个空间圆环，整体绕 Y 轴持续旋转，
+            使用 <strong>transform-style: preserve-3d</strong> 与 <strong>perspective</strong> 实现立体效果。
+        </p>
+
+        <section class="chen_stage2">
+            <div class="chen_ring">
+                <div class="chen_panel chen_p1">
+                    <img class="chen_img" src="./img/1.jpg" alt="作品一">
+                    <span class="chen_cap">作品一</span>
+                </div>
+                <div class="chen_panel chen_p2">
+                    <img class="chen_img" src="./img/2.jpg" alt="作品二">
+                    <span class="chen_cap">作品二</span>
+                </div>
+                <div class="chen_panel chen_p3">
+                    <img class="chen_img" src="./img/3.jpg" alt="作品三">
+                    <span class="chen_cap">作品三</span>
+                </div>
+                <div class="chen_panel chen_p4">
+                    <img class="chen_img" src="./img/4.jpg" alt="作品四">
+                    <span class="chen_cap">作品四</span>
+                </div>
+                <div class="chen_panel chen_p5">
+                    <img class="chen_img" src="./img/5.jpeg" alt="作品五">
+                    <span class="chen_cap">作品五</span>
+                </div>
+                <div class="chen_panel chen_p6">
+                    <img class="chen_img" src="./img/6.jpg" alt="作品六">
+                    <span class="chen_cap">作品六</span>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

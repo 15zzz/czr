@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>陈卓然 - 响应式视口</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            font-size: 14px;
+            --screen-color: #e76f51;
+            --text-color: #fff8ef;
+            --accent-color: #243b53;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        .viewport-box {
+            display: grid;
+            width: 100%;
+            min-height: 100vh;
+            min-height: 100svh;
+            place-items: center;
+            padding: 2rem;
+            background-color: var(--screen-color);
+            color: var(--text-color);
+            text-align: center;
+            transition: background-color 300ms ease;
+        }
+
+        .caption {
+            max-width: 100%;
+        }
+
+        .caption h1 {
+            margin: 0;
+            font-size: 3.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .caption p {
+            margin: 1rem 0 0;
+            color: var(--text-color);
+            font-size: 1rem;
+            line-height: 1.8;
+        }
+
+        .caption p span {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        @media (min-width: 600px) {
+            :root {
+                font-size: 17px;
+                --screen-color: #2a9d8f;
+                --text-color: #f4f1de;
+                --accent-color: #264653;
+            }
+
+            .caption h1 {
+                font-size: 4.5rem;
+            }
+        }
+
+        @media (min-width: 1000px) {
+            :root {
+                font-size: 20px;
+                --screen-color: #264653;
+                --text-color: #f4f1de;
+                --accent-color: #e9c46a;
+            }
+
+            .caption h1 {
+                font-size: 5rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .viewport-box {
+                transition: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="viewport-box">
+        <div class="caption">
+            <h1>陈卓然</h1>
+            <p>视口变化，字幕大小随之变化</p>
+            <p><span>响应式设计</span> / CSS Media Query</p>
+        </div>
+    </main>
+    <a class="chen_home" href="./index.html" style="position:fixed;top:14px;left:14px;z-index:9999;display:inline-block;padding:10px 18px;border-radius:40px;background:#145a8d;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;font-family:'Microsoft YaHei','PingFang SC',sans-serif;box-shadow:0 8px 18px rgba(0,0,0,0.25);">← 返回首页</a>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012陈卓然</title>
+    <style>
+        h3{
+            color: red;
+        }
+        p{
+            color: blue;
+        }
+        #box{
+            width: 500px;
+            height: 500px;
+            background-color: #CCC;
+        }
+        /*id选择器，以#开始，唯一*/
+        .n1{
+            color:#FF0;
+        }
+        .n2{
+            color: #F00;
+        }
+        .n3{
+            color: #0F0;
+        }
+        /*扩展1：h2黑底白字*/
+        h2{
+            background-color: #000;
+            color: #FFF;
+        }
+        /*扩展3：h3中"选择器"三个字为白色*/
+        h3 span{
+            color: #FFF;
+        }
+        /*扩展4：学号盒子，有宽高背景*/
+        #stuId{
+            width: 400px;
+            height: 100px;
+            background-color: #A8E0FF;
+            font-size: 36px;
+            font-weight: bold;
+            color: #000;
+            text-align: center;
+            line-height: 100px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>层叠样表式CSS</h2>
+    <div id="box">
+        <h3>CSS<span>选择器</span></h3>
+        <p><span class="n1">陈</span><span class="n2">卓</span><span class="n3">然</span></p>
+        <p>CSS属性</p>
+    </div>
+    <!--扩展4：新加一个学号盒子-->
+    <div id="stuId">24001011012</div>
+    <a class="chen_home" href="./index.html" style="position:fixed;top:14px;left:14px;z-index:9999;display:inline-block;padding:10px 18px;border-radius:40px;background:#145a8d;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;font-family:'Microsoft YaHei','PingFang SC',sans-serif;box-shadow:0 8px 18px rgba(0,0,0,0.25);">← 返回首页</a>
+</body>
+</html>

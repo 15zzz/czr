@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012陈卓然 盒模型，框模型 box model</title>
+    <style>
+        body,u1,p,h1,h2,h3,h4,h5,h6{
+            margin: 0;
+            padding: 0;
+        }/*尽量少用*符*/
+        u1{
+            list-style: none;
+
+        }
+        .a{
+width:500px;
+height: 500px;
+border: 2px dotted #039;
+padding: 70px 60px 50px 40px; 
+margin: 40px auto;
+/*上下、左右，左右margin为auto则盒子剧中*/
+        }
+        .b{
+            width: 500px;
+            height: 300px;
+            border: 2px dashed #039;
+            margin: 50px auto 40px;
+        }
+        .c{
+            width: 500px;
+            height: 300px;
+            border: 2px solid #039;
+            margin: 50px auto 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="a">1012陈卓然</div>
+    <div class="b">1012陈卓然</div>
+    <div class="c">1012陈卓然</div>
+    <a class="chen_home" href="./index.html" style="position:fixed;top:14px;left:14px;z-index:9999;display:inline-block;padding:10px 18px;border-radius:40px;background:#145a8d;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;font-family:'Microsoft YaHei','PingFang SC',sans-serif;box-shadow:0 8px 18px rgba(0,0,0,0.25);">← 返回首页</a>
+</body>
+</html>

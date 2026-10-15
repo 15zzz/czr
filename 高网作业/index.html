@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  项目名称：大学生实习就业网站（参照 实习僧 www.shixiseng.com 仿写）
+  课程名称：高级网页设计I  四级项目（网页元素设计）
+  设计制作：陈卓然
+  学号：24001011012
+  班级：计科24010班
+  学校：大连东软信息学院
+  说明：页面结构与内容对照实习僧首页制作，包含顶部导航栏、
+        简历直达推广卡+职位分类侧栏、搜索区（数字瓦片职位数）、Banner、推广小卡片、
+        热门企业（上图下文）、tab切换+复选框职位列表（含"荐"角标与HOT徽标）等元素；
+        使用 flex / grid 布局，不使用 float 与 table；
+        样式以 class 选择器为主，定义了全局公共 CSS。
+        类名前缀 czr- 为姓名缩写（陈卓然）。
+  ============================================================
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="实习僧|大学生实习|校招求职|校园招聘——陈卓然 24001011012 仿站作品">
+    <title>实习僧|大学生实习|校招求职|校园招聘</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- ============ 网页元素一：顶部导航栏（header + nav） ============ -->
+    <header class="czr-header">
+        <div class="czr-container czr-header-inner">
+            <a href="#" class="czr-logo">
+                <span class="czr-logo-mark">实</span>
+                <span class="czr-logo-box">
+                    <span class="czr-logo-text">实习僧</span>
+                    <span class="czr-logo-en">shixiseng.com</span>
+                </span>
+            </a>
+
+            <span class="czr-city">全国<i class="czr-city-switch">[切换]</i></span>
+
+            <nav class="czr-nav">
+                <ul class="czr-nav-list">
+                    <li><a class="czr-nav-item czr-active" href="#">首页</a></li>
+                    <li><a class="czr-nav-item" href="#">校招</a></li>
+                    <li><a class="czr-nav-item" href="#">实习僧TV<i class="czr-badge czr-badge-hot">hot</i></a></li>
+                    <li><a class="czr-nav-item" href="#">实习僧教育</a></li>
+                    <li><a class="czr-nav-item" href="#">职位百科<i class="czr-badge czr-badge-new">new</i></a></li>
+                </ul>
+            </nav>
+
+            <a class="czr-entry-btn" href="#"><i class="czr-entry-icon">同</i>同学</a>
+        </div>
+    </header>
+
+    <!-- ============ 首屏：左侧简历直达推广卡+全部分类侧栏 / 右侧搜索+Banner+推广小卡片 ============ -->
+    <section class="czr-hero">
+        <div class="czr-container czr-hero-inner">
+
+            <!-- 左侧：简历直达推广卡 + 全部分类 -->
+            <aside class="czr-side">
+                <a class="czr-promo" href="#">
+                    <strong class="czr-promo-title">简历直达<br>100+企业官网</strong>
+                    <i class="czr-promo-doc"></i>
+                    <span class="czr-promo-ai">AI</span>
+                    <span class="czr-promo-btn">启用AI助手</span>
+                </a>
+
+                <div class="czr-cat">
+                    <a class="czr-cat-all" href="#">全部分类<i class="czr-cat-arrow">›</i></a>
+                    <ul class="czr-cat-list">
+                        <li class="czr-cat-item">
+                            <a class="czr-cat-name" href="#">互联网IT</a>
+                            <p class="czr-cat-tags">产品 运营 技术管理</p>
+                            <i class="czr-cat-go">›</i>
+                        </li>
+                        <li class="czr-cat-item">
+                            <a class="czr-cat-name" href="#">通信/硬件</a>
+                            <p class="czr-cat-tags">电子/半导体</p>
+                            <i class="czr-cat-go">›</i>
+                        </li>
+                        <li class="czr-cat-item">
+                            <a class="czr-cat-name" href="#">设计/传媒</a>
+                            <p class="czr-cat-tags">视觉/交互设计</p>
+                            <i class="czr-cat-go">›</i>
+                        </li>
+                        <li class="czr-cat-item">
+                            <a class="czr-cat-name" href="#">人事行政财务</a>
+                            <p class="czr-cat-tags">行政 人力资源</p>
+                            <i class="czr-cat-go">›</i>
+                        </li>
+                        <li class="czr-cat-item">
+                            <a class="czr-cat-name" href="#">金融/法务</a>
+                            <p class="czr-cat-tags">中后台 战略投资</p>
+                            <i class="czr-cat-go">›</i>
+                        </li>
+                        <li class="czr-cat-item">
+                            <a class="czr-cat-name" href="#">生产制造</a>
+                            <p class="czr-cat-tags">质量安全 生产营运</p>
+                            <i class="czr-cat-go">›</i>
+                        </li>
+                        <li class="czr-cat-item">
+                            <a class="czr-cat-name" href="#">贸易商务</a>
+                            <p class="czr-cat-tags">公关展会 会务会展</p>
+                            <i class="czr-cat-go">›</i>
+                        </li>
+                        <li class="czr-cat-item">
+                            <a class="czr-cat-name" href="#">教育培训</a>
+                            <p class="czr-cat-tags">教务行政 教师</p>
+                            <i class="czr-cat-go">›</i>
+                        </li>
+                        <li class="czr-cat-item">
+                            <a class="czr-cat-name" href="#">生物医疗</a>
+                            <p class="czr-cat-tags">护士/护理 医生/医技</p>
+                            <i class="czr-cat-go">›</i>
+                        </li>
+                    </ul>
+                </div>
+            </aside>
+
+            <!-- 右侧：职位数 + 搜索 + Banner + 推广小卡片 -->
+            <div class="czr-main">
+                <p class="czr-count">共计 <strong><i class="czr-digit">0</i><i class="czr-digit">1</i><i class="czr-digit">5</i><i class="czr-digit">1</i><i class="czr-digit">9</i><i class="czr-digit">0</i><i class="czr-digit">8</i><i class="czr-digit">5</i></strong> 个热门职位</p>
+                <form class="czr-search czr-main-search" action="#">
+                    <span class="czr-search-type">实习<i class="czr-type-arrow">▾</i></span>
+                    <input class="czr-search-input" type="text" placeholder="请输入期望的实习岗位、公司">
+                    <button class="czr-search-btn" type="button">搜索</button>
+                </form>
+                <p class="czr-hot">
+                    <span class="czr-hot-label">热门搜索：</span>
+                    <a class="czr-hot-word" href="#">远程</a>
+                    <a class="czr-hot-word" href="#">运营</a>
+                    <a class="czr-hot-word" href="#">人力资源</a>
+                    <a class="czr-hot-word" href="#">产品</a>
+                    <a class="czr-hot-word" href="#">数据</a>
+                    <a class="czr-hot-word" href="#">市场营销</a>
+                    <a class="czr-hot-word" href="#">行政</a>
+                    <a class="czr-hot-word" href="#">ACCA青年人才库</a>
+                </p>
+
+                <figure class="czr-banner">
+                    <img src="images/banner-deloitte.png" alt="德勤中国2027秋季校园招聘正式启动">
+                    <span class="czr-banner-logo">Deloitte.</span>
+                    <span class="czr-banner-brand">德勤</span>
+                    <figcaption class="czr-banner-text">
+                        <strong>德专注于你</strong>
+                        <strong>勤路可期</strong>
+                        <em>德勤中国2027秋季校园招聘</em>
+                        <em>正式启动</em>
+                    </figcaption>
+                    <ul class="czr-banner-strip">
+                        <li>校招提前站</li>
+                        <li>打击虚假招聘违规行为</li>
+                        <li>ACCA</li>
+                        <li>德勤</li>
+                        <li>金融融经堂</li>
+                    </ul>
+                </figure>
+
+                <ul class="czr-minis">
+                    <li class="czr-mini">
+                        <span class="czr-mini-logo czr-mini-logo-white"><b class="czr-yst">养生堂</b><i>农夫山泉</i></span>
+                        <p class="czr-mini-name">农夫山泉</p>
+                    </li>
+                    <li class="czr-mini">
+                        <span class="czr-mini-logo czr-mini-red">ZURU</span>
+                        <p class="czr-mini-name">zuru2027届校园招聘项目</p>
+                    </li>
+                    <li class="czr-mini">
+                        <span class="czr-mini-logo czr-mini-blue">字节跳动</span>
+                        <p class="czr-mini-name">字节跳动</p>
+                    </li>
+                    <li class="czr-mini">
+                        <span class="czr-mini-logo czr-mini-orange">滴滴</span>
+                        <p class="czr-mini-name">滴滴</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 网页元素二：热门企业（上图下文） ============ -->
+    <section class="czr-section">
+        <div class="czr-container">
+            <ul class="czr-companies">
+                <li class="czr-company">
+                    <span class="czr-company-logo czr-logo-xhs">小红书</span>
+                    <h3 class="czr-company-name">小红书</h3>
+                </li>
+                <li class="czr-company">
+                    <span class="czr-company-logo czr-logo-ks">快手</span>
+                    <h3 class="czr-company-name">快手</h3>
+                </li>
+                <li class="czr-company">
+                    <span class="czr-company-logo czr-logo-nio">NIO</span>
+                    <h3 class="czr-company-name">NIO蔚来</h3>
+                </li>
+                <li class="czr-company">
+                    <span class="czr-company-logo czr-logo-dw">得物</span>
+                    <h3 class="czr-company-name">得物App</h3>
+                </li>
+                <li class="czr-company">
+                    <span class="czr-company-logo czr-logo-bd">百度</span>
+                    <h3 class="czr-company-name">百度</h3>
+                </li>
+                <li class="czr-company">
+                    <span class="czr-company-logo czr-logo-bs">BOSCH</span>
+                    <h3 class="czr-company-name">博世中国</h3>
+                </li>
+                <li class="czr-company">
+                    <span class="czr-company-logo czr-logo-bl">bilibili</span>
+                    <h3 class="czr-company-name">哔哩哔哩</h3>
+                </li>
+                <li class="czr-company">
+                    <span class="czr-company-logo czr-logo-mi">MI</span>
+                    <h3 class="czr-company-name">小米</h3>
+                </li>
+                <li class="czr-company">
+                    <span class="czr-company-logo czr-logo-zq">乔丹</span>
+                    <h3 class="czr-company-name">中乔体育</h3>
+                </li>
+                <li class="czr-company">
+                    <span class="czr-company-logo czr-logo-wy">网易</span>
+                    <h3 class="czr-company-name">网易</h3>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ============ 活动推广色条（一排三张） ============ -->
+    <section class="czr-section czr-section-cta">
+        <div class="czr-container czr-ctas">
+            <a class="czr-cta czr-cta-green" href="#">
+                <i class="czr-cta-deco"></i>
+                <h3><i class="czr-cta-ico">▤</i>27届最新秋招岗位合集</h3>
+            </a>
+            <a class="czr-cta czr-cta-blue" href="#">
+                <i class="czr-cta-deco"></i>
+                <h3><i class="czr-cta-ico">✦</i>留学生offer护航计划</h3>
+            </a>
+            <a class="czr-cta czr-cta-orange" href="#">
+                <i class="czr-cta-deco"></i>
+                <h3><i class="czr-cta-ico">✈</i>热投实习岗位</h3>
+            </a>
+        </div>
+    </section>
+
+    <!-- ============ 网页元素三：tab 切换 + 职位列表 ============ -->
+    <section class="czr-section czr-section-jobs">
+        <div class="czr-container">
+            <div class="czr-section-head">
+                <div class="czr-tabs">
+                    <button class="czr-tab czr-tab-active" type="button">热门职位</button>
+                    <button class="czr-tab" type="button">最新职位</button>
+                    <button class="czr-tab" type="button">推荐职位</button>
+                </div>
+                <div class="czr-head-right">
+                    <span class="czr-check"><i class="czr-check-box">✓</i>实习职位</span>
+                    <span class="czr-check"><i class="czr-check-box">✓</i>校招职位</span>
+                    <a class="czr-more" href="#">查看更多职位 &gt;</a>
+                </div>
+            </div>
+
+            <ul class="czr-job-list">
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">校招</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">助理咨询顾问（数据方向）<i class="czr-job-hot">HOT</i></h3>
+                        <span class="czr-job-salary">12k-13k/月</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>数据驱动</li><li>对标研究</li><li>调研成果</li><li class="czr-tag-more">···</li></ul>
+                    <p class="czr-job-info">北京 <i>·</i> 应届生 <i>·</i> 本科</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-dtt">德勤</span>
+                        <span class="czr-job-company">德勤咨询</span>
+                        <span class="czr-job-field">咨询/财会/法律</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">校招</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">HR Intern<i class="czr-job-hot">HOT</i></h3>
+                        <span class="czr-job-salary">150/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>外资企业</li><li>上市公司</li><li>办公环境好</li></ul>
+                    <p class="czr-job-info">上海 <i>·</i> 4天/周 <i>·</i> 3个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-pwc">普华</span>
+                        <span class="czr-job-company">普华永道</span>
+                        <span class="czr-job-field">咨询/财会/法律</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">校招</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">助理咨询顾问--base上海<i class="czr-job-hot">HOT</i></h3>
+                        <span class="czr-job-salary">12k-13k/月</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>先进平台</li><li>高薪成长</li><li>多元培养</li></ul>
+                    <p class="czr-job-info">上海 <i>·</i> 5天/周 <i>·</i> 6个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-dtt">德勤</span>
+                        <span class="czr-job-company">德勤咨询</span>
+                        <span class="czr-job-field">咨询/财会/法律</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">AI广告产品实习生</h3>
+                        <span class="czr-job-salary">200-250/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>实习津贴</li></ul>
+                    <p class="czr-job-info">北京 <i>·</i> 5天/周 <i>·</i> 3个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-ks">快手</span>
+                        <span class="czr-job-company">快手</span>
+                        <span class="czr-job-field">互联网/游戏/软件</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">产研招聘实习生(A29977)</h3>
+                        <span class="czr-job-salary">150-250/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>上市公司</li><li>世界五百强</li><li>餐补</li></ul>
+                    <p class="czr-job-info">北京 <i>·</i> 5天/周 <i>·</i> 3个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-mi">小米</span>
+                        <span class="czr-job-company">小米</span>
+                        <span class="czr-job-field">互联网/游戏/软件</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">AIGC内容制作实习生（侧重编剧）</h3>
+                        <span class="czr-job-salary">薪资面议</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>周末双休</li></ul>
+                    <p class="czr-job-info">长沙 <i>·</i> 5天/周 <i>·</i> 3个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-mg">芒果</span>
+                        <span class="czr-job-company">芒果TV</span>
+                        <span class="czr-job-field">互联网/游戏/软件</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">互动应用产品实习生(A42086)<i class="czr-job-hot">HOT</i></h3>
+                        <span class="czr-job-salary">180-250/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>一对一导师</li></ul>
+                    <p class="czr-job-info">北京 <i>·</i> 5天/周 <i>·</i> 3个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-iqy">爱奇艺</span>
+                        <span class="czr-job-company">爱奇艺</span>
+                        <span class="czr-job-field">互联网/游戏/软件</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">官号运营实习生(J106540)</h3>
+                        <span class="czr-job-salary">120-200/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>提供餐补</li></ul>
+                    <p class="czr-job-info">北京 <i>·</i> 5天/周 <i>·</i> 3个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-bd">百度</span>
+                        <span class="czr-job-company">百度</span>
+                        <span class="czr-job-field">互联网/游戏/软件</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">HR社会招聘实习生（北京）</h3>
+                        <span class="czr-job-salary">120-150/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>周末双休</li><li>地铁周边</li></ul>
+                    <p class="czr-job-info">北京 <i>·</i> 4天/周 <i>·</i> 4个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-pf">辉瑞</span>
+                        <span class="czr-job-company">辉瑞</span>
+                        <span class="czr-job-field">医疗/健康/制药/生物</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">策略运营实习生-国际化内容社区<i class="czr-job-hot">HOT</i></h3>
+                        <span class="czr-job-salary">薪资面议</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>健身瑜伽</li><li>团队氛围好</li></ul>
+                    <p class="czr-job-info">上海 <i>·</i> 5天/周 <i>·</i> 3个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-zj2">字节</span>
+                        <span class="czr-job-company">字节跳动</span>
+                        <span class="czr-job-field">互联网/游戏/软件</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">医药代表实习生-济南-R2874516</h3>
+                        <span class="czr-job-salary">120-150/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>实习津贴</li></ul>
+                    <p class="czr-job-info">济南 <i>·</i> 5天/周 <i>·</i> 6个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-sn">赛诺菲</span>
+                        <span class="czr-job-company">赛诺菲</span>
+                        <span class="czr-job-field">医疗/健康/制药/生物</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">游戏视频运营实习生(二次元方向)</h3>
+                        <span class="czr-job-salary">200-250/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>上市公司</li><li>五险一金</li></ul>
+                    <p class="czr-job-info">上海 <i>·</i> 4天/周 <i>·</i> 3个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-bl">哔哩</span>
+                        <span class="czr-job-company">哔哩哔哩</span>
+                        <span class="czr-job-field">互联网/游戏/软件</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">人才交付</h3>
+                        <span class="czr-job-salary">150-200/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>餐补</li><li>新锐之星实习生</li></ul>
+                    <p class="czr-job-info">省-成都市 <i>·</i> 5天/周 <i>·</i> 3个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-jd">京东</span>
+                        <span class="czr-job-company">京东</span>
+                        <span class="czr-job-field">互联网/游戏/软件</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">L'Oreal - R&amp;I - Dev Makeup color Intern</h3>
+                        <span class="czr-job-salary">180-200/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>一对一导师</li><li>周末双休</li></ul>
+                    <p class="czr-job-info">上海 <i>·</i> 4天/周 <i>·</i> 6个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-ore">欧莱雅</span>
+                        <span class="czr-job-company">欧莱雅</span>
+                        <span class="czr-job-field">快消/百货/批发/零售</span>
+                    </div>
+                </li>
+
+                <li class="czr-job-item">
+                    <i class="czr-job-ribbon"><span class="czr-ribbon-txt">实习</span></i>
+                    <div class="czr-job-top">
+                        <h3 class="czr-job-name">国际事业群IBG-安全研发实习生</h3>
+                        <span class="czr-job-salary">200-300/天</span>
+                    </div>
+                    <ul class="czr-job-tags"><li>晚餐补贴</li><li>实习证明</li></ul>
+                    <p class="czr-job-info">北京 <i>·</i> 5天/周 <i>·</i> 5个月</p>
+                    <div class="czr-job-bottom">
+                        <span class="czr-job-logo czr-jl-dd">滴滴</span>
+                        <span class="czr-job-company">滴滴</span>
+                        <span class="czr-job-field">互联网/游戏/软件</span>
+                    </div>
+                </li>
+            </ul>
+
+            <div class="czr-job-more">
+                <a class="czr-job-more-btn" href="#">更多职位</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ 作者个人信息（作业要求：包含本人信息） ============ -->
+    <aside class="czr-author">
+        <div class="czr-container czr-author-inner">
+            <span class="czr-avatar">陈</span>
+            <div class="czr-author-info">
+                <h3 class="czr-author-name">设计与制作：陈卓然</h3>
+                <p class="czr-author-meta">学号：24001011012 ｜ 班级：计科24010班 ｜ 大连东软信息学院</p>
+                <p class="czr-author-meta">课程：《高级网页设计I》四级项目——网页元素设计 · 参照实习僧（www.shixiseng.com）仿写</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ============ 页脚 ============ -->
+    <footer class="czr-footer">
+        <div class="czr-container czr-footer-inner">
+            <div class="czr-footer-cols">
+                <div class="czr-footer-col">
+                    <h4>产品服务</h4>
+                    <ul>
+                        <li><a href="#">找实习</a></li>
+                        <li><a href="#">找校招</a></li>
+                        <li><a href="#">看空宣</a></li>
+                    </ul>
+                </div>
+                <div class="czr-footer-col">
+                    <h4>旗下产品</h4>
+                    <ul>
+                        <li><a href="#">实习僧</a></li>
+                        <li><a href="#">实习僧TV</a></li>
+                        <li><a href="#">实习僧题库</a></li>
+                        <li><a href="#">职场说</a></li>
+                    </ul>
+                </div>
+                <div class="czr-footer-col">
+                    <h4>关于我们</h4>
+                    <ul>
+                        <li><a href="#">了解我们</a></li>
+                        <li><a href="#">加入我们</a></li>
+                        <li><a href="#">免责声明</a></li>
+                        <li><a href="#">专项治理</a></li>
+                    </ul>
+                </div>
+                <div class="czr-footer-col">
+                    <h4>联系我们</h4>
+                    <ul>
+                        <li><a href="#">实习僧公众号</a></li>
+                        <li><a href="#">客户服务</a></li>
+                    </ul>
+                </div>
+                <div class="czr-footer-col">
+                    <h4>商务合作</h4>
+                    <ul>
+                        <li>商务合作：doreen@mshare.cn</li>
+                        <li>热线咨询：400-600-8206</li>
+                        <li>服务时间：工作日 9:30-18:00</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="czr-copyright">
+                ©2015-2026 实习僧 | 蜀ICP备13010980号 | 联系我们：sxs@shixiseng.com
+            </p>
+            <p class="czr-copyright">
+                成都萌想科技有限责任公司版权所有 中国专注实习、校招垂直招聘平台 川公网安备 51019002001179号
+            </p>
+            <p class="czr-copyright czr-copyright-note">
+                本页面为《高级网页设计I》课程仿站教学作品 · 设计与制作：陈卓然（24001011012 · 计科24010班 · 大连东软信息学院）
+            </p>
+        </div>
+    </footer>
+
+    <!-- ============ 右侧悬浮工具条 ============ -->
+    <aside class="czr-float">
+        <span class="czr-fb">≡</span>
+        <span class="czr-fb">▤</span>
+        <span class="czr-fb">✉</span>
+        <span class="czr-fb">☎</span>
+    </aside>
+
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>css3 1012陈卓然</title>
+    <style>
+        .main{
+            display: flex;
+            flex-wrap: wrap;/*让子元素换行*/
+            margin: 10px;
+        }
+        .box{
+            width: 150px;
+            height: 150px;
+            border: 1px solid #ccc;
+            margin: 10px;
+            display: flex;/*让子元素居中*/
+            justify-content: center;/*让子元素居中*/
+            align-items: center;/*让子元素居中*/
+            font-size: 40px;
+            transition: all 0.6s; 
+            box-sizing: border-box; /*让盒子的大小为width+padding+border*/
+        }
+        .box:first-child:hover{
+            background-color: red;
+            color: #fff;
+            font-size: 140px;
+        }
+        .box:nth-child(2):hover{
+            border-radius: 50%;/*让盒子变成圆形*/
+            border-width: 10px;
+        }
+        .box:nth-child(3):hover{
+            box-shadow: 10px 10px 10px #ccc;/*让盒子有阴影*/
+        }
+        .box:nth-of-type(4):hover{
+            text-shadow: 100px 10px 10px #ccc;/*让文字有阴影*/
+        }
+        .box:nth-of-type(5):hover{
+            /*线性渐变*/
+            background: linear-gradient(to right, rgb(251, 243, 243), yellow, green);
+        }
+        .box:nth-of-type(5)+.box{
+            /*径向渐变*/
+            background: radial-gradient(circle, rgb(251, 243, 243), rgb(91, 5, 115), rgb(0, 0, 0));
+        }
+        /*相邻兄弟选择器+后面的一个兄弟~后面所有的兄弟*/
+        .box:nth-of-type(7):hover{
+            transform: scale(0.5);/*让盒子缩小*/
+            
+        }
+        .box:nth-of-type(8):hover{
+            transform:translateX(-150px);/*让盒子向左移动*/
+        }
+        .box:nth-of-type(9):hover{
+            transform:rotateX(-180deg);/*让盒子旋转*/
+        }
+        .box:nth-of-type(10):hover{
+            transform:skewX(20deg) translateY(50px);/*让盒子倾斜*/
+        }
+        .box:nth-last-child(2):hover::before{
+            /*内部的最前面的元素*/
+            content: "*";
+            color: red;
+            
+        }
+        /*拓展一，第十二个盒子，鼠标在上面时显示自己的名字，
+        要求名字深色背景白色文字，水平垂直居中*/
+        .box:nth-last-child(1):hover{
+            background-color: #333;   /* 深色背景 */
+            color: #fff;              /* 白色文字 */
+            font-size: 0;             /* 隐藏原本的"12" */
+        }
+        .box:nth-last-child(1):hover::before{
+            content: "陈卓然";         /* 显示自己的名字 */
+            font-size: 14px;          /* 恢复字号 */
+            color: #fff;              /* 白色文字 */
+            /* 居中已由 box 自身的 flex 实现 */
+        }
+        /*拓展二，鼠标在偶数个盒子上时，盒子抖动（2、4、6、8、10、12）*/
+        @keyframes shake{
+            0%   { transform: translateX(0); }
+            25%  { transform: translateX(-10px); }
+            50%  { transform: translateX(10px); }
+            75%  { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
+        }
+        .box:nth-child(even):hover{
+            animation: shake 0.5s infinite;  /* 左右抖动循环 */
+        }
+    </style>
+</head>
+<body>
+    <div class="main">
+       <div class="box">1</div>
+       <div class="box">2</div>
+       <div class="box">3</div>
+       <div class="box">4</div>
+       <div class="box">5</div>
+       <div class="box">6</div>
+       <div class="box">7</div>
+       <div class="box">8</div>
+       <div class="box">9</div>
+       <div class="box">10</div>
+       <div class="box">11</div>
+       <div class="box">12</div>
+    </div>
+    <a class="chen_home" href="./index.html" style="position:fixed;top:14px;left:14px;z-index:9999;display:inline-block;padding:10px 18px;border-radius:40px;background:#145a8d;color:#ffffff;font-size:14px;font-weight:700;text-decoration:none;font-family:'Microsoft YaHei','PingFang SC',sans-serif;box-shadow:0 8px 18px rgba(0,0,0,0.25);">← 返回首页</a>
+</body>
+</html>
