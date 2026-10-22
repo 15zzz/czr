@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>1012 陈卓然 · SVG 图标下导航</title>
+    <script src="./font/font_5244823_nkj1sa0pqh/iconfont.js"></script>
+    <style>
+        :root {
+            --chen_bg: #eef4f8;
+            --chen_card: #ffffff;
+            --chen_text: #24324a;
+            --chen_muted: #8492a8;
+            --chen_line: #ccdce9;
+            --chen_blue: #4ca9d9;
+            --chen_deep: #145a8d;
+            --chen_cyan: #79d6ce;
+            --chen_red: #f5453d;
+            --chen_soft: #eef6fb;
+            --chen_shadow: rgba(32, 60, 85, 0.12);
+            --chen_radius: 18px;
+            --chen_tab_h: 56px;
+            --chen_icon: 24px;
+            --chen_font: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            font-size: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0px;
+            padding: 78px 16px 104px;
+            min-height: 100vh;
+            color: var(--chen_text);
+            font-family: var(--chen_font);
+            background:
+                radial-gradient(circle at 88% 6%, rgba(121, 214, 206, 0.2), transparent 24%),
+                radial-gradient(circle at 6% 90%, rgba(255, 196, 107, 0.18), transparent 24%),
+                var(--chen_bg);
+        }
+
+        .chen_home {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 40;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: 1px solid var(--chen_line);
+            background: var(--chen_card);
+            color: var(--chen_deep);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 8px 16px var(--chen_shadow);
+            transition: transform 0.25s ease;
+        }
+
+        .chen_home:hover {
+            transform: translateY(-3px);
+        }
+
+        .chen_wrap {
+            width: min(720px, 100%);
+            margin: 0 auto;
+        }
+
+        .chen_title {
+            margin: 0 0 12px;
+            font-size: clamp(26px, 6vw, 38px);
+            line-height: 1.25;
+            color: var(--chen_deep);
+        }
+
+        .chen_intro {
+            margin: 0px;
+            color: #5d6b81;
+            font-size: 15px;
+            line-height: 1.9;
+        }
+
+        .chen_intro code,
+        .chen_note code,
+        .chen_card code,
+        .chen_hint code {
+            color: var(--chen_deep);
+            background: var(--chen_soft);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .chen_intro strong {
+            color: var(--chen_deep);
+        }
+
+        .chen_subtitle {
+            margin: 34px 0 14px;
+            font-size: 21px;
+            color: var(--chen_deep);
+        }
+
+        .chen_note {
+            margin: -4px 0 16px;
+            font-size: 13px;
+            line-height: 1.9;
+            color: #5d6b81;
+        }
+
+        .chen_hint {
+            display: none;
+            margin: -4px 0 16px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #ffe3e0;
+            color: #a1281f;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+
+        /* ---------- SVG 图标通用样式 ---------- */
+        .chen_svg {
+            display: inline-block;
+            width: var(--chen_icon);
+            height: var(--chen_icon);
+            fill: currentColor;
+            vertical-align: -0.1em;
+        }
+
+        /* ---------- CSS3 3D 立方体 ---------- */
+        .chen_stage {
+            display: flex;
+            justify-content: center;
+            perspective: 900px;
+            margin: 24px 0 8px;
+        }
+
+        .chen_cube {
+            position: relative;
+            width: 132px;
+            height: 132px;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(0deg);
+            animation: chen_spin 14s linear infinite;
+        }
+
+        .chen_face {
+            position: absolute;
+            inset: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: inset 0 0 26px rgba(255, 255, 255, 0.35);
+            font-size: 12px;
+            font-weight: 800;
+            color: #062033;
+        }
+
+        .chen_face .chen_svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .chen_f1 { background: linear-gradient(135deg, #4ca9d9, #79d6ce); transform: translateZ(66px); }
+        .chen_f2 { background: linear-gradient(135deg, #145a8d, #4ca9d9); transform: rotateY(180deg) translateZ(66px); color: #eaf3ff; }
+        .chen_f3 { background: linear-gradient(135deg, #ffc46b, #ff9f43); transform: rotateY(90deg) translateZ(66px); }
+        .chen_f4 { background: linear-gradient(135deg, #79d6ce, #3fbfae); transform: rotateY(-90deg) translateZ(66px); }
+        .chen_f5 { background: linear-gradient(135deg, #a9e8ff, #4ca9d9); transform: rotateX(90deg) translateZ(66px); }
+        .chen_f6 { background: linear-gradient(135deg, #145a8d, #10233a); transform: rotateX(-90deg) translateZ(66px); color: #eaf3ff; }
+
+        @keyframes chen_spin {
+            from { transform: rotateX(-20deg) rotateY(0deg); }
+            to   { transform: rotateX(-20deg) rotateY(360deg); }
+        }
+
+        /* ---------- 说明卡片 ---------- */
+        .chen_cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .chen_card {
+            background: var(--chen_card);
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+            padding: 18px 20px 20px;
+        }
+
+        .chen_card h3 {
+            margin: 0 0 8px;
+            font-size: 15px;
+            color: var(--chen_deep);
+            letter-spacing: 1px;
+        }
+
+        .chen_card p {
+            margin: 0px;
+            font-size: 13px;
+            line-height: 1.9;
+            color: #5d6b81;
+        }
+
+        /* ---------- 状态预览（静态示例，非固定定位） ---------- */
+        .chen_states {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+        }
+
+        .chen_state {
+            background: var(--chen_card);
+            border: 1px solid var(--chen_line);
+            border-radius: 14px;
+            box-shadow: 0 8px 18px var(--chen_shadow);
+            padding: 22px 0 16px;
+        }
+
+        .chen_state_row {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            height: 62px;
+        }
+
+        .chen_state_tx {
+            margin: 10px 0 0;
+            text-align: center;
+            font-size: 13px;
+            color: #5d6b81;
+        }
+
+        /* ---------- 图标清单 ---------- */
+        .chen_icons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+            gap: 10px;
+        }
+
+        .chen_icon_cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 6px 12px;
+            border: 1px solid var(--chen_line);
+            border-radius: 12px;
+            background: var(--chen_card);
+            box-shadow: 0 6px 14px var(--chen_shadow);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .chen_icon_cell:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 24px rgba(32, 60, 85, 0.18);
+        }
+
+        .chen_icon_cell .chen_svg {
+            width: 28px;
+            height: 28px;
+            color: var(--chen_deep);
+        }
+
+        .chen_icon_cell span {
+            font-size: 12px;
+            color: var(--chen_muted);
+            text-align: center;
+        }
+
+        /* ---------- 代码示例 ---------- */
+        .chen_code {
+            margin: 0px;
+            padding: 18px 20px;
+            border-radius: var(--chen_radius);
+            background: #10233a;
+            color: #d6ecff;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.9;
+            overflow-x: auto;
+            box-shadow: 0 8px 18px var(--chen_shadow);
+        }
+
+        .chen_code em {
+            color: #ffc46b;
+            font-style: normal;
+        }
+
+        .chen_code b {
+            color: #79d6ce;
+            font-weight: 700;
+        }
+
+        /* ================= 固定的移动端下导航（全屏宽度） ================= */
+        .chen_tabbar {
+            position: fixed;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+            width: 100%;
+            z-index: 30;
+            background: rgba(255, 255, 255, 0.94);
+            border-top: 1px solid var(--chen_line);
+            box-shadow: 0 -8px 22px rgba(32, 60, 85, 0.14);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .chen_tabbar_box {
+            display: flex;
+            width: 100%;
+            height: var(--chen_tab_h);
+        }
+
+        .chen_tab {
+            position: relative;
+            flex: 1 1 0px;
+            min-width: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            color: var(--chen_muted);
+            text-decoration: none;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: color 0.25s ease;
+        }
+
+        .chen_tab_ic {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            perspective: 420px;
+        }
+
+        .chen_tab_ic .chen_svg {
+            transition: transform 0.3s ease;
+        }
+
+        .chen_tab:active .chen_tab_ic .chen_svg {
+            transform: scale(0.88);
+        }
+
+        .chen_tab_tx {
+            font-size: 12px;
+            line-height: 16px;
+            white-space: nowrap;
+        }
+
+        .chen_tab_on {
+            color: var(--chen_deep);
+        }
+
+        .chen_tab_on .chen_tab_ic {
+            animation: chen_lift 2.6s ease-in-out infinite;
+        }
+
+        @keyframes chen_lift {
+            0%, 100% { transform: translateZ(0px) rotateX(0deg); }
+            50% { transform: translateZ(10px) rotateX(-16deg); }
+        }
+
+        /* 数字徽章：贴在图标右上角 */
+        .chen_badge {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0px 5px;
+            border-radius: 9px;
+            border: 2px solid #ffffff;
+            background: var(--chen_red);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 14px;
+            text-align: center;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(245, 69, 61, 0.35);
+        }
+
+        /* 红点：位于导航项右上角 */
+        .chen_dot {
+            position: absolute;
+            top: 7px;
+            right: 12px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--chen_red);
+            box-shadow: 0 0 0 2px #ffffff;
+            animation: chen_blink 1.8s ease-in-out infinite;
+        }
+
+        @keyframes chen_blink {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.5; }
+        }
+
+        .chen_sign {
+            margin: 34px 0 0;
+            text-align: center;
+            font-size: 13px;
+            color: var(--chen_muted);
+        }
+
+        .chen_sign strong {
+            color: var(--chen_deep);
+            font-size: 15px;
+        }
+
+        /* ---------- 移动端自适应 ---------- */
+        @media (max-width: 359px) {
+            :root {
+                --chen_icon: 22px;
+            }
+
+            .chen_tab_tx {
+                font-size: 11px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            :root {
+                --chen_tab_h: 64px;
+                --chen_icon: 27px;
+            }
+
+            .chen_tab_tx {
+                font-size: 13px;
+            }
+
+            .chen_dot {
+                right: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="chen_home" href="./index.html">← 返回首页 index.html</a>
+
+    <div class="chen_wrap">
+        <h1 class="chen_title">移动端固定下导航（SVG 图标）</h1>
+        <p class="chen_intro">
+            本页用 <strong>font 目录里 iconfont 的 SVG 方案</strong>：本地
+            <code>iconfont.js</code> 会在页面里注入一段隐藏的 <code>&lt;svg&gt;&lt;symbol&gt;</code> 精灵图，
+            图标换成矢量图形后写成
+            <code>&lt;svg class="chen_svg"&gt;&lt;use xlink:href="#icon-shouye"&gt;&lt;/use&gt;&lt;/svg&gt;</code>
+            来引用。下导航依旧 <code>position: fixed</code> 贴在底部、<code>width: 100%</code> 占满屏宽，
+            四个导航项 <code>flex: 1 1 0px</code> 平分宽度，颜色由 <code>fill: currentColor</code> 跟随文字色。
+        </p>
+
+        <div class="chen_stage">
+            <div class="chen_cube">
+                <div class="chen_face chen_f1"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-shouye"></use></svg><span>首页</span></div>
+                <div class="chen_face chen_f2"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-faxian"></use></svg><span>发现</span></div>
+                <div class="chen_face chen_f3"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-shoucang"></use></svg><span>收藏</span></div>
+                <div class="chen_face chen_f4"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-iconfonticon5"></use></svg><span>我的</span></div>
+                <div class="chen_face chen_f5"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-sousuo"></use></svg><span>搜索</span></div>
+                <div class="chen_face chen_f6"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-gengduo"></use></svg><span>更多</span></div>
+            </div>
+        </div>
+
+        <h2 class="chen_subtitle">SVG 写法说明</h2>
+        <p class="chen_note">
+            符号的 <code>viewBox</code> 是 <code>0 0 1024 1024</code>，所以缩放只改 CSS 宽高即可；
+            <code>fill: currentColor</code> 让矢量图跟随 <code>color</code>，切换选中色不用换图。
+        </p>
+        <p id="chen_hint" class="chen_hint">
+            提示：未检测到 <code>&lt;symbol&gt;</code> 精灵图，请确认 <code>iconfont.js</code> 已加载，
+            并且 <code>&lt;use xlink:href="#icon-名字"&gt;</code> 的名字与 <code>font</code> 目录中的图标一致。
+        </p>
+        <pre class="chen_code"><code>&lt;!-- 1. 引入 font 目录里本地的 symbol 脚本，它会把精灵图插到 body 里 --&gt;
+&lt;script src="./font/font_5244823_nkj1sa0pqh/iconfont.js"&gt;&lt;/script&gt;
+
+&lt;!-- 2. 用 svg + use 引用具体图标（图标以矢量图形绘制，不再是字体） --&gt;
+&lt;svg class="<b>chen_svg</b>" aria-hidden="true"&gt;
+  &lt;use xlink:href="<b>#icon-shouye</b>"&gt;&lt;/use&gt;
+&lt;/svg&gt;
+
+/* 3. 尺寸与颜色全部由 CSS 控制 */
+.chen_svg {
+  width: <b>24px</b>;
+  height: <b>24px</b>;
+  fill: <b>currentColor</b>;   /* 跟随父元素 color */
+}
+.chen_tab { flex: <b>1 1 0px</b>; }   /* 四项平分屏宽 */
+.chen_tabbar { position: <b>fixed</b>; left: <b>0px</b>; right: <b>0px</b>; bottom: <b>0px</b>; width: <b>100%</b>; }</code></pre>
+
+        <h2 class="chen_subtitle">导航项上的两种提示</h2>
+        <p class="chen_note">
+            <code>数字徽章</code>贴在图标右上角，用于显示具体数量（超过 99 写成 99+）；
+            <code>红点</code>放在导航项自己的右上角，表示“有新内容”而不透露数量，两者可以同时出现。
+        </p>
+        <section class="chen_cards">
+            <article class="chen_card">
+                <h3>数字徽章 .chen_badge</h3>
+                <p>绝对定位在图标盒子右上角 <code>right: -10px</code>、<code>top: -6px</code>，
+                   红底白字圆角胶囊加两像素白描边，数字再多也只向内撑开、不会挤压图标。</p>
+            </article>
+            <article class="chen_card">
+                <h3>红点 .chen_dot</h3>
+                <p>八个像素圆点固定在导航项右上角，配合 <code>@keyframes chen_blink</code>
+                   做缩放呼吸动画，提示有新内容但不必显示数字。</p>
+            </article>
+            <article class="chen_card">
+                <h3>SVG 比字体图标更灵活</h3>
+                <p>矢量图形可以直接改 <code>fill</code>、加描边与滤镜，选中态还能做形变动画；
+                   字体图标只能改字号和颜色。</p>
+            </article>
+            <article class="chen_card">
+                <h3>自适应与安全区</h3>
+                <p>四项平分 100% 屏宽，窄屏靠媒体查询缩小字号；容器
+                   <code>padding-bottom: env(safe-area-inset-bottom)</code> 避开 iPhone 小横条。</p>
+            </article>
+        </section>
+
+        <h2 class="chen_subtitle">四种状态预览</h2>
+        <section class="chen_states">
+            <div class="chen_state">
+                <div class="chen_state_row">
+                    <span class="chen_tab">
+                        <span class="chen_tab_ic"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-shouye"></use></svg><b class="chen_badge">3</b></span>
+                        <span class="chen_tab_tx">首页</span>
+                        <i class="chen_dot"></i>
+                    </span>
+                </div>
+                <p class="chen_state_tx">徽章 + 红点</p>
+            </div>
+            <div class="chen_state">
+                <div class="chen_state_row">
+                    <span class="chen_tab">
+                        <span class="chen_tab_ic"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-faxian"></use></svg><b class="chen_badge">99+</b></span>
+                        <span class="chen_tab_tx">发现</span>
+                    </span>
+                </div>
+                <p class="chen_state_tx">只有数字徽章</p>
+            </div>
+            <div class="chen_state">
+                <div class="chen_state_row">
+                    <span class="chen_tab">
+                        <span class="chen_tab_ic"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-shoucang"></use></svg></span>
+                        <span class="chen_tab_tx">收藏</span>
+                        <i class="chen_dot"></i>
+                    </span>
+                </div>
+                <p class="chen_state_tx">只有红点</p>
+            </div>
+            <div class="chen_state">
+                <div class="chen_state_row">
+                    <span class="chen_tab chen_tab_on">
+                        <span class="chen_tab_ic"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-iconfonticon5"></use></svg></span>
+                        <span class="chen_tab_tx">我的</span>
+                    </span>
+                </div>
+                <p class="chen_state_tx">选中态，无提示</p>
+            </div>
+        </section>
+
+        <h2 class="chen_subtitle">font 目录里的全部图标（SVG 引用）</h2>
+        <p class="chen_note">以下 21 个图标均来自 <code>iconfont.js</code> 注入的 symbol，写法为 <code>use xlink:href="#icon-名字"</code>。</p>
+        <section class="chen_icons">
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-shouye"></use></svg><span>首页</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-zhuye"></use></svg><span>主页</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-faxian"></use></svg><span>发现</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-sousuo"></use></svg><span>搜索</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-shoucang"></use></svg><span>收藏</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-24gl-bookmarks2"></use></svg><span>书签（线）</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-24gf-bookmarks"></use></svg><span>书签（实）</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-tushu"></use></svg><span>图书</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-shuben"></use></svg><span>书本</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-xiaoshuo"></use></svg><span>小说</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-dianzan"></use></svg><span>点赞</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-icon"></use></svg><span>赞</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-zhuanfa"></use></svg><span>转发</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-xiazai"></use></svg><span>下载</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-baocun"></use></svg><span>保存</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-zhongxinshengcheng"></use></svg><span>重新生成</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-tongyihebingqingqiu"></use></svg><span>同意合并</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-jianjie"></use></svg><span>简介</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-denglu"></use></svg><span>登录</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-iconfonticon5"></use></svg><span>个人中心</span></div>
+            <div class="chen_icon_cell"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-gengduo"></use></svg><span>更多</span></div>
+        </section>
+
+        <p class="chen_sign">本页面由 <strong>陈卓然</strong> 制作 · 1012 陈卓然 · 高级网页设计 · 图标来自 font 目录的 iconfont symbol</p>
+    </div>
+
+    <nav class="chen_tabbar" aria-label="底部主导航">
+        <div class="chen_tabbar_box">
+            <a class="chen_tab chen_tab_on" href="#chen_home">
+                <span class="chen_tab_ic"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-shouye"></use></svg><b class="chen_badge">3</b></span>
+                <span class="chen_tab_tx">首页</span>
+                <i class="chen_dot"></i>
+            </a>
+            <a class="chen_tab" href="#chen_faxian">
+                <span class="chen_tab_ic"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-faxian"></use></svg><b class="chen_badge">8</b></span>
+                <span class="chen_tab_tx">发现</span>
+                <i class="chen_dot"></i>
+            </a>
+            <a class="chen_tab" href="#chen_shoucang">
+                <span class="chen_tab_ic"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-shoucang"></use></svg><b class="chen_badge">12</b></span>
+                <span class="chen_tab_tx">收藏</span>
+                <i class="chen_dot"></i>
+            </a>
+            <a class="chen_tab" href="#chen_mine">
+                <span class="chen_tab_ic"><svg class="chen_svg" aria-hidden="true"><use xlink:href="#icon-iconfonticon5"></use></svg><b class="chen_badge">99+</b></span>
+                <span class="chen_tab_tx">我的</span>
+                <i class="chen_dot"></i>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        var chen_tabs = document.querySelectorAll(".chen_tabbar_box .chen_tab");
+        var chen_hint = document.getElementById("chen_hint");
+        var chen_i;
+        var chen_j;
+
+        for (chen_i = 0; chen_i < chen_tabs.length; chen_i++) {
+            chen_tabs[chen_i].addEventListener("click", function (chen_evt) {
+                chen_evt.preventDefault();
+                for (chen_j = 0; chen_j < chen_tabs.length; chen_j++) {
+                    chen_tabs[chen_j].classList.remove("chen_tab_on");
+                }
+                this.classList.add("chen_tab_on");
+            });
+        }
+
+        window.addEventListener("load", function () {
+            if (!document.querySelector("symbol#icon-shouye")) {
+                chen_hint.style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>

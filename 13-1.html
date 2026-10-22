@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · Font Awesome 字体图标</title>
+    <link rel="stylesheet" href="./cdn/fontawesome/css/all.min.css">
+    <style>
+        :root {
+            --chen_bg: #eef4f8;
+            --chen_card: #ffffff;
+            --chen_text: #24324a;
+            --chen_muted: #697791;
+            --chen_line: #ccdce9;
+            --chen_blue: #4ca9d9;
+            --chen_deep: #145a8d;
+            --chen_cyan: #79d6ce;
+            --chen_orange: #ffc46b;
+            --chen_soft: #eef6fb;
+            --chen_shadow: rgba(32, 60, 85, 0.12);
+            --chen_radius: 18px;
+            --chen_font: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            font-size: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0px;
+            padding: 78px 20px 64px;
+            min-height: 100vh;
+            color: var(--chen_text);
+            font-family: var(--chen_font);
+            background:
+                radial-gradient(circle at 85% 8%, rgba(121, 214, 206, 0.16), transparent 22%),
+                radial-gradient(circle at 10% 90%, rgba(76, 169, 217, 0.14), transparent 22%),
+                var(--chen_bg);
+        }
+
+        .chen_home {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 40;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: 1px solid var(--chen_line);
+            background: var(--chen_card);
+            color: var(--chen_deep);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 8px 16px var(--chen_shadow);
+            transition: transform 0.25s ease;
+        }
+
+        .chen_home:hover {
+            transform: translateY(-3px);
+        }
+
+        .chen_wrap {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+        }
+
+        .chen_head {
+            display: grid;
+            grid-template-columns: 1.35fr 0.65fr;
+            gap: 32px;
+            align-items: center;
+            margin: 16px 0 8px;
+        }
+
+        .chen_title {
+            margin: 0 0 12px;
+            font-size: clamp(30px, 4vw, 46px);
+            line-height: 1.2;
+            color: var(--chen_deep);
+        }
+
+        .chen_intro {
+            margin: 0px;
+            color: var(--chen_muted);
+            font-size: 16px;
+            line-height: 1.9;
+        }
+
+        .chen_intro code,
+        .chen_note code {
+            color: var(--chen_deep);
+            background: var(--chen_soft);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .chen_intro strong {
+            color: var(--chen_deep);
+        }
+
+        .chen_subtitle {
+            margin: 40px 0 16px;
+            font-size: 24px;
+            color: var(--chen_deep);
+        }
+
+        .chen_note {
+            margin: -6px 0 18px;
+            font-size: 14px;
+            line-height: 1.9;
+            color: var(--chen_muted);
+        }
+
+        /* ---------- CSS3 3D 立方体（面里放字体图标） ---------- */
+        .chen_stage {
+            display: flex;
+            justify-content: center;
+            perspective: 900px;
+        }
+
+        .chen_cube {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(0deg);
+            animation: chen_spin 13s linear infinite;
+        }
+
+        .chen_face {
+            position: absolute;
+            inset: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.35);
+            font-size: 13px;
+            font-weight: 800;
+            color: #062033;
+            letter-spacing: 1px;
+        }
+
+        .chen_face > i {
+            font-size: 48px;
+        }
+
+        .chen_f1 { background: linear-gradient(135deg, #4ca9d9, #79d6ce); transform: translateZ(75px); }
+        .chen_f2 { background: linear-gradient(135deg, #145a8d, #4ca9d9); transform: rotateY(180deg) translateZ(75px); color: #eaf3ff; }
+        .chen_f3 { background: linear-gradient(135deg, #ffc46b, #ff9f43); transform: rotateY(90deg) translateZ(75px); }
+        .chen_f4 { background: linear-gradient(135deg, #79d6ce, #3fbfae); transform: rotateY(-90deg) translateZ(75px); }
+        .chen_f5 { background: linear-gradient(135deg, #a9e8ff, #4ca9d9); transform: rotateX(90deg) translateZ(75px); }
+        .chen_f6 { background: linear-gradient(135deg, #145a8d, #10233a); transform: rotateX(-90deg) translateZ(75px); color: #eaf3ff; }
+
+        @keyframes chen_spin {
+            from { transform: rotateX(-20deg) rotateY(0deg); }
+            to   { transform: rotateX(-20deg) rotateY(360deg); }
+        }
+
+        /* ---------- 图标墙 ---------- */
+        .chen_wall {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+            gap: 12px;
+        }
+
+        .chen_cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 8px 14px;
+            border: 1px solid var(--chen_line);
+            border-radius: 14px;
+            background: var(--chen_card);
+            box-shadow: 0 6px 14px var(--chen_shadow);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .chen_cell:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 26px rgba(32, 60, 85, 0.18);
+        }
+
+        .chen_cell > i {
+            font-size: 30px;
+            color: var(--chen_deep);
+        }
+
+        .chen_cell span {
+            font-size: 12px;
+            color: var(--chen_muted);
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        /* ---------- 系列对比 ---------- */
+        .chen_series {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .chen_scard {
+            background: var(--chen_card);
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+            padding: 20px 22px 22px;
+        }
+
+        .chen_scard h3 {
+            margin: 0 0 6px;
+            font-size: 16px;
+            color: var(--chen_deep);
+            letter-spacing: 1px;
+        }
+
+        .chen_scard p {
+            margin: 0 0 14px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--chen_muted);
+        }
+
+        .chen_scard code {
+            color: var(--chen_deep);
+            background: var(--chen_soft);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .chen_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            min-height: 64px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: var(--chen_soft);
+            font-size: 26px;
+            color: var(--chen_deep);
+        }
+
+        /* ---------- 尺寸与颜色 ---------- */
+        .chen_sizes {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 26px;
+            padding: 20px 22px;
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            background: var(--chen_card);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+        }
+
+        .chen_sz_item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--chen_deep);
+        }
+
+        .chen_sz_item span {
+            font-size: 12px;
+            color: var(--chen_muted);
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .chen_sz_1 { font-size: 14px; }
+        .chen_sz_2 { font-size: 24px; }
+        .chen_sz_3 { font-size: 40px; }
+        .chen_sz_4 { font-size: 64px; }
+
+        .chen_colors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 22px;
+            padding: 20px 22px;
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            background: var(--chen_card);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+            font-size: 34px;
+        }
+
+        .chen_c_blue { color: #145a8d; }
+        .chen_c_cyan { color: #2fa79b; }
+        .chen_c_orange { color: #e08a12; }
+        .chen_c_red { color: #d9534f; }
+        .chen_c_gray { color: #697791; }
+
+        /* ---------- 修饰类 ---------- */
+        .chen_tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .chen_tool {
+            background: var(--chen_card);
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+            padding: 18px 20px 20px;
+        }
+
+        .chen_tool h3 {
+            margin: 0 0 12px;
+            font-size: 15px;
+            color: var(--chen_deep);
+        }
+
+        .chen_tool h3 code {
+            color: var(--chen_deep);
+            background: var(--chen_soft);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+        }
+
+        .chen_demo {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            min-height: 84px;
+            padding: 14px;
+            border-radius: 12px;
+            background: var(--chen_soft);
+            font-size: 32px;
+            color: var(--chen_deep);
+        }
+
+        .chen_demo_dark {
+            background: #145a8d;
+            color: #eaf3ff;
+        }
+
+        .chen_fw {
+            font-size: 28px;
+        }
+
+        .chen_borderbox {
+            padding: 6px 8px;
+            font-size: 26px;
+        }
+
+        /* ---------- 代码示例 ---------- */
+        .chen_code {
+            margin: 0px;
+            padding: 18px 20px;
+            border-radius: var(--chen_radius);
+            background: #10233a;
+            color: #d6ecff;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.9;
+            overflow-x: auto;
+            box-shadow: 0 8px 18px var(--chen_shadow);
+        }
+
+        .chen_code em {
+            color: #ffc46b;
+            font-style: normal;
+        }
+
+        .chen_code b {
+            color: #79d6ce;
+            font-weight: 700;
+        }
+
+        /* ---------- 3D 翻转卡片 ---------- */
+        .chen_flips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
+        }
+
+        .chen_flip {
+            perspective: 900px;
+            height: 176px;
+        }
+
+        .chen_flip_in {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.7s ease;
+        }
+
+        .chen_flip:hover .chen_flip_in {
+            transform: rotateY(180deg);
+        }
+
+        .chen_flip_face {
+            position: absolute;
+            inset: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 18px;
+            border-radius: var(--chen_radius);
+            backface-visibility: hidden;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .chen_flip_front {
+            background: var(--chen_deep);
+            color: #ffffff;
+        }
+
+        .chen_flip_front i {
+            font-size: 34px;
+        }
+
+        .chen_flip_front strong {
+            font-size: 17px;
+            letter-spacing: 1px;
+        }
+
+        .chen_flip_back {
+            transform: rotateY(180deg);
+            background: var(--chen_card);
+            color: var(--chen_text);
+            border: 1px solid var(--chen_line);
+        }
+
+        .chen_sign {
+            margin: 40px 0 0;
+            text-align: center;
+            font-size: 14px;
+            color: var(--chen_muted);
+        }
+
+        .chen_sign strong {
+            color: var(--chen_deep);
+            font-size: 16px;
+        }
+
+        @media (max-width: 820px) {
+            .chen_head {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .chen_stage {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="chen_home" href="./index.html">← 返回首页 index.html</a>
+
+    <div class="chen_wrap">
+        <header class="chen_head">
+            <div>
+                <h1 class="chen_title">Font Awesome 字体图标</h1>
+                <p class="chen_intro">
+                    字体图标就是<strong>把图标做成一套字体文件</strong>：Font Awesome 用 <code>@font-face</code>
+                    加载本地的 <code>fa-solid-900.woff2</code>，再借助伪元素写成
+                    <code>.fa-house::before { content: "\f015"; }</code>，让浏览器到字体里取出对应字形画出来。
+                    所以图标本质上是“文字”，可以用 <code>font-size</code>、<code>color</code> 随意缩放上色，
+                    放大后依然清晰不模糊。本页所有 CSS 与字体文件已下载到本地
+                    <code>cdn/fontawesome/</code> 目录，离线也能正常显示。
+                </p>
+            </div>
+            <div class="chen_stage">
+                <div class="chen_cube">
+                    <div class="chen_face chen_f1"><i class="fa-solid fa-house"></i><span>house</span></div>
+                    <div class="chen_face chen_f2"><i class="fa-solid fa-heart"></i><span>heart</span></div>
+                    <div class="chen_face chen_f3"><i class="fa-solid fa-bolt"></i><span>bolt</span></div>
+                    <div class="chen_face chen_f4"><i class="fa-solid fa-rocket"></i><span>rocket</span></div>
+                    <div class="chen_face chen_f5"><i class="fa-solid fa-camera"></i><span>camera</span></div>
+                    <div class="chen_face chen_f6"><i class="fa-solid fa-code"></i><span>code</span></div>
+                </div>
+            </div>
+        </header>
+
+        <h2 class="chen_subtitle">常用图标墙（fa-solid 实心系列）</h2>
+        <p class="chen_note">写法固定：<code>&lt;i class="fa-solid fa-house"&gt;&lt;/i&gt;</code>，前缀 <code>fa-solid</code> 决定字重 900，后面跟图标名。</p>
+        <section class="chen_wall">
+            <div class="chen_cell"><i class="fa-solid fa-house"></i><span>fa-house</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-heart"></i><span>fa-heart</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-star"></i><span>fa-star</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-bolt"></i><span>fa-bolt</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-camera"></i><span>fa-camera</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-music"></i><span>fa-music</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-envelope"></i><span>fa-envelope</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-user"></i><span>fa-user</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-gear"></i><span>fa-gear</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-magnifying-glass"></i><span>fa-search</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-cloud"></i><span>fa-cloud</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-download"></i><span>fa-download</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-lock"></i><span>fa-lock</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-eye"></i><span>fa-eye</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-bookmark"></i><span>fa-bookmark</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-bell"></i><span>fa-bell</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-calendar"></i><span>fa-calendar</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-clock"></i><span>fa-clock</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-location-dot"></i><span>fa-map-pin</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-wifi"></i><span>fa-wifi</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-laptop"></i><span>fa-laptop</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-code"></i><span>fa-code</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-palette"></i><span>fa-palette</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-rocket"></i><span>fa-rocket</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-shield-halved"></i><span>fa-shield</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-globe"></i><span>fa-globe</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-terminal"></i><span>fa-terminal</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-folder"></i><span>fa-folder</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-phone"></i><span>fa-phone</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-play"></i><span>fa-play</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-gift"></i><span>fa-gift</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-coffee"></i><span>fa-coffee</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-thumbs-up"></i><span>fa-thumbs-up</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-trash"></i><span>fa-trash</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-key"></i><span>fa-key</span></div>
+            <div class="chen_cell"><i class="fa-solid fa-database"></i><span>fa-database</span></div>
+        </section>
+
+        <h2 class="chen_subtitle">实心 / 轮廓 / 品牌 三个系列</h2>
+        <section class="chen_series">
+            <article class="chen_scard">
+                <h3>实心 solid</h3>
+                <p>字重 900，最常用：<code>fa-solid fa-heart</code></p>
+                <div class="chen_row">
+                    <i class="fa-solid fa-heart"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-circle-check"></i>
+                    <i class="fa-solid fa-bell"></i>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </div>
+            </article>
+            <article class="chen_scard">
+                <h3>轮廓 regular</h3>
+                <p>字重 400，线条更轻：<code>fa-regular fa-heart</code></p>
+                <div class="chen_row">
+                    <i class="fa-regular fa-heart"></i>
+                    <i class="fa-regular fa-star"></i>
+                    <i class="fa-regular fa-bookmark"></i>
+                    <i class="fa-regular fa-face-smile"></i>
+                    <i class="fa-regular fa-moon"></i>
+                </div>
+            </article>
+            <article class="chen_scard">
+                <h3>品牌 brands</h3>
+                <p>各家厂牌商标：<code>fa-brands fa-github</code></p>
+                <div class="chen_row">
+                    <i class="fa-brands fa-github"></i>
+                    <i class="fa-brands fa-html5"></i>
+                    <i class="fa-brands fa-css3-alt"></i>
+                    <i class="fa-brands fa-js"></i>
+                    <i class="fa-brands fa-react"></i>
+                    <i class="fa-brands fa-node-js"></i>
+                </div>
+            </article>
+        </section>
+
+        <h2 class="chen_subtitle">尺寸：字体图标用 font-size 控制</h2>
+        <p class="chen_note">内置倍数类 <code>fa-2x</code> … <code>fa-5x</code>，也可以直接写自己的长度值 <code>40px</code>、<code>2.5rem</code>、<code>3em</code>。</p>
+        <section class="chen_sizes">
+            <div class="chen_sz_item"><i class="fa-solid fa-rocket"></i><span>默认 1em</span></div>
+            <div class="chen_sz_item"><i class="fa-solid fa-rocket fa-2x"></i><span>fa-2x</span></div>
+            <div class="chen_sz_item"><i class="fa-solid fa-rocket fa-3x"></i><span>fa-3x</span></div>
+            <div class="chen_sz_item"><i class="fa-solid fa-rocket fa-5x"></i><span>fa-5x</span></div>
+            <div class="chen_sz_item chen_sz_3"><i class="fa-solid fa-rocket"></i><span>40px</span></div>
+            <div class="chen_sz_item chen_sz_4"><i class="fa-solid fa-rocket"></i><span>64px</span></div>
+            <div class="chen_sz_item" style="font-size: 2.5rem;"><i class="fa-solid fa-rocket"></i><span>2.5rem</span></div>
+        </section>
+
+        <h2 class="chen_subtitle">颜色：字体图标用 color 控制</h2>
+        <p class="chen_note">字形本身就是文字，继承文字颜色即可换色，无需改图。</p>
+        <section class="chen_colors">
+            <i class="fa-solid fa-heart chen_c_blue" title="#145a8d"></i>
+            <i class="fa-solid fa-heart chen_c_cyan" title="#2fa79b"></i>
+            <i class="fa-solid fa-heart chen_c_orange" title="#e08a12"></i>
+            <i class="fa-solid fa-heart chen_c_red" title="#d9534f"></i>
+            <i class="fa-solid fa-heart chen_c_gray" title="#697791"></i>
+            <i class="fa-solid fa-heart" style="color: #7b5cd6;" title="#7b5cd6"></i>
+        </section>
+
+        <h2 class="chen_subtitle">内置修饰类</h2>
+        <section class="chen_tools">
+            <div class="chen_tool">
+                <h3>动画 <code>fa-spin</code> / <code>fa-beat</code></h3>
+                <div class="chen_demo">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                    <i class="fa-solid fa-gear fa-spin"></i>
+                    <i class="fa-solid fa-heart fa-beat"></i>
+                </div>
+            </div>
+            <div class="chen_tool">
+                <h3>旋转翻转 <code>fa-rotate-90</code> / <code>fa-flip-horizontal</code></h3>
+                <div class="chen_demo">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <i class="fa-solid fa-arrow-right fa-rotate-90"></i>
+                    <i class="fa-solid fa-arrow-right fa-rotate-180"></i>
+                    <i class="fa-solid fa-arrow-right fa-flip-horizontal"></i>
+                </div>
+            </div>
+            <div class="chen_tool">
+                <h3>等宽 <code>fa-fw</code> 与边框 <code>fa-border</code></h3>
+                <div class="chen_demo">
+                    <span class="chen_fw"><i class="fa-solid fa-camera fa-fw"></i> 拍照</span>
+                    <span class="chen_fw"><i class="fa-solid fa-trash fa-fw"></i> 删除</span>
+                    <i class="fa-solid fa-star chen_borderbox fa-border"></i>
+                </div>
+            </div>
+            <div class="chen_tool">
+                <h3>图标堆叠 <code>fa-stack</code> + <code>fa-inverse</code></h3>
+                <div class="chen_demo">
+                    <span class="fa-stack fa-2x">
+                        <i class="fa-solid fa-circle fa-stack-1x"></i>
+                        <i class="fa-solid fa-check fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <span class="fa-stack fa-2x">
+                        <i class="fa-solid fa-circle fa-stack-1x"></i>
+                        <i class="fa-solid fa-camera fa-stack-1x fa-inverse"></i>
+                    </span>
+                    <span class="fa-stack fa-2x">
+                        <i class="fa-solid fa-square fa-stack-2x"></i>
+                        <i class="fa-brands fa-html5 fa-stack-1x fa-inverse"></i>
+                    </span>
+                </div>
+            </div>
+            <div class="chen_tool">
+                <h3>深底反白 <code>fa-inverse</code></h3>
+                <div class="chen_demo chen_demo_dark">
+                    <i class="fa-solid fa-user fa-inverse"></i>
+                    <i class="fa-solid fa-envelope fa-inverse"></i>
+                    <i class="fa-solid fa-lock fa-inverse"></i>
+                    <i class="fa-solid fa-shield-halved fa-inverse"></i>
+                </div>
+            </div>
+            <div class="chen_tool">
+                <h3>品牌图标直出</h3>
+                <div class="chen_demo">
+                    <i class="fa-brands fa-weixin"></i>
+                    <i class="fa-brands fa-qq"></i>
+                    <i class="fa-brands fa-google"></i>
+                    <i class="fa-brands fa-apple"></i>
+                    <i class="fa-brands fa-linux"></i>
+                    <i class="fa-brands fa-npm"></i>
+                </div>
+            </div>
+        </section>
+
+        <h2 class="chen_subtitle">代码与原理</h2>
+        <section>
+            <pre class="chen_code"><code>&lt;link rel="stylesheet" href="./cdn/fontawesome/css/all.min.css"&gt;
+
+&lt;!-- 图标就是一个空元素，字形由 CSS 伪元素提供 --&gt;
+&lt;i class="fa-solid fa-house"&gt;&lt;/i&gt;
+&lt;i class="fa-regular fa-heart"&gt;&lt;/i&gt;
+&lt;i class="fa-brands fa-github"&gt;&lt;/i&gt;
+
+/* all.min.css 里对每个图标做的事（节选） */
+.fa-house::<em>before</em> { content: "<b>\f015</b>"; }
+.fa-solid, .fa-<b>free</b> { font-weight: 900; }
+
+/* 像文字一样调大小、调颜色 */
+.my-icon { font-size: <b>48px</b>; color: <b>#145a8d</b>; }</code></pre>
+        </section>
+
+        <h2 class="chen_subtitle">字体图标的特点（悬停翻转看背面）</h2>
+        <section class="chen_flips">
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><i class="fa-solid fa-font"></i><strong>字形</strong><span>悬停翻转</span></div>
+                    <div class="chen_flip_face chen_flip_back">一个图标 = 字体里的一个字符，靠 <code>::before</code> 的 content 编码取出，天然继承文字的字号、颜色、行高。</div>
+                </div>
+            </div>
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><i class="fa-solid fa-expand"></i><strong>无损缩放</strong><span>悬停翻转</span></div>
+                    <div class="chen_flip_face chen_flip_back">矢量字形放大到 100px 也不失真，改 <code>font-size</code> 即可，还能配合 <code>-webkit-text-stroke</code> 描边。</div>
+                </div>
+            </div>
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><i class="fa-solid fa-palette"></i><strong>易于上色</strong><span>悬停翻转</span></div>
+                    <div class="chen_flip_face chen_flip_back">因为是文字，直接写 <code>color</code> 就换色，还能做渐变文字、阴影、透明度等排版效果。</div>
+                </div>
+            </div>
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><i class="fa-solid fa-triangle-exclamation"></i><strong>依赖字体文件</strong><span>悬停翻转</span></div>
+                    <div class="chen_flip_face chen_flip_back">必须加载 <code>.woff2/.ttf</code> 字体，字体没加载到时会显示成小方块，这也是本页把字体放进本地 cdn 目录的原因。</div>
+                </div>
+            </div>
+        </section>
+
+        <p class="chen_sign">本页面由 <strong>陈卓然</strong> 制作 · 1012 陈卓然 · 高级网页设计 · 图标来自本地 cdn/fontawesome</p>
+    </div>
+</body>
+</html>

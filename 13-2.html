@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · Lucide SVG 图标</title>
+    <script src="./cdn/lucide/lucide.min.js"></script>
+    <style>
+        :root {
+            --chen_bg: #eef4f8;
+            --chen_card: #ffffff;
+            --chen_text: #24324a;
+            --chen_muted: #697791;
+            --chen_line: #ccdce9;
+            --chen_blue: #4ca9d9;
+            --chen_deep: #145a8d;
+            --chen_cyan: #79d6ce;
+            --chen_orange: #ffc46b;
+            --chen_soft: #eef6fb;
+            --chen_shadow: rgba(32, 60, 85, 0.12);
+            --chen_radius: 18px;
+            --chen_font: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            font-size: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0px;
+            padding: 78px 20px 64px;
+            min-height: 100vh;
+            color: var(--chen_text);
+            font-family: var(--chen_font);
+            background:
+                radial-gradient(circle at 88% 6%, rgba(255, 196, 107, 0.18), transparent 24%),
+                radial-gradient(circle at 8% 92%, rgba(76, 169, 217, 0.16), transparent 24%),
+                var(--chen_bg);
+        }
+
+        .chen_home {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 40;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: 1px solid var(--chen_line);
+            background: var(--chen_card);
+            color: var(--chen_deep);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 8px 16px var(--chen_shadow);
+            transition: transform 0.25s ease;
+        }
+
+        .chen_home:hover {
+            transform: translateY(-3px);
+        }
+
+        .chen_wrap {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+        }
+
+        .chen_head {
+            display: grid;
+            grid-template-columns: 1.35fr 0.65fr;
+            gap: 32px;
+            align-items: center;
+            margin: 16px 0 8px;
+        }
+
+        .chen_title {
+            margin: 0 0 12px;
+            font-size: clamp(30px, 4vw, 46px);
+            line-height: 1.2;
+            color: var(--chen_deep);
+        }
+
+        .chen_intro {
+            margin: 0px;
+            color: var(--chen_muted);
+            font-size: 16px;
+            line-height: 1.9;
+        }
+
+        .chen_intro code,
+        .chen_note code,
+        .chen_vcard code {
+            color: var(--chen_deep);
+            background: var(--chen_soft);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .chen_intro strong {
+            color: var(--chen_deep);
+        }
+
+        .chen_subtitle {
+            margin: 40px 0 16px;
+            font-size: 24px;
+            color: var(--chen_deep);
+        }
+
+        .chen_note {
+            margin: -6px 0 18px;
+            font-size: 14px;
+            line-height: 1.9;
+            color: var(--chen_muted);
+        }
+
+        .chen_hint {
+            display: none;
+            margin: -6px 0 18px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: #ffe3e0;
+            color: #a1281f;
+            font-size: 14px;
+        }
+
+        /* ---------- CSS3 3D 立方体（面里放 SVG 图标） ---------- */
+        .chen_stage {
+            display: flex;
+            justify-content: center;
+            perspective: 900px;
+        }
+
+        .chen_cube {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(0deg);
+            animation: chen_spin 13s linear infinite;
+        }
+
+        .chen_face {
+            position: absolute;
+            inset: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.35);
+            font-size: 13px;
+            font-weight: 800;
+            color: #062033;
+            letter-spacing: 1px;
+        }
+
+        .chen_face > svg {
+            width: 46px;
+            height: 46px;
+            stroke-width: 1.8;
+        }
+
+        .chen_f1 { background: linear-gradient(135deg, #ffc46b, #ff9f43); transform: translateZ(75px); }
+        .chen_f2 { background: linear-gradient(135deg, #145a8d, #4ca9d9); transform: rotateY(180deg) translateZ(75px); color: #eaf3ff; }
+        .chen_f3 { background: linear-gradient(135deg, #4ca9d9, #79d6ce); transform: rotateY(90deg) translateZ(75px); }
+        .chen_f4 { background: linear-gradient(135deg, #79d6ce, #3fbfae); transform: rotateY(-90deg) translateZ(75px); }
+        .chen_f5 { background: linear-gradient(135deg, #a9e8ff, #4ca9d9); transform: rotateX(90deg) translateZ(75px); }
+        .chen_f6 { background: linear-gradient(135deg, #145a8d, #10233a); transform: rotateX(-90deg) translateZ(75px); color: #eaf3ff; }
+
+        @keyframes chen_spin {
+            from { transform: rotateX(-20deg) rotateY(0deg); }
+            to   { transform: rotateX(-20deg) rotateY(360deg); }
+        }
+
+        /* ---------- 图标墙 ---------- */
+        .chen_wall {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+            gap: 12px;
+        }
+
+        .chen_cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 18px 8px 14px;
+            border: 1px solid var(--chen_line);
+            border-radius: 14px;
+            background: var(--chen_card);
+            box-shadow: 0 6px 14px var(--chen_shadow);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .chen_cell:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 26px rgba(32, 60, 85, 0.18);
+        }
+
+        .chen_cell > svg {
+            width: 30px;
+            height: 30px;
+            color: var(--chen_deep);
+        }
+
+        .chen_cell span {
+            font-size: 12px;
+            color: var(--chen_muted);
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        /* ---------- 尺寸 / 颜色 / 线宽 ---------- */
+        .chen_sizes {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            gap: 26px;
+            padding: 20px 22px;
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            background: var(--chen_card);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+        }
+
+        .chen_sz_item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--chen_deep);
+        }
+
+        .chen_sz_item span {
+            font-size: 12px;
+            color: var(--chen_muted);
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .chen_sz_1 svg { width: 16px; height: 16px; }
+        .chen_sz_2 svg { width: 28px; height: 28px; }
+        .chen_sz_3 svg { width: 44px; height: 44px; }
+        .chen_sz_4 svg { width: 72px; height: 72px; }
+
+        .chen_colors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            padding: 20px 22px;
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            background: var(--chen_card);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+        }
+
+        .chen_colors svg {
+            width: 38px;
+            height: 38px;
+        }
+
+        .chen_c_blue { color: #145a8d; }
+        .chen_c_cyan { color: #2fa79b; }
+        .chen_c_orange { color: #e08a12; }
+        .chen_c_red { color: #d9534f; }
+        .chen_c_gray { color: #697791; }
+        .chen_c_purple { color: #7b5cd6; }
+
+        .chen_strokes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            padding: 20px 22px;
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            background: var(--chen_card);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+        }
+
+        .chen_sw_item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--chen_deep);
+        }
+
+        .chen_sw_item span {
+            font-size: 12px;
+            color: var(--chen_muted);
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .chen_sw_item svg {
+            width: 44px;
+            height: 44px;
+        }
+
+        .chen_sw_1 svg { stroke-width: 1; }
+        .chen_sw_2 svg { stroke-width: 2; }
+        .chen_sw_3 svg { stroke-width: 3; }
+        .chen_sw_4 svg { stroke-width: 4; }
+
+        /* ---------- 交互控制 ---------- */
+        .chen_ctrl {
+            padding: 20px 22px 24px;
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            background: var(--chen_card);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+        }
+
+        .chen_btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .chen_btn {
+            padding: 9px 18px;
+            border: 1px solid var(--chen_line);
+            border-radius: 40px;
+            background: var(--chen_soft);
+            color: var(--chen_deep);
+            font-family: var(--chen_font);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .chen_btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .chen_btn.chen_on {
+            color: #062033;
+            border-color: transparent;
+            background: linear-gradient(135deg, var(--chen_blue), var(--chen_cyan));
+            box-shadow: 0 8px 18px rgba(76, 169, 217, 0.35);
+        }
+
+        .chen_ctrl_icons {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 22px;
+            min-height: 88px;
+            padding: 16px 18px;
+            border-radius: 12px;
+            background: var(--chen_soft);
+            color: var(--chen_deep);
+        }
+
+        .chen_ctrl_icons svg {
+            width: 40px;
+            height: 40px;
+            transition: stroke-width 0.25s ease, color 0.25s ease;
+        }
+
+        /* ---------- SVG 结构代码 ---------- */
+        .chen_code {
+            margin: 0px;
+            padding: 18px 20px;
+            border-radius: var(--chen_radius);
+            background: #10233a;
+            color: #d6ecff;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            line-height: 1.9;
+            overflow-x: auto;
+            box-shadow: 0 8px 18px var(--chen_shadow);
+        }
+
+        .chen_code em {
+            color: #ffc46b;
+            font-style: normal;
+        }
+
+        .chen_code b {
+            color: #79d6ce;
+            font-weight: 700;
+        }
+
+        /* ---------- 对比卡片（3D 翻转） ---------- */
+        .chen_flips {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 18px;
+        }
+
+        .chen_flip {
+            perspective: 900px;
+            height: 176px;
+        }
+
+        .chen_flip_in {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.7s ease;
+        }
+
+        .chen_flip:hover .chen_flip_in {
+            transform: rotateY(180deg);
+        }
+
+        .chen_flip_face {
+            position: absolute;
+            inset: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 18px;
+            border-radius: var(--chen_radius);
+            backface-visibility: hidden;
+            text-align: center;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .chen_flip_front {
+            background: var(--chen_deep);
+            color: #ffffff;
+        }
+
+        .chen_flip_front svg {
+            width: 34px;
+            height: 34px;
+        }
+
+        .chen_flip_front strong {
+            font-size: 17px;
+            letter-spacing: 1px;
+        }
+
+        .chen_flip_back {
+            transform: rotateY(180deg);
+            background: var(--chen_card);
+            color: var(--chen_text);
+            border: 1px solid var(--chen_line);
+        }
+
+        /* ---------- 说明卡 ---------- */
+        .chen_vcards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .chen_vcard {
+            background: var(--chen_card);
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+            padding: 20px 22px 22px;
+        }
+
+        .chen_vcard h3 {
+            margin: 0 0 8px;
+            font-size: 16px;
+            color: var(--chen_deep);
+            letter-spacing: 1px;
+        }
+
+        .chen_vcard p {
+            margin: 0px;
+            font-size: 13px;
+            line-height: 1.9;
+            color: var(--chen_muted);
+        }
+
+        .chen_sign {
+            margin: 40px 0 0;
+            text-align: center;
+            font-size: 14px;
+            color: var(--chen_muted);
+        }
+
+        .chen_sign strong {
+            color: var(--chen_deep);
+            font-size: 16px;
+        }
+
+        @media (max-width: 820px) {
+            .chen_head {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .chen_stage {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="chen_home" href="./index.html">← 返回首页 index.html</a>
+
+    <div class="chen_wrap">
+        <header class="chen_head">
+            <div>
+                <h1 class="chen_title">Lucide SVG 图标</h1>
+                <p class="chen_intro">
+                    Lucide 把每个图标直接做成一段 <strong>SVG 矢量代码</strong>：一个 <code>&lt;svg&gt;</code>
+                    标签，里面是 <code>&lt;path&gt;</code>、<code>&lt;circle&gt;</code> 等图形元素，
+                    用 <code>stroke="currentColor"</code> 描边绘制。页面里先写占位元素
+                    <code>&lt;i data-lucide="house"&gt;&lt;/i&gt;</code>，再由本地
+                    <code>cdn/lucide/lucide.min.js</code> 调用 <code>lucide.createIcons()</code>
+                    把它替换成真正的 <code>&lt;svg&gt;</code> 元素——所以图标不再是“字符”，
+                    而是可以直接控制 <code>width</code>、<code>height</code>、<code>stroke-width</code> 的图形。
+                </p>
+            </div>
+            <div class="chen_stage">
+                <div class="chen_cube">
+                    <div class="chen_face chen_f1"><i data-lucide="house"></i><span>house</span></div>
+                    <div class="chen_face chen_f2"><i data-lucide="star"></i><span>star</span></div>
+                    <div class="chen_face chen_f3"><i data-lucide="zap"></i><span>zap</span></div>
+                    <div class="chen_face chen_f4"><i data-lucide="palette"></i><span>palette</span></div>
+                    <div class="chen_face chen_f5"><i data-lucide="rocket"></i><span>rocket</span></div>
+                    <div class="chen_face chen_f6"><i data-lucide="code"></i><span>code</span></div>
+                </div>
+            </div>
+        </header>
+
+        <h2 class="chen_subtitle">常用图标墙（SVG）</h2>
+        <p class="chen_note">占位写法：<code>&lt;i data-lucide="house"&gt;&lt;/i&gt;</code>，执行后变成 <code>&lt;svg class="lucide lucide-house"&gt;…&lt;/svg&gt;</code>。</p>
+        <p id="chen_hint" class="chen_hint">提示：本地 lucide 脚本未加载成功，图标无法转换为 SVG。</p>
+        <section class="chen_wall">
+            <div class="chen_cell"><i data-lucide="house"></i><span>house</span></div>
+            <div class="chen_cell"><i data-lucide="heart"></i><span>heart</span></div>
+            <div class="chen_cell"><i data-lucide="star"></i><span>star</span></div>
+            <div class="chen_cell"><i data-lucide="search"></i><span>search</span></div>
+            <div class="chen_cell"><i data-lucide="settings"></i><span>settings</span></div>
+            <div class="chen_cell"><i data-lucide="user"></i><span>user</span></div>
+            <div class="chen_cell"><i data-lucide="mail"></i><span>mail</span></div>
+            <div class="chen_cell"><i data-lucide="bell"></i><span>bell</span></div>
+            <div class="chen_cell"><i data-lucide="camera"></i><span>camera</span></div>
+            <div class="chen_cell"><i data-lucide="music"></i><span>music</span></div>
+            <div class="chen_cell"><i data-lucide="image"></i><span>image</span></div>
+            <div class="chen_cell"><i data-lucide="download"></i><span>download</span></div>
+            <div class="chen_cell"><i data-lucide="lock"></i><span>lock</span></div>
+            <div class="chen_cell"><i data-lucide="cloud"></i><span>cloud</span></div>
+            <div class="chen_cell"><i data-lucide="sun"></i><span>sun</span></div>
+            <div class="chen_cell"><i data-lucide="moon"></i><span>moon</span></div>
+            <div class="chen_cell"><i data-lucide="zap"></i><span>zap</span></div>
+            <div class="chen_cell"><i data-lucide="bookmark"></i><span>bookmark</span></div>
+            <div class="chen_cell"><i data-lucide="calendar"></i><span>calendar</span></div>
+            <div class="chen_cell"><i data-lucide="clock"></i><span>clock</span></div>
+            <div class="chen_cell"><i data-lucide="trash-2"></i><span>trash-2</span></div>
+            <div class="chen_cell"><i data-lucide="pencil"></i><span>pencil</span></div>
+            <div class="chen_cell"><i data-lucide="link"></i><span>link</span></div>
+            <div class="chen_cell"><i data-lucide="map-pin"></i><span>map-pin</span></div>
+            <div class="chen_cell"><i data-lucide="wifi"></i><span>wifi</span></div>
+            <div class="chen_cell"><i data-lucide="smartphone"></i><span>smartphone</span></div>
+            <div class="chen_cell"><i data-lucide="laptop"></i><span>laptop</span></div>
+            <div class="chen_cell"><i data-lucide="code"></i><span>code</span></div>
+            <div class="chen_cell"><i data-lucide="palette"></i><span>palette</span></div>
+            <div class="chen_cell"><i data-lucide="feather"></i><span>feather</span></div>
+            <div class="chen_cell"><i data-lucide="github"></i><span>github</span></div>
+            <div class="chen_cell"><i data-lucide="rocket"></i><span>rocket</span></div>
+            <div class="chen_cell"><i data-lucide="shield"></i><span>shield</span></div>
+            <div class="chen_cell"><i data-lucide="globe"></i><span>globe</span></div>
+            <div class="chen_cell"><i data-lucide="terminal"></i><span>terminal</span></div>
+            <div class="chen_cell"><i data-lucide="folder"></i><span>folder</span></div>
+            <div class="chen_cell"><i data-lucide="file-text"></i><span>file-text</span></div>
+            <div class="chen_cell"><i data-lucide="eye"></i><span>eye</span></div>
+            <div class="chen_cell"><i data-lucide="smile"></i><span>smile</span></div>
+            <div class="chen_cell"><i data-lucide="thumbs-up"></i><span>thumbs-up</span></div>
+            <div class="chen_cell"><i data-lucide="coffee"></i><span>coffee</span></div>
+            <div class="chen_cell"><i data-lucide="gift"></i><span>gift</span></div>
+            <div class="chen_cell"><i data-lucide="play"></i><span>play</span></div>
+            <div class="chen_cell"><i data-lucide="filter"></i><span>filter</span></div>
+            <div class="chen_cell"><i data-lucide="users"></i><span>users</span></div>
+            <div class="chen_cell"><i data-lucide="battery"></i><span>battery</span></div>
+            <div class="chen_cell"><i data-lucide="bluetooth"></i><span>bluetooth</span></div>
+            <div class="chen_cell"><i data-lucide="volume-2"></i><span>volume-2</span></div>
+        </section>
+
+        <h2 class="chen_subtitle">SVG 的尺寸：width / height 属性或 CSS</h2>
+        <p class="chen_note">SVG 是图形，直接改盒子尺寸即可，常用单位 <code>16px</code>、<code>28px</code>、<code>1.5rem</code>、<code>2em</code>。</p>
+        <section class="chen_sizes">
+            <div class="chen_sz_item chen_sz_1"><i data-lucide="heart"></i><span>16px</span></div>
+            <div class="chen_sz_item chen_sz_2"><i data-lucide="heart"></i><span>28px</span></div>
+            <div class="chen_sz_item chen_sz_3"><i data-lucide="heart"></i><span>44px</span></div>
+            <div class="chen_sz_item chen_sz_4"><i data-lucide="heart"></i><span>72px</span></div>
+            <div class="chen_sz_item" style="font-size: 1.5rem;"><i data-lucide="heart"></i><span>1.5rem</span></div>
+            <div class="chen_sz_item" style="font-size: 3em;"><i data-lucide="heart"></i><span>3em</span></div>
+        </section>
+
+        <h2 class="chen_subtitle">SVG 的颜色：stroke 使用 currentColor</h2>
+        <p class="chen_note">图标描边写的是 <code>stroke="currentColor"</code>，会跟随父元素的 <code>color</code>，因此改颜色不用换图。</p>
+        <section class="chen_colors">
+            <i data-lucide="heart" class="chen_c_blue"></i>
+            <i data-lucide="heart" class="chen_c_cyan"></i>
+            <i data-lucide="heart" class="chen_c_orange"></i>
+            <i data-lucide="heart" class="chen_c_red"></i>
+            <i data-lucide="heart" class="chen_c_gray"></i>
+            <i data-lucide="heart" class="chen_c_purple"></i>
+        </section>
+
+        <h2 class="chen_subtitle">SVG 的线宽：stroke-width</h2>
+        <p class="chen_note"><code>stroke-width</code> 是 SVG 自带的表现属性，可直接用 CSS 覆盖，1 表示细线，4 表示粗线。</p>
+        <section class="chen_strokes">
+            <div class="chen_sw_item chen_sw_1"><i data-lucide="camera"></i><span>stroke-width: 1</span></div>
+            <div class="chen_sw_item chen_sw_2"><i data-lucide="camera"></i><span>stroke-width: 2</span></div>
+            <div class="chen_sw_item chen_sw_3"><i data-lucide="camera"></i><span>stroke-width: 3</span></div>
+            <div class="chen_sw_item chen_sw_4"><i data-lucide="camera"></i><span>stroke-width: 4</span></div>
+        </section>
+
+        <h2 class="chen_subtitle">试一试：实时改写 SVG 属性</h2>
+        <p class="chen_note">点击按钮，用脚本修改 <code>&lt;svg&gt;</code> 的 <code>style.strokeWidth</code> 与 <code>style.color</code>。</p>
+        <section class="chen_ctrl">
+            <div class="chen_btns">
+                <button type="button" class="chen_btn chen_wbtn chen_on" data-chen-width="1">线宽 1</button>
+                <button type="button" class="chen_btn chen_wbtn" data-chen-width="2">线宽 2</button>
+                <button type="button" class="chen_btn chen_wbtn" data-chen-width="3">线宽 3</button>
+                <button type="button" class="chen_btn chen_wbtn" data-chen-width="4">线宽 4</button>
+                <button type="button" class="chen_btn chen_cbtn chen_on" data-chen-color="#145a8d">深蓝</button>
+                <button type="button" class="chen_btn chen_cbtn" data-chen-color="#e08a12">橙色</button>
+                <button type="button" class="chen_btn chen_cbtn" data-chen-color="#2fa79b">青色</button>
+                <button type="button" class="chen_btn chen_cbtn" data-chen-color="#24324a">墨色</button>
+            </div>
+            <div class="chen_ctrl_icons" id="chen_ctrl_box">
+                <i data-lucide="house"></i>
+                <i data-lucide="heart"></i>
+                <i data-lucide="star"></i>
+                <i data-lucide="zap"></i>
+                <i data-lucide="camera"></i>
+                <i data-lucide="rocket"></i>
+                <i data-lucide="bell"></i>
+                <i data-lucide="bookmark"></i>
+            </div>
+        </section>
+
+        <h2 class="chen_subtitle">一个图标的完整 SVG 代码（house）</h2>
+        <section>
+            <pre class="chen_code"><code>&lt;svg xmlns="http://www.w3.org/2000/svg" width="<b>24</b>" height="<b>24</b>"
+     viewBox="<b>0 0 24 24</b>" fill="<b>none</b>" stroke="<b>currentColor</b>"
+     stroke-width="<b>2</b>" stroke-linecap="<b>round</b>" stroke-linejoin="<b>round</b>"
+     class="lucide lucide-house"&gt;
+  &lt;path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/&gt;
+  &lt;path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0
+           l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/&gt;
+&lt;/svg&gt;
+
+&lt;!-- 页面中的用法：占位 + 本地脚本 --&gt;
+&lt;script src="./cdn/lucide/lucide.min.js"&gt;&lt;/script&gt;
+&lt;i data-lucide="house"&gt;&lt;/i&gt;
+&lt;script&gt;lucide.createIcons();&lt;/script&gt;</code></pre>
+        </section>
+
+        <h2 class="chen_subtitle">为什么用 SVG 图标</h2>
+        <section class="chen_vcards">
+            <article class="chen_vcard">
+                <h3>不依赖字体文件</h3>
+                <p>SVG 就是普通标签，没有 <code>@font-face</code>、没有字体加载失败变方块的问题，浏览器拿到 <code>&lt;svg&gt;</code> 即可绘制。</p>
+            </article>
+            <article class="chen_vcard">
+                <h3>属性可精确控制</h3>
+                <p><code>width</code>、<code>height</code>、<code>stroke-width</code>、<code>stroke-linecap</code> 都能按需改写，还能用 CSS 伪元素继续装饰。</p>
+            </article>
+            <article class="chen_vcard">
+                <h3>颜色跟随文字</h3>
+                <p><code>stroke="currentColor"</code> 让描边自动取父级颜色，深底反白、悬停变色都只需改 <code>color</code>。</p>
+            </article>
+            <article class="chen_vcard">
+                <h3>可内联可复用</h3>
+                <p>内联后可以用 <code>&lt;use&gt;</code> 复用、加滤镜、做形变动画，也能直接在设计软件里编辑路径。</p>
+            </article>
+        </section>
+
+        <h2 class="chen_subtitle">字体图标 vs SVG 图标（悬停翻转）</h2>
+        <section class="chen_flips">
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><i data-lucide="type"></i><strong>字体图标</strong><span>Font Awesome · 悬停翻转</span></div>
+                    <div class="chen_flip_face chen_flip_back">图标是字体里的字符，靠 <code>content</code> 编码取出，改 <code>font-size</code> 与 <code>color</code> 即可，一个字体文件包含成千上万个图标。</div>
+                </div>
+            </div>
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><i data-lucide="shapes"></i><strong>SVG 图标</strong><span>Lucide · 悬停翻转</span></div>
+                    <div class="chen_flip_face chen_flip_back">图标是一段图形标签，<code>width/height/stroke-width</code> 全部可控，只取用需要的那几个，不用下载整套字体。</div>
+                </div>
+            </div>
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><i data-lucide="gauge"></i><strong>加载开销</strong><span>悬停翻转</span></div>
+                    <div class="chen_flip_face chen_flip_back">字体要下载整个 woff2（本页 solid 字体 156KB），SVG 只有几百字节的路径数据，按需内联更轻。</div>
+                </div>
+            </div>
+            <div class="chen_flip">
+                <div class="chen_flip_in">
+                    <div class="chen_flip_face chen_flip_front"><i data-lucide="wand-sparkles"></i><strong>可定制性</strong><span>悬停翻转</span></div>
+                    <div class="chen_flip_face chen_flip_back">SVG 可改路径、加渐变与动画、按主题换色；字体图标则受字符编码限制，样式自由度较低。</div>
+                </div>
+            </div>
+        </section>
+
+        <p class="chen_sign">本页面由 <strong>陈卓然</strong> 制作 · 1012 陈卓然 · 高级网页设计 · 图标来自本地 cdn/lucide</p>
+    </div>
+
+    <script>
+        if (window.lucide) {
+            lucide.createIcons();
+        } else {
+            document.getElementById("chen_hint").style.display = "block";
+        }
+
+        var chen_ctrl_box = document.getElementById("chen_ctrl_box");
+        var chen_wbtns = document.querySelectorAll(".chen_wbtn");
+        var chen_cbtns = document.querySelectorAll(".chen_cbtn");
+        var chen_i;
+        var chen_j;
+
+        for (chen_i = 0; chen_i < chen_wbtns.length; chen_i++) {
+            chen_wbtns[chen_i].addEventListener("click", function () {
+                chen_ctrl_box.style.strokeWidth = this.getAttribute("data-chen-width");
+                for (chen_j = 0; chen_j < chen_wbtns.length; chen_j++) {
+                    chen_wbtns[chen_j].classList.remove("chen_on");
+                }
+                this.classList.add("chen_on");
+            });
+        }
+
+        for (chen_i = 0; chen_i < chen_cbtns.length; chen_i++) {
+            chen_cbtns[chen_i].addEventListener("click", function () {
+                chen_ctrl_box.style.color = this.getAttribute("data-chen-color");
+                for (chen_j = 0; chen_j < chen_cbtns.length; chen_j++) {
+                    chen_cbtns[chen_j].classList.remove("chen_on");
+                }
+                this.classList.add("chen_on");
+            });
+        }
+    </script>
+</body>
+</html>

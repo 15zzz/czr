@@ -71,7 +71,7 @@ body {
 .czr-search {
     display: flex;
     align-items: center;
-    border: 2px solid var(--czr-blue);
+    border: 1px solid #dfe5ee;
     border-radius: 4px;
     overflow: hidden;
     background: #fff;
@@ -123,7 +123,12 @@ body {
 .czr-logo {
     display: flex;
     align-items: center;
-    gap: 8px;
+}
+
+.czr-logo-img {
+    display: block;
+    height: 48px;
+    width: auto;
 }
 
 .czr-logo-mark {
@@ -221,6 +226,7 @@ body {
     display: flex;
     align-items: center;
     gap: 6px;
+    margin-left: auto;
     color: var(--czr-text);
     font-size: 14px;
     white-space: nowrap;
@@ -230,23 +236,16 @@ body {
     color: var(--czr-blue);
 }
 
-.czr-entry-icon {
-    display: grid;
-    place-items: center;
-    width: 26px;
-    height: 26px;
-    border-radius: 6px;
-    background: linear-gradient(135deg, #ff7a21, #ff9a3d);
-    color: #fff;
-    font-size: 14px;
-    font-weight: 700;
-    font-style: normal;
+.czr-entry-img {
+    display: block;
+    width: 30px;
+    height: 35px;
 }
 
 /* ============ 首屏：推广卡+分类侧栏 / 搜索+Banner+小卡片 ============ */
 .czr-hero {
     background: #fff;
-    padding: 12px 0 31px;
+    padding: 12px 0 10px;
 }
 
 .czr-hero-inner {
@@ -263,15 +262,15 @@ body {
 }
 
 .czr-promo {
-    position: relative;
     display: block;
-    height: 112px;
-    background: linear-gradient(120deg, #0a2058 15%, #1f4bb0 65%, #2f6fd8);
-    border-radius: 8px;
-    color: #fff;
-    padding: 15px 16px;
     margin: 5px 0 28px;
-    overflow: hidden;
+}
+
+.czr-promo-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
 }
 
 .czr-promo-title {
@@ -336,24 +335,16 @@ body {
 
 /* 职位数量：每个数字一个独立小方块（数字瓦片） */
 .czr-count strong {
-    display: inline-flex;
-    gap: 2px;
-    vertical-align: -4px;
+    color: #5b9be0;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 2px;
     margin: 0 4px;
+    vertical-align: -2px;
 }
 
 .czr-digit {
-    display: grid;
-    place-items: center;
-    min-width: 19px;
-    height: 17px;
-    padding: 0 1px;
-    border-radius: 3px;
-    background: #dceaf9;
-    color: #5c8fdd;
-    font-size: 12px;
     font-style: normal;
-    font-weight: 700;
 }
 
 .czr-main-search {
@@ -381,12 +372,12 @@ body {
 .czr-hot {
     font-size: 12px;
     color: var(--czr-text-muted);
-    line-height: 14px;
+    line-height: 16px;
     margin-bottom: 30px;
 }
 
 .czr-hot-word {
-    color: #1a53d8;
+    color: #3f76d6;
     margin-right: 10px;
 }
 
@@ -397,7 +388,7 @@ body {
 .czr-cat {
     flex: 1 1 auto;
     background: #fff;
-    border: 1px solid var(--czr-line);
+    border: 1px solid #eef0f4;
     border-radius: 8px;
     padding: 8px 17px 4px;
 }
@@ -432,6 +423,31 @@ body {
     min-width: 0;
 }
 
+.czr-cat-list .czr-cat-item:last-child {
+    border-bottom: 0;
+}
+
+/* 头部右侧圆形翻页按钮 */
+.czr-cat-btn {
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    margin-left: 6px;
+    border: 1px solid #e3e6ec;
+    border-radius: 50%;
+    font-style: normal;
+    font-size: 13px;
+    color: #c2c8d0;
+}
+
+.czr-cat-btn-dark {
+    background: #3b4148;
+    border-color: #3b4148;
+    color: #fff;
+}
+
 .czr-cat-name {
     flex: 0 0 auto;
     font-size: 14px;
@@ -448,7 +464,7 @@ body {
     flex: 1 1 auto;
     min-width: 0;
     font-size: 13px;
-    color: var(--czr-text-sub);
+    color: #555b63;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -458,18 +474,16 @@ body {
 .czr-cat-go {
     flex: 0 0 auto;
     font-style: normal;
-    color: var(--czr-text-muted);
-    font-size: 14px;
+    color: #9aa0a8;
+    font-size: 15px;
 }
 
 /* ---- 中间：Banner（德勤校招主题，深色） ---- */
 .czr-banner {
-    position: relative;
     height: 299px;
     border-radius: 6px;
     overflow: hidden;
-    margin-bottom: 27px;
-    background: #0b1512;
+    margin-bottom: 12px;
 }
 
 .czr-banner img {
@@ -490,60 +504,11 @@ body {
     letter-spacing: .5px;
 }
 
-.czr-banner-brand {
-    position: absolute;
-    right: 24px;
-    top: 16px;
-    color: #fff;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: 5px;
-}
-
-.czr-banner-text {
-    position: absolute;
-    left: 24px;
-    top: 46%;
-    transform: translateY(-50%);
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    gap: 7px;
-}
-
 /* 绿色主张语（德专注于你 / 勤路可期） */
 .czr-banner-text strong {
     font-size: 22px;
     color: #86bc25;
     letter-spacing: 3px;
-}
-
-.czr-banner-text em {
-    font-style: normal;
-    font-size: 17px;
-    font-weight: 600;
-    color: #fff;
-    letter-spacing: 1px;
-}
-
-.czr-banner-strip {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 30px;
-    padding: 0;
-    background: #000;
-    color: #fff;
-    font-size: 12px;
-}
-
-.czr-banner-strip li {
-    padding: 0 16px;
-    white-space: nowrap;
 }
 
 /* ---- 右侧主栏：Banner 下方推广小卡片 ---- */
@@ -557,7 +522,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    height: 70px;
+    height: 96px;
     background: #fff;
     border: 1px solid var(--czr-line);
     border-radius: 6px;
@@ -565,20 +530,12 @@ body {
     min-width: 0;
 }
 
-.czr-mini-logo {
+.czr-mini-img {
     flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 46px;
-    height: 46px;
-    border-radius: 6px;
-    color: #fff;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 2px;
-    text-align: center;
+    max-height: 76px;
+    max-width: 62%;
+    width: auto;
+    height: auto;
 }
 
 /* 养生堂×农夫山泉：白底红字 logo */
@@ -588,42 +545,12 @@ body {
     color: #d0021b;
 }
 
-.czr-yst {
-    border: 1.5px solid #d0021b;
-    border-radius: 50%;
-    padding: 1px 3px;
-    font-size: 9px;
-    font-weight: 700;
-}
-
-.czr-mini-logo-white i {
-    font-style: normal;
-    font-size: 8px;
-    margin-top: 2px;
-    white-space: nowrap;
-}
-
-.czr-mini-red {
-    background: #e60012;
-}
-
-.czr-mini-blue {
-    background: #3248f5;
-    font-size: 10px;
-}
-
-.czr-mini-orange {
-    background: #ff7a21;
-}
-
 .czr-mini-name {
     flex: 1 1 auto;
     min-width: 0;
     font-size: 12px;
-    color: var(--czr-text-sub);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #4b8fe8;
+    line-height: 1.4;
 }
 
 /* ============ 公共板块 ============ */
@@ -682,6 +609,7 @@ body {
     display: grid;
     grid-template-columns: repeat(10, minmax(0, 1fr));
     gap: 21px;
+    margin-top: 8px;
 }
 
 .czr-company {
@@ -697,24 +625,13 @@ body {
     box-shadow: 0 6px 16px rgba(95, 146, 205, .18);
 }
 
-.czr-company-logo {
-    display: grid;
-    place-items: center;
-    width: 50px;
-    height: 50px;
+.czr-company-logo-img {
+    display: block;
+    max-height: 52px;
+    max-width: 82%;
     margin: 0 auto 7px;
-    border-radius: 10px;
-    color: #fff;
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.czr-logo-xhs {
-    background: #ff2442;
-}
-
-.czr-logo-ks {
-    background: #ff6d00;
+    width: auto;
+    height: auto;
 }
 
 /* 白底品牌色字（对照真实站 logo 形态） */
@@ -722,53 +639,6 @@ body {
     background: #fff;
     border: 1px solid var(--czr-line);
     color: #17323f;
-    font-weight: 800;
-}
-
-.czr-logo-dw {
-    background: #1c1c1e;
-}
-
-.czr-logo-bd {
-    background: #fff;
-    border: 1px solid var(--czr-line);
-    color: #2932e1;
-    font-weight: 800;
-}
-
-.czr-logo-bs {
-    background: #fff;
-    border: 1px solid var(--czr-line);
-    color: #e2001a;
-    font-size: 11px;
-    font-weight: 800;
-}
-
-.czr-logo-bl {
-    background: #fff;
-    border: 1px solid var(--czr-line);
-    color: #fb7299;
-    font-size: 10px;
-    font-weight: 800;
-}
-
-.czr-logo-mi {
-    background: #ff6900;
-    font-weight: 800;
-}
-
-.czr-logo-zq {
-    background: #fff;
-    border: 1px solid var(--czr-line);
-    color: #c8102e;
-    font-weight: 800;
-}
-
-.czr-logo-wy {
-    background: #fff;
-    border: 1px solid var(--czr-line);
-    color: #d43c33;
-    font-size: 12px;
     font-weight: 800;
 }
 
@@ -810,8 +680,8 @@ body {
 .czr-cta-ico {
     font-style: normal;
     margin-right: 7px;
-    font-size: 14px;
-    opacity: .95;
+    display: inline-flex;
+    vertical-align: -4px;
 }
 
 /* 左侧同色系浅色装饰块 */
@@ -827,15 +697,15 @@ body {
 }
 
 .czr-cta-green {
-    background: #2ddd82;
+    background: #2edd7e;
 }
 
 .czr-cta-blue {
-    background: #4ea6ff;
+    background: #51a5fd;
 }
 
 .czr-cta-orange {
-    background: #ffb550;
+    background: #ffb64d;
 }
 
 /* ============ 网页元素三：tab 切换 + 职位列表 ============ */
@@ -1217,28 +1087,34 @@ body {
 /* ============ 右侧悬浮工具条 ============ */
 .czr-float {
     position: fixed;
-    right: 7px;
-    bottom: 69px;
-    width: 62px;
+    right: 6px;
+    top: 55%;
+    transform: translateY(-50%);
+    width: 56px;
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    padding: 3px;
     background: #fff;
-    border: 1px solid #eee;
-    border-radius: 4px;
+    border: 1px solid #eef0f4;
+    border-radius: 8px;
     z-index: 20;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(30, 50, 80, .08);
 }
 
 .czr-fb {
     display: grid;
     place-items: center;
     width: 54px;
-    height: 54px;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    color: #8a939e;
-    font-size: 20px;
+    height: 58px;
+    border-bottom: 1px solid #f0f2f6;
+}
+
+.czr-fb:last-child {
+    border-bottom: 0;
+}
+
+.czr-fb:last-child {
+    border-bottom: 0;
 }
 
 /* ============ 响应式：平板 / 手机 ============ */
@@ -1251,7 +1127,7 @@ body {
 
 @media (max-width: 1100px) {
     .czr-hero-inner {
-        grid-template-columns: 200px minmax(0, 1fr);
+        grid-template-columns: 220px minmax(0, 1fr);
     }
 
     .czr-companies {
@@ -1317,4 +1193,10 @@ body {
     .czr-notice-text {
         white-space: normal;
     }
+}
+
+/* 分类头右侧按钮组 */
+.czr-cat-btns {
+    display: flex;
+    gap: 7px;
 }

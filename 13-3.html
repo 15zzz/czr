@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>1012 陈卓然 · 字体图标下导航</title>
+    <link rel="stylesheet" href="./font/font_5244823_nkj1sa0pqh/iconfont.css">
+    <style>
+        :root {
+            --chen_bg: #eef4f8;
+            --chen_card: #ffffff;
+            --chen_text: #24324a;
+            --chen_muted: #8492a8;
+            --chen_line: #ccdce9;
+            --chen_blue: #4ca9d9;
+            --chen_deep: #145a8d;
+            --chen_cyan: #79d6ce;
+            --chen_red: #f5453d;
+            --chen_soft: #eef6fb;
+            --chen_shadow: rgba(32, 60, 85, 0.12);
+            --chen_radius: 18px;
+            --chen_tab_h: 56px;
+            --chen_font: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            font-size: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0px;
+            padding: 78px 16px 104px;
+            min-height: 100vh;
+            color: var(--chen_text);
+            font-family: var(--chen_font);
+            background:
+                radial-gradient(circle at 88% 6%, rgba(255, 196, 107, 0.16), transparent 24%),
+                radial-gradient(circle at 6% 90%, rgba(76, 169, 217, 0.16), transparent 24%),
+                var(--chen_bg);
+        }
+
+        .chen_home {
+            position: fixed;
+            top: 14px;
+            left: 14px;
+            z-index: 40;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 40px;
+            border: 1px solid var(--chen_line);
+            background: var(--chen_card);
+            color: var(--chen_deep);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 8px 16px var(--chen_shadow);
+            transition: transform 0.25s ease;
+        }
+
+        .chen_home:hover {
+            transform: translateY(-3px);
+        }
+
+        .chen_wrap {
+            width: min(720px, 100%);
+            margin: 0 auto;
+        }
+
+        .chen_title {
+            margin: 0 0 12px;
+            font-size: clamp(26px, 6vw, 38px);
+            line-height: 1.25;
+            color: var(--chen_deep);
+        }
+
+        .chen_intro {
+            margin: 0px;
+            color: #5d6b81;
+            font-size: 15px;
+            line-height: 1.9;
+        }
+
+        .chen_intro code,
+        .chen_note code,
+        .chen_card code {
+            color: var(--chen_deep);
+            background: var(--chen_soft);
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+        }
+
+        .chen_intro strong {
+            color: var(--chen_deep);
+        }
+
+        .chen_subtitle {
+            margin: 34px 0 14px;
+            font-size: 21px;
+            color: var(--chen_deep);
+        }
+
+        .chen_note {
+            margin: -4px 0 16px;
+            font-size: 13px;
+            line-height: 1.9;
+            color: #5d6b81;
+        }
+
+        /* ---------- CSS3 3D 立方体 ---------- */
+        .chen_stage {
+            display: flex;
+            justify-content: center;
+            perspective: 900px;
+            margin: 24px 0 8px;
+        }
+
+        .chen_cube {
+            position: relative;
+            width: 132px;
+            height: 132px;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(0deg);
+            animation: chen_spin 14s linear infinite;
+        }
+
+        .chen_face {
+            position: absolute;
+            inset: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: inset 0 0 26px rgba(255, 255, 255, 0.35);
+            font-size: 12px;
+            font-weight: 800;
+            color: #062033;
+        }
+
+        .chen_face i {
+            font-size: 40px;
+        }
+
+        .chen_f1 { background: linear-gradient(135deg, #4ca9d9, #79d6ce); transform: translateZ(66px); }
+        .chen_f2 { background: linear-gradient(135deg, #145a8d, #4ca9d9); transform: rotateY(180deg) translateZ(66px); color: #eaf3ff; }
+        .chen_f3 { background: linear-gradient(135deg, #ffc46b, #ff9f43); transform: rotateY(90deg) translateZ(66px); }
+        .chen_f4 { background: linear-gradient(135deg, #79d6ce, #3fbfae); transform: rotateY(-90deg) translateZ(66px); }
+        .chen_f5 { background: linear-gradient(135deg, #a9e8ff, #4ca9d9); transform: rotateX(90deg) translateZ(66px); }
+        .chen_f6 { background: linear-gradient(135deg, #145a8d, #10233a); transform: rotateX(-90deg) translateZ(66px); color: #eaf3ff; }
+
+        @keyframes chen_spin {
+            from { transform: rotateX(-20deg) rotateY(0deg); }
+            to   { transform: rotateX(-20deg) rotateY(360deg); }
+        }
+
+        /* ---------- 说明卡片 ---------- */
+        .chen_cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .chen_card {
+            background: var(--chen_card);
+            border: 1px solid var(--chen_line);
+            border-radius: var(--chen_radius);
+            box-shadow: 0 8px 18px var(--chen_shadow);
+            padding: 18px 20px 20px;
+        }
+
+        .chen_card h3 {
+            margin: 0 0 8px;
+            font-size: 15px;
+            color: var(--chen_deep);
+            letter-spacing: 1px;
+        }
+
+        .chen_card p {
+            margin: 0px;
+            font-size: 13px;
+            line-height: 1.9;
+            color: #5d6b81;
+        }
+
+        /* ---------- 状态预览（静态示例，非固定定位） ---------- */
+        .chen_states {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+        }
+
+        .chen_state {
+            background: var(--chen_card);
+            border: 1px solid var(--chen_line);
+            border-radius: 14px;
+            box-shadow: 0 8px 18px var(--chen_shadow);
+            padding: 22px 0 16px;
+        }
+
+        .chen_state_row {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            height: 62px;
+        }
+
+        .chen_state_tx {
+            margin: 10px 0 0;
+            text-align: center;
+            font-size: 13px;
+            color: #5d6b81;
+        }
+
+        /* ---------- 图标清单 ---------- */
+        .chen_icons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+            gap: 10px;
+        }
+
+        .chen_icon_cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 16px 6px 12px;
+            border: 1px solid var(--chen_line);
+            border-radius: 12px;
+            background: var(--chen_card);
+            box-shadow: 0 6px 14px var(--chen_shadow);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .chen_icon_cell:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 24px rgba(32, 60, 85, 0.18);
+        }
+
+        .chen_icon_cell i {
+            font-size: 28px;
+            color: var(--chen_deep);
+        }
+
+        .chen_icon_cell span {
+            font-size: 12px;
+            color: var(--chen_muted);
+            text-align: center;
+        }
+
+        /* ================= 固定的移动端下导航（全屏宽度） ================= */
+        .chen_tabbar {
+            position: fixed;
+            left: 0px;
+            right: 0px;
+            bottom: 0px;
+            width: 100%;
+            z-index: 30;
+            background: rgba(255, 255, 255, 0.94);
+            border-top: 1px solid var(--chen_line);
+            box-shadow: 0 -8px 22px rgba(32, 60, 85, 0.14);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .chen_tabbar_box {
+            display: flex;
+            width: 100%;
+            height: var(--chen_tab_h);
+        }
+
+        .chen_tab {
+            position: relative;
+            flex: 1 1 0px;
+            min-width: 0px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1px;
+            color: var(--chen_muted);
+            text-decoration: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: color 0.25s ease;
+        }
+
+        .chen_tab_ic {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 34px;
+            height: 34px;
+            perspective: 420px;
+        }
+
+        .chen_tab_ic i {
+            font-size: 24px;
+            line-height: 24px;
+            transition: transform 0.3s ease, color 0.25s ease;
+        }
+
+        .chen_tab_tx {
+            font-size: 12px;
+            line-height: 16px;
+            white-space: nowrap;
+        }
+
+        .chen_tab:active .chen_tab_ic i {
+            transform: scale(0.88);
+        }
+
+        .chen_tab_on {
+            color: var(--chen_deep);
+        }
+
+        .chen_tab_on .chen_tab_ic {
+            animation: chen_lift 2.6s ease-in-out infinite;
+        }
+
+        @keyframes chen_lift {
+            0%, 100% { transform: translateZ(0px) rotateX(0deg); }
+            50% { transform: translateZ(10px) rotateX(-16deg); }
+        }
+
+        /* 数字徽章：贴在图标右上角 */
+        .chen_badge {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            min-width: 18px;
+            height: 18px;
+            padding: 0px 5px;
+            border-radius: 9px;
+            border: 2px solid #ffffff;
+            background: var(--chen_red);
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 14px;
+            text-align: center;
+            white-space: nowrap;
+            box-shadow: 0 2px 6px rgba(245, 69, 61, 0.35);
+        }
+
+        /* 红点：位于导航项右上角 */
+        .chen_dot {
+            position: absolute;
+            top: 7px;
+            right: 12px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--chen_red);
+            box-shadow: 0 0 0 2px #ffffff;
+            animation: chen_blink 1.8s ease-in-out infinite;
+        }
+
+        @keyframes chen_blink {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.4); opacity: 0.5; }
+        }
+
+        .chen_sign {
+            margin: 34px 0 0;
+            text-align: center;
+            font-size: 13px;
+            color: var(--chen_muted);
+        }
+
+        .chen_sign strong {
+            color: var(--chen_deep);
+            font-size: 15px;
+        }
+
+        /* ---------- 移动端自适应 ---------- */
+        @media (max-width: 359px) {
+            .chen_tab_tx {
+                font-size: 11px;
+            }
+
+            .chen_tab_ic i {
+                font-size: 22px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            :root {
+                --chen_tab_h: 64px;
+            }
+
+            .chen_tab_ic i {
+                font-size: 27px;
+            }
+
+            .chen_tab_tx {
+                font-size: 13px;
+            }
+
+            .chen_dot {
+                right: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a class="chen_home" href="./index.html">← 返回首页 index.html</a>
+
+    <div class="chen_wrap">
+        <h1 class="chen_title">移动端固定下导航（字体图标）</h1>
+        <p class="chen_intro">
+            本页使用 <strong>font 目录里 iconfont 的字体图标</strong>：先在页面顶部引入
+            <code>font/font_5244823_nkj1sa0pqh/iconfont.css</code>，再用
+            <code>&lt;i class="iconfont icon-shouye"&gt;&lt;/i&gt;</code> 把图标当成文字写进导航项。
+            下导航用 <code>position: fixed</code> 贴住屏幕底部，宽度 <code>100%</code> 占满整个屏幕，
+            四个导航项用 <code>flex: 1 1 0</code> 平均分配宽度，因此在任意手机宽度下都会自动伸缩对齐。
+        </p>
+
+        <div class="chen_stage">
+            <div class="chen_cube">
+                <div class="chen_face chen_f1"><i class="iconfont icon-shouye"></i><span>首页</span></div>
+                <div class="chen_face chen_f2"><i class="iconfont icon-faxian"></i><span>发现</span></div>
+                <div class="chen_face chen_f3"><i class="iconfont icon-shoucang"></i><span>收藏</span></div>
+                <div class="chen_face chen_f4"><i class="iconfont icon-iconfonticon5"></i><span>我的</span></div>
+                <div class="chen_face chen_f5"><i class="iconfont icon-sousuo"></i><span>搜索</span></div>
+                <div class="chen_face chen_f6"><i class="iconfont icon-gengduo"></i><span>更多</span></div>
+            </div>
+        </div>
+
+        <h2 class="chen_subtitle">导航项上的两种提示</h2>
+        <p class="chen_note">
+            <code>数字徽章</code>贴在图标右上角，用于显示具体数量（超过 99 写成 99+）；
+            <code>红点</code>放在导航项自己的右上角，表示“有新内容”而不透露数量。两者可以同时出现。
+        </p>
+        <section class="chen_cards">
+            <article class="chen_card">
+                <h3>数字徽章 .chen_badge</h3>
+                <p>用绝对定位放在图标盒子的 <code>right: -10px</code>、<code>top: -6px</code>，
+                   红底白字、圆角胶囊，外加两像素白色描边把图标“挖”出来，数字动起来也不会挤到图标。</p>
+            </article>
+            <article class="chen_card">
+                <h3>红点 .chen_dot</h3>
+                <p>八个像素的圆点固定在导航项右上角，配合 <code>@keyframes chen_blink</code>
+                   做缩放呼吸动画，提示有新消息但不需要展示数字。</p>
+            </article>
+            <article class="chen_card">
+                <h3>自适应宽度</h3>
+                <p>四个导航项 <code>flex: 1 1 0px</code> 平分 100% 屏宽，
+                   <code>min-width: 0px</code> 保证窄屏不撑破布局；<code>max-width: 359px</code>
+                   与 <code>min-width: 768px</code> 的媒体查询再微调图标和文字字号。</p>
+            </article>
+            <article class="chen_card">
+                <h3>iPhone 安全区</h3>
+                <p>导航容器加了 <code>padding-bottom: env(safe-area-inset-bottom)</code>，
+                   带小横条的全屏机型上也不会遮住图标。</p>
+            </article>
+        </section>
+
+        <h2 class="chen_subtitle">四种状态预览</h2>
+        <section class="chen_states">
+            <div class="chen_state">
+                <div class="chen_state_row">
+                    <span class="chen_tab">
+                        <span class="chen_tab_ic"><i class="iconfont icon-shouye"></i><b class="chen_badge">3</b></span>
+                        <span class="chen_tab_tx">首页</span>
+                        <i class="chen_dot"></i>
+                    </span>
+                </div>
+                <p class="chen_state_tx">徽章 + 红点</p>
+            </div>
+            <div class="chen_state">
+                <div class="chen_state_row">
+                    <span class="chen_tab">
+                        <span class="chen_tab_ic"><i class="iconfont icon-faxian"></i><b class="chen_badge">99+</b></span>
+                        <span class="chen_tab_tx">发现</span>
+                    </span>
+                </div>
+                <p class="chen_state_tx">只有数字徽章</p>
+            </div>
+            <div class="chen_state">
+                <div class="chen_state_row">
+                    <span class="chen_tab">
+                        <span class="chen_tab_ic"><i class="iconfont icon-shoucang"></i></span>
+                        <span class="chen_tab_tx">收藏</span>
+                        <i class="chen_dot"></i>
+                    </span>
+                </div>
+                <p class="chen_state_tx">只有红点</p>
+            </div>
+            <div class="chen_state">
+                <div class="chen_state_row">
+                    <span class="chen_tab chen_tab_on">
+                        <span class="chen_tab_ic"><i class="iconfont icon-iconfonticon5"></i></span>
+                        <span class="chen_tab_tx">我的</span>
+                    </span>
+                </div>
+                <p class="chen_state_tx">选中态，无提示</p>
+            </div>
+        </section>
+
+        <h2 class="chen_subtitle">font 目录里的全部图标</h2>
+        <p class="chen_note">以下图标都来自 <code>iconfont.css</code>，写法为 <code>class="iconfont icon-名字"</code>。</p>
+        <section class="chen_icons">
+            <div class="chen_icon_cell"><i class="iconfont icon-shouye"></i><span>首页</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-zhuye"></i><span>主页</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-faxian"></i><span>发现</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-sousuo"></i><span>搜索</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-shoucang"></i><span>收藏</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-24gl-bookmarks2"></i><span>书签（线）</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-24gf-bookmarks"></i><span>书签（实）</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-tushu"></i><span>图书</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-shuben"></i><span>书本</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-xiaoshuo"></i><span>小说</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-dianzan"></i><span>点赞</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-icon"></i><span>赞</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-zhuanfa"></i><span>转发</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-xiazai"></i><span>下载</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-baocun"></i><span>保存</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-zhongxinshengcheng"></i><span>重新生成</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-tongyihebingqingqiu"></i><span>同意合并</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-jianjie"></i><span>简介</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-denglu"></i><span>登录</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-iconfonticon5"></i><span>个人中心</span></div>
+            <div class="chen_icon_cell"><i class="iconfont icon-gengduo"></i><span>更多</span></div>
+        </section>
+
+        <p class="chen_sign">本页面由 <strong>陈卓然</strong> 制作 · 1012 陈卓然 · 高级网页设计 · 图标来自 font 目录的 iconfont 字体</p>
+    </div>
+
+    <nav class="chen_tabbar" aria-label="底部主导航">
+        <div class="chen_tabbar_box">
+            <a class="chen_tab chen_tab_on" href="#chen_home">
+                <span class="chen_tab_ic"><i class="iconfont icon-shouye"></i><b class="chen_badge">3</b></span>
+                <span class="chen_tab_tx">首页</span>
+                <i class="chen_dot"></i>
+            </a>
+            <a class="chen_tab" href="#chen_faxian">
+                <span class="chen_tab_ic"><i class="iconfont icon-faxian"></i><b class="chen_badge">8</b></span>
+                <span class="chen_tab_tx">发现</span>
+                <i class="chen_dot"></i>
+            </a>
+            <a class="chen_tab" href="#chen_shoucang">
+                <span class="chen_tab_ic"><i class="iconfont icon-shoucang"></i><b class="chen_badge">12</b></span>
+                <span class="chen_tab_tx">收藏</span>
+                <i class="chen_dot"></i>
+            </a>
+            <a class="chen_tab" href="#chen_mine">
+                <span class="chen_tab_ic"><i class="iconfont icon-iconfonticon5"></i><b class="chen_badge">99+</b></span>
+                <span class="chen_tab_tx">我的</span>
+                <i class="chen_dot"></i>
+            </a>
+        </div>
+    </nav>
+</body>
+</html>
