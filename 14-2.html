@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · JS 基础数据类型</title>
+    <style>
+        /* 基础重置 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap {
+            max-width: 960px;
+            margin: 0 auto;
+        }
+
+        /* 文件头注释占位已在 body 内 */
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-4px);
+        }
+
+        .czr_title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #79d6ce, #4ca9d9, #ffc46b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .czr_subtitle {
+            font-size: 16px;
+            color: #9fb3cc;
+            margin-bottom: 32px;
+        }
+
+        /* 类型卡片 */
+        .czr_cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            perspective: 1000px; /* 3D 透视 */
+        }
+
+        .czr_card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 22px;
+            transition: transform 0.5s ease;
+            transform-style: preserve-3d; /* 3D 保留 */
+            animation: czr_card_in 0.6s ease both;
+        }
+
+        .czr_card:nth-child(1) { animation-delay: 0.05s; }
+        .czr_card:nth-child(2) { animation-delay: 0.10s; }
+        .czr_card:nth-child(3) { animation-delay: 0.15s; }
+        .czr_card:nth-child(4) { animation-delay: 0.20s; }
+        .czr_card:nth-child(5) { animation-delay: 0.25s; }
+        .czr_card:nth-child(6) { animation-delay: 0.30s; }
+        .czr_card:nth-child(7) { animation-delay: 0.35s; }
+        .czr_card:nth-child(8) { animation-delay: 0.40s; }
+
+        /* 3D 入场动画 */
+        @keyframes czr_card_in {
+            from {
+                opacity: 0;
+                transform: rotateY(-25deg) translateZ(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: rotateY(0deg) translateZ(0);
+            }
+        }
+
+        .czr_card:hover {
+            transform: rotateX(4deg) rotateY(-6deg) translateZ(12px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 0 30px rgba(76, 169, 217, 0.15);
+        }
+
+        .czr_type_badge {
+            display: inline-block;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .czr_type_badge.c_String   { background: #ffc46b; color: #3a2800; }
+        .czr_type_badge.c_Number   { background: #4ca9d9; color: #ffffff; }
+        .czr_type_badge.c_Boolean  { background: #79d6ce; color: #063b3a; }
+        .czr_type_badge.c_Undefined{ background: #b099e0; color: #2b1a55; }
+        .czr_type_badge.c_Null     { background: #e07a7a; color: #3a0a0a; }
+        .czr_type_badge.c_Symbol   { background: #66c06b; color: #082f0a; }
+        .czr_type_badge.c_BigInt   { background: #e8924a; color: #3a1b06; }
+        .czr_type_badge.c_Object   { background: #c8c8c8; color: #1a1a1a; }
+
+        .czr_card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #ffffff;
+        }
+
+        .czr_card .czr_desc {
+            font-size: 13px;
+            color: #9fb3cc;
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+
+        .czr_code {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            word-break: break-all;
+            margin-bottom: 10px;
+            line-height: 1.55;
+        }
+
+        .czr_result {
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 3px solid #79d6ce;
+            padding: 10px 14px;
+            font-size: 13px;
+            border-radius: 0 6px 6px 0;
+        }
+        .czr_result .czr_label {
+            color: #79d6ce;
+            font-weight: bold;
+        }
+
+        .czr_footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-10-22，功能名称：JavaScript 六种基础数据类型演示 -->
+<div class="czr_wrap">
+
+    <a href="index.html" class="czr_home">← 返回首页</a>
+
+    <h1 class="czr_title">JavaScript 基础数据类型</h1>
+    <p class="czr_subtitle">演示 JS 的 7 种基础类型 + 1 种引用类型，并实时查看 typeof 结果</p>
+
+    <div class="czr_cards" id="czr_cards"></div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 14-2.html · JavaScript 数据类型</p>
+</div>
+
+<script>
+    // JavaScript 六种基础数据类型 + BigInt + Object 引用类型
+    const czr_types = [
+        {
+            key: 'String',
+            desc: '用单引号、双引号或反引号包裹的文本序列。',
+            code: "let czr_name = '陈卓然';",
+            get value() { return czr_name; }
+        },
+        {
+            key: 'Number',
+            desc: '整数、浮点数、特殊值（Infinity、NaN）。JS 只有一个 Number 类型。',
+            code: 'let czr_age = 20;\nlet czr_pi  = 3.14;',
+            get value() { return czr_age + ', ' + czr_pi; }
+        },
+        {
+            key: 'Boolean',
+            desc: '只有 true 和 false 两个值，常用于条件判断。',
+            code: 'let czr_ok = true;\nlet czr_no = false;',
+            get value() { return czr_ok + ', ' + czr_no; }
+        },
+        {
+            key: 'Undefined',
+            desc: '变量已声明但未赋值时的默认值。',
+            code: 'let czr_undef;\n// typeof czr_undef === "undefined"',
+            get value() { return czr_undef; }
+        },
+        {
+            key: 'Null',
+            desc: '表示"空"或"无"的引用。注意 typeof null 返回 "object"（历史遗留 bug）。',
+            code: 'let czr_null = null;',
+            get value() { return czr_null; }
+        },
+        {
+            key: 'Symbol',
+            desc: 'ES6 新增，创建唯一标识符，常用于对象属性键，避免命名冲突。',
+            code: 'let czr_sym = Symbol("key");',
+            get value() { return czr_sym.toString(); }
+        },
+        {
+            key: 'BigInt',
+            desc: 'ES2020 新增，支持超过 Number.MAX_SAFE_INTEGER 的大整数，末尾加 n。',
+            code: 'let czr_big = 9007199254740993n;',
+            get value() { return czr_big.toString() + 'n'; }
+        },
+        {
+            key: 'Object',
+            desc: '引用类型，包括普通对象、数组、函数等。存储在堆内存，按引用访问。',
+            code: "let czr_obj = { name: '陈卓然', age: 20 };",
+            get value() { return JSON.stringify(czr_obj); }
+        }
+    ];
+
+    let czr_name = '陈卓然';
+    let czr_age  = 20;
+    let czr_pi   = 3.14;
+    let czr_ok   = true;
+    let czr_no   = false;
+    let czr_undef;
+    let czr_null = null;
+    let czr_sym  = Symbol('key');
+    let czr_big  = 9007199254740993n;
+    let czr_obj  = { name: '陈卓然', age: 20 };
+
+    // 渲染卡片
+    const czr_container = document.getElementById('czr_cards');
+    czr_types.forEach(function (czr_t) {
+        let czr_html =
+            '<div class="czr_card">' +
+                '<span class="czr_type_badge c_' + czr_t.key + '">' + czr_t.key + '</span>' +
+                '<h3>' + czr_t.key + ' 类型</h3>' +
+                '<p class="czr_desc">' + czr_t.desc + '</p>' +
+                '<pre class="czr_code">' + czr_t.code + '</pre>' +
+                '<div class="czr_result">' +
+                    '<span class="czr_label">值：</span>' + String(czr_t.value) + '<br>' +
+                    '<span class="czr_label">typeof：</span>' + typeof czr_t.value +
+                '</div>' +
+            '</div>';
+        czr_container.innerHTML += czr_html;
+    });
+</script>
+</body>
+</html>
