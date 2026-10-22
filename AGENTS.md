@@ -8,12 +8,19 @@ Static HTML/CSS coursework portfolio ("高级网页设计" by 陈卓然). Flat r
 - Git repo initialized (`git init`); do not commit unless explicitly asked.
 
 ## Hard constraints
-- Native HTML/CSS only. **No CDN / external libraries / external assets.** All styling lives inline in `<style>` (as in `index.html`) or in local files.
+- **Native HTML/CSS/JS only.** 不使用任何第三方库或 CDN（包括 Font Awesome、Lucide、CDN 资源等）。
+- **图标使用 `font/` 目录下的 iconfont 字体图标**（`iconfont.css` + `iconfont.js` + `iconfont.ttf/woff2`）。通过 `<link>` 引入本地 `iconfont.css`，用 `class="iconfont icon-xxx"` 方式使用。
+- **数据请求使用原生 `fetch()`** 获取服务器端数据，不使用 axios/jQuery 等。
 - All page content is Simplified Chinese. Match the tone; keep `<title>` in the `1012 陈卓然` style.
-- Pages live at repo root; images in `img/` (`1.jpg`…`6.jpg`, `5.jpeg`).
+- Pages live at repo root; images in `img/` (`1.jpg`…`6.jpg`, `5.jpeg`); iconfont assets in `font/`.
 
 ## Project mandatory rules (enforced)
-- **`chen_` prefix**: every new CSS class name, `id`, and JS variable must start with `chen_`.
+- **`czr_` 前缀**: every new CSS class name, `id`, and JS variable must start with `czr_`（陈卓然首字母缩写）。示例：`.czr_container`、`#czr_main`、`let czr_count = 0`。
+- **HTML 文件头注释**: every `.html` file must contain at the top of `<body>` a comment block in this exact format:
+  ```html
+  <!-- 姓名：陈卓然，日期：YYYY-MM-DD，功能名称：XXX -->
+  ```
+  日期用任务执行当天的实际日期，功能名称写页面的核心用途（一句话）。
 - **Prompt logging**: *before* executing any task, append (never overwrite) to `chen_prompt.md` an entry with the execution time, the model used, and the verbatim prompt text.
 - **CSS length units + 3D**: pages must use explicit CSS length units and include a CSS3 3D animation.
 - **Back-link**: every newly created `.html` file must contain a hyperlink back to the homepage `index.html`（新建的 html 文件必须加入超链接，链接到首页 index.html）。
