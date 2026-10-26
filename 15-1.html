@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · 数7游戏</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #1a0533 0px, #2d1b4e 400px, #0e1b2a 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-4px);
+        }
+
+        .czr_title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #ffc46b, #79d6ce, #4ca9d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .czr_author {
+            font-size: 15px;
+            color: #ffc46b;
+            margin-bottom: 6px;
+        }
+
+        .czr_subtitle {
+            font-size: 14px;
+            color: #9fb3cc;
+            margin-bottom: 28px;
+            line-height: 1.7;
+        }
+
+        .czr_legend {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #9fb3cc;
+        }
+        .czr_legend span {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .czr_legend i {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .czr_legend_num i { background: rgba(121, 214, 206, 0.25); border: 1px solid #79d6ce; }
+        .czr_legend_empty i { background: rgba(255, 70, 100, 0.15); border: 1px dashed #ff5c7a; }
+
+        /* 100 个盒子的网格 */
+        .czr_grid {
+            display: grid;
+            grid-template-columns: repeat(10, 72px);
+            gap: 10px;
+            perspective: 1200px;
+        }
+
+        .czr_box {
+            width: 72px;
+            height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            border-radius: 10px;
+            background: rgba(121, 214, 206, 0.12);
+            border: 1px solid rgba(121, 214, 206, 0.45);
+            color: #79d6ce;
+            transform-style: preserve-3d;
+            animation: czr_flip_in 0.5s ease both;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            cursor: default;
+        }
+
+        /* 满足数7规则的空盒子 */
+        .czr_box.czr_empty {
+            background: rgba(255, 70, 100, 0.10);
+            border: 1px dashed #ff5c7a;
+            color: transparent;
+        }
+
+        .czr_box:hover {
+            transform: rotateY(180deg) translateZ(14px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.45), 0 0 20px rgba(255, 196, 107, 0.25);
+        }
+
+        /* CSS3 3D 入场动画：从远处翻转飞入 */
+        @keyframes czr_flip_in {
+            from {
+                opacity: 0;
+                transform: rotateX(-90deg) translateZ(-60px);
+            }
+            to {
+                opacity: 1;
+                transform: rotateX(0deg) translateZ(0);
+            }
+        }
+
+        .czr_stats {
+            margin-top: 24px;
+            font-size: 14px;
+            color: #9fb3cc;
+            line-height: 1.8;
+        }
+        .czr_stats strong { color: #ffc46b; }
+
+        .czr_footer {
+            margin-top: 32px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-10-26，功能名称：数7游戏100个盒子 -->
+<div class="czr_wrap">
+
+    <a href="index.html" class="czr_home">← 返回首页</a>
+
+    <h1 class="czr_title">数 7 游戏 · 100 个盒子</h1>
+    <p class="czr_author">制作者：陈卓然</p>
+    <p class="czr_subtitle">
+        规则：从 1 数到 100，遇到 <strong>7 的倍数</strong> 或 <strong>数字中含有 7</strong>（如 7、17、70、77）
+        的数就跳过——盒子留空；其余数字正常显示在盒子里。
+    </p>
+
+    <div class="czr_legend">
+        <span class="czr_legend_num"><i></i>普通数字盒子</span>
+        <span class="czr_legend_empty"><i></i>满足数 7 规则（空盒子）</span>
+    </div>
+
+    <div class="czr_grid" id="czr_grid"></div>
+
+    <p class="czr_stats" id="czr_stats"></p>
+
+    <p class="czr_footer">陈卓然 · 1012 · 15-1.html · 数7游戏</p>
+</div>
+
+<script>
+    // 数7规则：7 的倍数，或数字中包含 7
+    function czr_isSeven(czr_n) {
+        return czr_n % 7 === 0 || String(czr_n).indexOf('7') !== -1;
+    }
+
+    var czr_grid = document.getElementById('czr_grid');
+    var czr_empty_count = 0;
+
+    for (var czr_i = 1; czr_i <= 100; czr_i++) {
+        var czr_box = document.createElement('div');
+        // 入场动画按行列交错延迟
+        czr_box.style.animationDelay = (czr_i * 12) + 'ms';
+
+        if (czr_isSeven(czr_i)) {
+            czr_box.className = 'czr_box czr_empty';
+            czr_box.textContent = ''; // 满足规则：空盒子
+            czr_empty_count++;
+        } else {
+            czr_box.className = 'czr_box';
+            czr_box.textContent = czr_i; // 不满足规则：显示数字
+        }
+        czr_grid.appendChild(czr_box);
+    }
+
+    document.getElementById('czr_stats').innerHTML =
+        '共 100 个盒子，其中空盒子 <strong>' + czr_empty_count + '</strong> 个，' +
+        '数字盒子 <strong>' + (100 - czr_empty_count) + '</strong> 个。';
+</script>
+</body>
+</html>
