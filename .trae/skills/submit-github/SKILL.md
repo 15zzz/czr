@@ -34,8 +34,18 @@ description: 将项目提交并推送到 GitHub 远程仓库（git@github.com:15
      `git remote add github git@github.com:15zzz/czr.git`
    - 若 `github` 已存在但地址不对，则更新：
      `git remote set-url github git@github.com:15zzz/czr.git`
-   - 首次连接 GitHub 如提示主机密钥确认，可先执行：
-     `ssh-keyscan github.com >> ~/.ssh/known_hosts`
+   - 本网络 GitHub 22 端口被封锁，需使用 443 端口 SSH 通道。确认 `~/.ssh/config` 含：
+     ```
+     Host github.com
+       HostName ssh.github.com
+       Port 443
+       User git
+     ```
+   - D:\Git 自带 ssh 连接 ssh.github.com 会崩溃，须让 git 使用系统 OpenSSH（仓库已配置）：
+     `git config core.sshCommand "C:/Windows/System32/OpenSSH/ssh.exe"`
+   - 首次连接先非交互接受主机密钥：
+     `ssh -o StrictHostKeyChecking=accept-new -o BatchMode=yes -T git@github.com`
+     （返回 "Hi 15zzz! ..." 即认证成功，exit 1 属正常）
 
 4. **暂存并提交**：`git add -A`，然后写一句简洁的中文提交信息，例如：
    `git commit -m "提交项目更新"`

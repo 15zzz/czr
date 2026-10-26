@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · JS 程序结构：条件与循环</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #0e1b2a 0px, #173a2f 500px, #0f2027 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-4px);
+        }
+
+        .czr_title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #79d6ce, #ffc46b, #4ca9d9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .czr_subtitle {
+            font-size: 15px;
+            color: #9fb3cc;
+            margin-bottom: 32px;
+        }
+
+        .czr_section {
+            margin-bottom: 36px;
+        }
+
+        .czr_section_title {
+            font-size: 22px;
+            color: #79d6ce;
+            margin-bottom: 16px;
+            padding-left: 12px;
+            border-left: 4px solid #79d6ce;
+        }
+
+        .czr_cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            perspective: 1000px;
+        }
+
+        .czr_card {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            padding: 20px;
+            transform-style: preserve-3d;
+            animation: czr_card_in 0.6s ease both;
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .czr_card:nth-child(1) { animation-delay: 0.05s; }
+        .czr_card:nth-child(2) { animation-delay: 0.12s; }
+        .czr_card:nth-child(3) { animation-delay: 0.19s; }
+        .czr_card:nth-child(4) { animation-delay: 0.26s; }
+
+        /* CSS3 3D 入场动画 */
+        @keyframes czr_card_in {
+            from {
+                opacity: 0;
+                transform: rotateY(-25deg) translateZ(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: rotateY(0deg) translateZ(0);
+            }
+        }
+
+        .czr_card:hover {
+            transform: rotateX(4deg) rotateY(-5deg) translateZ(12px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), 0 0 26px rgba(121, 214, 206, 0.18);
+        }
+
+        .czr_card h3 {
+            font-size: 17px;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .czr_card h3 span {
+            font-size: 12px;
+            color: #ffc46b;
+            font-weight: normal;
+            margin-left: 8px;
+        }
+
+        .czr_code {
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .czr_run {
+            display: inline-block;
+            padding: 7px 18px;
+            font-size: 13px;
+            color: #063b3a;
+            background: #79d6ce;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+        .czr_run:hover {
+            background: #ffc46b;
+            transform: scale(1.06);
+        }
+
+        .czr_output {
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 3px solid #ffc46b;
+            border-radius: 0 6px 6px 0;
+            padding: 10px 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            color: #ffe1a8;
+            min-height: 38px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+
+        .czr_footer {
+            margin-top: 36px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-10-26，功能名称：JavaScript 程序结构（条件与循环）演示 -->
+<div class="czr_wrap">
+
+    <a href="index.html" class="czr_home">← 返回首页</a>
+
+    <h1 class="czr_title">JavaScript 程序结构</h1>
+    <p class="czr_subtitle">陈卓然 · 条件分支（if / switch / 三元）与循环（for / while / do...while / for...of），点击按钮实时运行查看结果</p>
+
+    <!-- ============ 条件结构 ============ -->
+    <section class="czr_section">
+        <h2 class="czr_section_title">一、条件结构</h2>
+        <div class="czr_cards">
+
+            <div class="czr_card">
+                <h3>if ... else<span>双分支</span></h3>
+                <pre class="czr_code">let czr_score = 85;
+if (czr_score >= 60) {
+  '及格';
+} else {
+  '不及格';
+}</pre>
+                <button class="czr_run" onclick="czr_demo_if()">▶ 运行</button>
+                <div class="czr_output" id="czr_out_if">点击运行查看结果</div>
+            </div>
+
+            <div class="czr_card">
+                <h3>if ... else if ... else<span>多分支</span></h3>
+                <pre class="czr_code">let czr_score = 85;
+if (czr_score >= 90) '优秀';
+else if (czr_score >= 80) '良好';
+else if (czr_score >= 60) '及格';
+else '不及格';</pre>
+                <button class="czr_run" onclick="czr_demo_elseif()">▶ 运行</button>
+                <div class="czr_output" id="czr_out_elseif">点击运行查看结果</div>
+            </div>
+
+            <div class="czr_card">
+                <h3>switch ... case<span>等值多分支</span></h3>
+                <pre class="czr_code">let czr_day = 3;
+switch (czr_day) {
+  case 1: '星期一'; break;
+  case 2: '星期二'; break;
+  case 3: '星期三'; break;
+  default: '其他';
+}</pre>
+                <button class="czr_run" onclick="czr_demo_switch()">▶ 运行</button>
+                <div class="czr_output" id="czr_out_switch">点击运行查看结果</div>
+            </div>
+
+            <div class="czr_card">
+                <h3>三元运算符<span>? :</span></h3>
+                <pre class="czr_code">let czr_age = 20;
+let czr_msg =
+  czr_age >= 18 ? '成年人' : '未成年';</pre>
+                <button class="czr_run" onclick="czr_demo_ternary()">▶ 运行</button>
+                <div class="czr_output" id="czr_out_ternary">点击运行查看结果</div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ============ 循环结构 ============ -->
+    <section class="czr_section">
+        <h2 class="czr_section_title">二、循环结构</h2>
+        <div class="czr_cards">
+
+            <div class="czr_card">
+                <h3>for 循环<span>计数循环</span></h3>
+                <pre class="czr_code">for (let czr_i = 1; czr_i <= 5; czr_i++) {
+  // 输出 1 ~ 5
+}</pre>
+                <button class="czr_run" onclick="czr_demo_for()">▶ 运行</button>
+                <div class="czr_output" id="czr_out_for">点击运行查看结果</div>
+            </div>
+
+            <div class="czr_card">
+                <h3>while 循环<span>先判断后执行</span></h3>
+                <pre class="czr_code">let czr_n = 1;
+while (czr_n <= 5) {
+  // 输出 czr_n
+  czr_n++;
+}</pre>
+                <button class="czr_run" onclick="czr_demo_while()">▶ 运行</button>
+                <div class="czr_output" id="czr_out_while">点击运行查看结果</div>
+            </div>
+
+            <div class="czr_card">
+                <h3>do ... while<span>先执行后判断</span></h3>
+                <pre class="czr_code">let czr_n = 1;
+do {
+  // 输出 czr_n
+  czr_n++;
+} while (czr_n <= 5);</pre>
+                <button class="czr_run" onclick="czr_demo_dowhile()">▶ 运行</button>
+                <div class="czr_output" id="czr_out_dowhile">点击运行查看结果</div>
+            </div>
+
+            <div class="czr_card">
+                <h3>for ... of + break/continue<span>遍历数组</span></h3>
+                <pre class="czr_code">for (let czr_x of [1,2,3,4,5,6,7]) {
+  if (czr_x === 3) continue; // 跳过 3
+  if (czr_x === 6) break;    // 到 6 停止
+}</pre>
+                <button class="czr_run" onclick="czr_demo_forof()">▶ 运行</button>
+                <div class="czr_output" id="czr_out_forof">点击运行查看结果</div>
+            </div>
+
+        </div>
+    </section>
+
+    <p class="czr_footer">陈卓然 · 1012 · 15-2.html · JavaScript 条件与循环</p>
+</div>
+
+<script>
+    // ---------- 条件结构演示 ----------
+    function czr_demo_if() {
+        let czr_score = 85;
+        let czr_res;
+        if (czr_score >= 60) {
+            czr_res = '及格';
+        } else {
+            czr_res = '不及格';
+        }
+        document.getElementById('czr_out_if').textContent =
+            'czr_score = ' + czr_score + '  →  ' + czr_res;
+    }
+
+    function czr_demo_elseif() {
+        let czr_score = 85;
+        let czr_res;
+        if (czr_score >= 90) czr_res = '优秀';
+        else if (czr_score >= 80) czr_res = '良好';
+        else if (czr_score >= 60) czr_res = '及格';
+        else czr_res = '不及格';
+        document.getElementById('czr_out_elseif').textContent =
+            'czr_score = ' + czr_score + '  →  ' + czr_res;
+    }
+
+    function czr_demo_switch() {
+        let czr_day = 3;
+        let czr_res;
+        switch (czr_day) {
+            case 1: czr_res = '星期一'; break;
+            case 2: czr_res = '星期二'; break;
+            case 3: czr_res = '星期三'; break;
+            default: czr_res = '其他';
+        }
+        document.getElementById('czr_out_switch').textContent =
+            'czr_day = ' + czr_day + '  →  ' + czr_res;
+    }
+
+    function czr_demo_ternary() {
+        let czr_age = 20;
+        let czr_msg = czr_age >= 18 ? '成年人' : '未成年';
+        document.getElementById('czr_out_ternary').textContent =
+            'czr_age = ' + czr_age + '  →  ' + czr_msg;
+    }
+
+    // ---------- 循环结构演示 ----------
+    function czr_demo_for() {
+        let czr_arr = [];
+        for (let czr_i = 1; czr_i <= 5; czr_i++) {
+            czr_arr.push(czr_i);
+        }
+        document.getElementById('czr_out_for').textContent =
+            '输出：' + czr_arr.join(' , ');
+    }
+
+    function czr_demo_while() {
+        let czr_n = 1;
+        let czr_arr = [];
+        while (czr_n <= 5) {
+            czr_arr.push(czr_n);
+            czr_n++;
+        }
+        document.getElementById('czr_out_while').textContent =
+            '输出：' + czr_arr.join(' , ');
+    }
+
+    function czr_demo_dowhile() {
+        let czr_n = 1;
+        let czr_arr = [];
+        do {
+            czr_arr.push(czr_n);
+            czr_n++;
+        } while (czr_n <= 5);
+        document.getElementById('czr_out_dowhile').textContent =
+            '输出：' + czr_arr.join(' , ') + '\n（循环体至少执行一次）';
+    }
+
+    function czr_demo_forof() {
+        let czr_arr = [];
+        for (let czr_x of [1, 2, 3, 4, 5, 6, 7]) {
+            if (czr_x === 3) continue; // 跳过 3
+            if (czr_x === 6) break;    // 到 6 停止
+            czr_arr.push(czr_x);
+        }
+        document.getElementById('czr_out_forof').textContent =
+            '输出：' + czr_arr.join(' , ') + '\n（continue 跳过 3，break 在 6 停止）';
+    }
+</script>
+</body>
+</html>
