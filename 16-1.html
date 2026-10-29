@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · JS 数组方法大全</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #0b1a2e 0px, #1c2a40 500px, #0e1b2a 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap {
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-4px);
+        }
+
+        .czr_title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #ffc46b, #79d6ce, #4ca9d9, #ffc46b);
+            background-size: 300% 300%;
+            animation: czr_gradient 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes czr_gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .czr_subtitle {
+            font-size: 14px;
+            color: #9fb3cc;
+            margin-bottom: 28px;
+            line-height: 1.8;
+        }
+
+        /* 原始数组可视化 */
+        .czr_original {
+            background: rgba(255, 196, 107, 0.08);
+            border: 1px solid rgba(255, 196, 107, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 28px;
+        }
+        .czr_original h3 {
+            font-size: 14px;
+            color: #ffc46b;
+            margin-bottom: 10px;
+        }
+        .czr_band {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .czr_band span {
+            min-width: 40px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            background: #ffc46b;
+            color: #3a2800;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+        }
+
+        /* 分类卡片 */
+        .czr_category {
+            margin-bottom: 32px;
+        }
+        .czr_category_title {
+            font-size: 18px;
+            color: #79d6ce;
+            margin-bottom: 14px;
+            padding-left: 12px;
+            border-left: 4px solid #79d6ce;
+        }
+
+        .czr_methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 16px;
+            perspective: 1000px;
+        }
+
+        .czr_method {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 16px 18px;
+            transform-style: preserve-3d;
+            animation: czr_method_in 0.6s ease both;
+            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+
+        /* CSS3 3D 入场动画 */
+        @keyframes czr_method_in {
+            from { opacity: 0; transform: rotateY(-20deg) translateZ(-40px); }
+            to   { opacity: 1; transform: rotateY(0deg) translateZ(0); }
+        }
+
+        .czr_method:hover {
+            transform: rotateX(3deg) rotateY(-4deg) translateZ(10px);
+            border-color: #79d6ce;
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4), 0 0 22px rgba(121, 214, 206, 0.15);
+        }
+
+        .czr_method h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 15px;
+            color: #ffffff;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+        .czr_method h4 code {
+            background: rgba(121, 214, 206, 0.15);
+            border: 1px solid rgba(121, 214, 206, 0.4);
+            color: #79d6ce;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+        }
+        .czr_method .czr_mutate {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(255, 92, 122, 0.15);
+            color: #ff5c7a;
+            border: 1px solid rgba(255, 92, 122, 0.4);
+        }
+        .czr_method .czr_immu {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(76, 169, 217, 0.15);
+            color: #4ca9d9;
+            border: 1px solid rgba(76, 169, 217, 0.4);
+        }
+
+        .czr_method p {
+            font-size: 12px;
+            color: #9fb3cc;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+
+        .czr_code {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            overflow-x: auto;
+        }
+
+        .czr_method .czr_row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .czr_run {
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #063b3a;
+            background: #79d6ce;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .czr_run:hover {
+            background: #ffc46b;
+            transform: scale(1.06);
+        }
+
+        .czr_res {
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 3px solid #ffc46b;
+            border-radius: 0 6px 6px 0;
+            padding: 6px 12px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            color: #ffe1a8;
+            flex: 1;
+            min-width: 100px;
+            line-height: 1.5;
+        }
+
+        .czr_footer {
+            margin-top: 36px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-10-29，功能名称：JavaScript 数组方法大全 -->
+<div class="czr_wrap">
+
+    <a href="index.html" class="czr_home">← 返回首页</a>
+
+    <h1 class="czr_title">JavaScript 数组方法大全</h1>
+    <p class="czr_subtitle">
+        陈卓然 · 共 20 个常用数组方法，按类别分组。<br>
+        <span style="color:#ff5c7a;">红色标签 = 会修改原数组</span> &nbsp;|&nbsp;
+        <span style="color:#4ca9d9;">蓝色标签 = 返回新数组（原数组不变）</span>
+    </p>
+
+    <!-- 原始数组 -->
+    <div class="czr_original">
+        <h3>📦 演示用原始数组：czr_arr = [1, 2, 3, 4, 5]</h3>
+        <div class="czr_band">
+            <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+        </div>
+    </div>
+
+    <!-- ============ 一、增删元素 ============ -->
+    <div class="czr_category">
+        <h2 class="czr_category_title">一、增删元素</h2>
+        <div class="czr_methods">
+
+            <div class="czr_method">
+                <h4><code>push()</code><span class="czr_mutate">修改原数组</span></h4>
+                <p>在末尾添加元素，返回新长度</p>
+                <pre class="czr_code">czr_arr.push(6);
+// → arr 变为 [1,2,3,4,5,6]</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('push')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_push">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>pop()</code><span class="czr_mutate">修改原数组</span></h4>
+                <p>删除末尾元素，返回被删值</p>
+                <pre class="czr_code">czr_arr.pop();
+// → 返回 5，arr 变为 [1,2,3,4]</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('pop')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_pop">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>unshift()</code><span class="czr_mutate">修改原数组</span></h4>
+                <p>在开头添加元素，返回新长度</p>
+                <pre class="czr_code">czr_arr.unshift(0);
+// → arr 变为 [0,1,2,3,4,5]</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('unshift')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_unshift">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>shift()</code><span class="czr_mutate">修改原数组</span></h4>
+                <p>删除开头元素，返回被删值</p>
+                <pre class="czr_code">czr_arr.shift();
+// → 返回 1，arr 变为 [2,3,4,5]</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('shift')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_shift">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>splice()</code><span class="czr_mutate">修改原数组</span></h4>
+                <p>从指定位置删除/替换/插入元素</p>
+                <pre class="czr_code">czr_arr.splice(2, 1, 99);
+// → 从下标2删1个，插入99</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('splice')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_splice">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>slice()</code><span class="czr_immu">返回新数组</span></h4>
+                <p>截取子数组，原数组不变</p>
+                <pre class="czr_code">czr_arr.slice(1, 4);
+// → 下标 1,2,3 的元素</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('slice')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_slice">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>concat()</code><span class="czr_immu">返回新数组</span></h4>
+                <p>合并数组，原数组不变</p>
+                <pre class="czr_code">czr_arr.concat([6, 7]);
+// → [1,2,3,4,5,6,7]</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('concat')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_concat">结果</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============ 二、遍历/变换 ============ -->
+    <div class="czr_category">
+        <h2 class="czr_category_title">二、遍历 / 变换</h2>
+        <div class="czr_methods">
+
+            <div class="czr_method">
+                <h4><code>forEach()</code><span class="czr_mutate">不返回值</span></h4>
+                <p>遍历执行回调，常用于打印或副作用操作</p>
+                <pre class="czr_code">czr_arr.forEach((v,i) =>
+  console.log(i, v)
+);</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('forEach')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_forEach">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>map()</code><span class="czr_immu">返回新数组</span></h4>
+                <p>对每个元素做变换，返回新数组</p>
+                <pre class="czr_code">czr_arr.map(v => v * 2);
+// → [2, 4, 6, 8, 10]</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('map')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_map">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>filter()</code><span class="czr_immu">返回新数组</span></h4>
+                <p>筛选满足条件的元素</p>
+                <pre class="czr_code">czr_arr.filter(v => v > 2);
+// → [3, 4, 5]</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('filter')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_filter">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>reduce()</code><span class="czr_immu">返回单值</span></h4>
+                <p>累计计算，返回最终值</p>
+                <pre class="czr_code">czr_arr.reduce((a, b) => a + b, 0);
+// → 1 + 2 + 3 + 4 + 5 = 15</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('reduce')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_reduce">结果</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============ 三、查找/判断 ============ -->
+    <div class="czr_category">
+        <h2 class="czr_category_title">三、查找 / 判断</h2>
+        <div class="czr_methods">
+
+            <div class="czr_method">
+                <h4><code>indexOf()</code></h4>
+                <p>返回元素下标，找不到返回 -1</p>
+                <pre class="czr_code">czr_arr.indexOf(3);  // → 2
+czr_arr.indexOf(99); // → -1</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('indexOf')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_indexOf">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>includes()</code></h4>
+                <p>是否包含某元素，返回 true/false</p>
+                <pre class="czr_code">czr_arr.includes(3);  // → true
+czr_arr.includes(99); // → false</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('includes')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_includes">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>find()</code></h4>
+                <p>找到第一个满足条件的元素值</p>
+                <pre class="czr_code">czr_arr.find(v => v > 3);
+// → 4（第一个大于3的数）</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('find')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_find">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>findIndex()</code></h4>
+                <p>找到第一个满足条件的下标</p>
+                <pre class="czr_code">czr_arr.findIndex(v => v > 3);
+// → 3（下标为3）</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('findIndex')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_findIndex">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>some()</code></h4>
+                <p>是否"存在"满足条件的元素</p>
+                <pre class="czr_code">czr_arr.some(v => v > 4);
+// → true（5 满足）</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('some')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_some">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>every()</code></h4>
+                <p>是否"全部"满足条件</p>
+                <pre class="czr_code">czr_arr.every(v => v > 0);
+// → true（全是正数）</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('every')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_every">结果</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============ 四、排序/转换 ============ -->
+    <div class="czr_category">
+        <h2 class="czr_category_title">四、排序 / 转换</h2>
+        <div class="czr_methods">
+
+            <div class="czr_method">
+                <h4><code>sort()</code><span class="czr_mutate">修改原数组</span></h4>
+                <p>原地排序，数值排序要传比较函数</p>
+                <pre class="czr_code">[3,1,4,2,5].sort((a,b)=>a-b);
+// → [1,2,3,4,5]</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('sort')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_sort">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>reverse()</code><span class="czr_mutate">修改原数组</span></h4>
+                <p>原地反转数组顺序</p>
+                <pre class="czr_code">[1,2,3,4,5].reverse();
+// → [5,4,3,2,1]</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('reverse')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_reverse">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>join()</code><span class="czr_immu">返回字符串</span></h4>
+                <p>用分隔符把元素拼成字符串</p>
+                <pre class="czr_code">czr_arr.join(' - ');
+// → "1 - 2 - 3 - 4 - 5"</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('join')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_join">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>toString()</code><span class="czr_immu">返回字符串</span></h4>
+                <p>默认用逗号拼接</p>
+                <pre class="czr_code">czr_arr.toString();
+// → "1,2,3,4,5"</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_run('toString')">▶ 运行</button>
+                    <div class="czr_res" id="czr_r_toString">结果</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 16-1.html · JavaScript 数组方法</p>
+</div>
+
+<script>
+    // 每个方法运行前，会克隆原始数组，避免前一次修改影响下一次
+    var czr_ORIGINAL = [1, 2, 3, 4, 5];
+
+    function czr_reset() {
+        return czr_ORIGINAL.slice(); // 克隆
+    }
+
+    function czr_show(id, arr, ret) {
+        var czr_html = '原数组: [' + czr_ORIGINAL.join(', ') + ']';
+        if (arr !== undefined) czr_html += '\n运行后数组: [' + arr.join(', ') + ']';
+        if (ret !== undefined) czr_html += '\n返回值: ' + JSON.stringify(ret);
+        document.getElementById('czr_r_' + id).textContent = czr_html;
+    }
+
+    function czr_run(czr_name) {
+        var czr_arr = czr_reset();
+        var czr_ret, czr_msg;
+
+        switch (czr_name) {
+            // ======= 增删 =======
+            case 'push':    czr_ret = czr_arr.push(6);    czr_show(czr_name, czr_arr, czr_ret); break;
+            case 'pop':     czr_ret = czr_arr.pop();      czr_show(czr_name, czr_arr, czr_ret); break;
+            case 'unshift': czr_ret = czr_arr.unshift(0); czr_show(czr_name, czr_arr, czr_ret); break;
+            case 'shift':   czr_ret = czr_arr.shift();    czr_show(czr_name, czr_arr, czr_ret); break;
+            case 'splice':  czr_ret = czr_arr.splice(2, 1, 99); czr_show(czr_name, czr_arr, czr_ret); break;
+            case 'slice':   czr_ret = czr_arr.slice(1, 4); czr_show(czr_name, czr_ret, '新数组'); break;
+            case 'concat':  czr_ret = czr_arr.concat([6, 7]); czr_show(czr_name, czr_ret, '新数组'); break;
+
+            // ======= 遍历 =======
+            case 'forEach':
+                czr_msg = [];
+                czr_arr.forEach(function (v, i) { czr_msg.push(i + ':' + v); });
+                document.getElementById('czr_r_' + czr_name).textContent =
+                    '遍历输出: ' + czr_msg.join('  |  ') + '\n（forEach 返回 undefined）';
+                break;
+            case 'map':    czr_ret = czr_arr.map(function (v) { return v * 2; });  czr_show(czr_name, czr_ret, '新数组'); break;
+            case 'filter': czr_ret = czr_arr.filter(function (v) { return v > 2; }); czr_show(czr_name, czr_ret, '新数组'); break;
+            case 'reduce': czr_ret = czr_arr.reduce(function (a, b) { return a + b; }, 0);
+                document.getElementById('czr_r_reduce').textContent =
+                    '原数组: [' + czr_ORIGINAL.join(', ') + ']\n累加和 = ' + czr_ORIGINAL.join(' + ') + ' = ' + czr_ret;
+                break;
+
+            // ======= 查找 =======
+            case 'indexOf':
+                document.getElementById('czr_r_indexOf').textContent =
+                    'czr_arr.indexOf(3) = ' + czr_arr.indexOf(3) + '\n' +
+                    'czr_arr.indexOf(99) = ' + czr_arr.indexOf(99);
+                break;
+            case 'includes':
+                document.getElementById('czr_r_includes').textContent =
+                    'czr_arr.includes(3)  = ' + czr_arr.includes(3) + '\n' +
+                    'czr_arr.includes(99) = ' + czr_arr.includes(99);
+                break;
+            case 'find':      czr_ret = czr_arr.find(function (v) { return v > 3; });     czr_show(czr_name, undefined, czr_ret); break;
+            case 'findIndex': czr_ret = czr_arr.findIndex(function (v) { return v > 3; }); czr_show(czr_name, undefined, czr_ret); break;
+            case 'some':      czr_ret = czr_arr.some(function (v) { return v > 4; });     czr_show(czr_name, undefined, czr_ret); break;
+            case 'every':     czr_ret = czr_arr.every(function (v) { return v > 0; });    czr_show(czr_name, undefined, czr_ret); break;
+
+            // ======= 排序 =======
+            case 'sort':    czr_ret = czr_arr.sort(function (a, b) { return a - b; }); czr_show(czr_name, czr_arr, czr_ret.slice()); break;
+            case 'reverse': czr_ret = czr_arr.reverse(); czr_show(czr_name, czr_arr, czr_ret.slice()); break;
+            case 'join':    czr_ret = czr_arr.join(' - '); czr_show(czr_name, undefined, '"' + czr_ret + '"'); break;
+            case 'toString':czr_ret = czr_arr.toString();  czr_show(czr_name, undefined, '"' + czr_ret + '"'); break;
+        }
+    }
+</script>
+</body>
+</html>

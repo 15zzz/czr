@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · JS 对象与字符串</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #0b1a2e 0px, #2b1a40 500px, #0e1b2a 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap { max-width: 1120px; margin: 0 auto; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-4px);
+        }
+
+        .czr_title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #ffc46b, #79d6ce, #4ca9d9, #ffc46b);
+            background-size: 300% 300%;
+            animation: czr_gradient 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes czr_gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .czr_subtitle {
+            font-size: 14px;
+            color: #9fb3cc;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+
+        /* 演示数据条 */
+        .czr_demo_data {
+            background: rgba(76, 169, 217, 0.08);
+            border: 1px solid rgba(76, 169, 217, 0.3);
+            border-radius: 12px;
+            padding: 14px 20px;
+            margin-bottom: 28px;
+        }
+        .czr_demo_data h3 {
+            font-size: 13px;
+            color: #4ca9d9;
+            margin-bottom: 8px;
+        }
+        .czr_demo_data pre {
+            background: rgba(0,0,0,0.35);
+            padding: 10px 14px;
+            border-radius: 6px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            line-height: 1.6;
+        }
+
+        /* 分类 */
+        .czr_category { margin-bottom: 34px; }
+        .czr_category_title {
+            font-size: 18px;
+            color: #79d6ce;
+            margin-bottom: 14px;
+            padding-left: 12px;
+            border-left: 4px solid #79d6ce;
+        }
+
+        .czr_methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 16px;
+            perspective: 1000px;
+        }
+
+        .czr_method {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            padding: 16px 18px;
+            transform-style: preserve-3d;
+            animation: czr_method_in 0.6s ease both;
+            transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+
+        /* CSS3 3D 入场动画 */
+        @keyframes czr_method_in {
+            from { opacity: 0; transform: rotateY(-20deg) translateZ(-40px); }
+            to   { opacity: 1; transform: rotateY(0deg) translateZ(0); }
+        }
+
+        .czr_method:hover {
+            transform: rotateX(3deg) rotateY(-4deg) translateZ(10px);
+            border-color: #79d6ce;
+            box-shadow: 0 14px 32px rgba(0, 0, 0, 0.4), 0 0 22px rgba(121, 214, 206, 0.15);
+        }
+
+        .czr_method h4 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 15px;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+        .czr_method h4 code {
+            background: rgba(121, 214, 206, 0.15);
+            border: 1px solid rgba(121, 214, 206, 0.4);
+            color: #79d6ce;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+        }
+        .czr_method h4 span {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(255, 196, 107, 0.15);
+            color: #ffc46b;
+            border: 1px solid rgba(255, 196, 107, 0.4);
+        }
+        .czr_method p {
+            font-size: 12px;
+            color: #9fb3cc;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        .czr_code {
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            overflow-x: auto;
+        }
+        .czr_row {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .czr_run {
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #063b3a;
+            background: #79d6ce;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .czr_run:hover { background: #ffc46b; transform: scale(1.06); }
+
+        .czr_res {
+            background: rgba(255, 255, 255, 0.08);
+            border-left: 3px solid #ffc46b;
+            border-radius: 0 6px 6px 0;
+            padding: 6px 12px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            color: #ffe1a8;
+            flex: 1;
+            min-width: 140px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .czr_footer {
+            margin-top: 36px;
+            text-align: center;
+            font-size: 13px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-10-29，功能名称：JavaScript 对象与字符串常用方法 -->
+<div class="czr_wrap">
+
+    <a href="index.html" class="czr_home">← 返回首页</a>
+
+    <h1 class="czr_title">JavaScript 对象 &amp; 字符串</h1>
+    <p class="czr_subtitle">陈卓然 · 对象（Object）与字符串（String）常用方法，点击「▶ 运行」实时查看结果</p>
+
+    <!-- 演示用数据 -->
+    <div class="czr_demo_data">
+        <h3>📦 演示用数据</h3>
+<pre>var czr_person = { name: '陈卓然', age: 20, major: '高级网页设计' };
+var czr_str    = 'Hello 陈卓然 1012';</pre>
+    </div>
+
+    <!-- ============ 对象方法 ============ -->
+    <div class="czr_category">
+        <h2 class="czr_category_title">一、对象（Object）常用方法</h2>
+        <div class="czr_methods">
+
+            <div class="czr_method">
+                <h4><code>Object.keys(obj)</code></h4>
+                <p>返回对象所有键名的数组</p>
+                <pre class="czr_code">Object.keys(czr_person);
+// → ['name', 'age', 'major']</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_obj('keys')">▶ 运行</button>
+                    <div class="czr_res" id="czr_obj_keys">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>Object.values(obj)</code></h4>
+                <p>返回对象所有值的数组</p>
+                <pre class="czr_code">Object.values(czr_person);
+// → ['陈卓然', 20, '高级网页设计']</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_obj('values')">▶ 运行</button>
+                    <div class="czr_res" id="czr_obj_values">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>Object.entries(obj)</code></h4>
+                <p>返回键值对数组</p>
+                <pre class="czr_code">Object.entries(czr_person);
+// → [['name','陈卓然'],['age',20],['major','高级网页设计']]</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_obj('entries')">▶ 运行</button>
+                    <div class="czr_res" id="czr_obj_entries">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>Object.assign({}, obj)</code><span>拷贝</span></h4>
+                <p>浅拷贝对象（合并属性）</p>
+                <pre class="czr_code">var czr_copy =
+  Object.assign({}, czr_person);
+czr_copy.age = 99;
+// czr_person.age 不受影响</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_obj('assign')">▶ 运行</button>
+                    <div class="czr_res" id="czr_obj_assign">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>obj.hasOwnProperty(k)</code></h4>
+                <p>检查对象是否拥有某键</p>
+                <pre class="czr_code">czr_person.hasOwnProperty('name'); // true
+czr_person.hasOwnProperty('addr'); // false</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_obj('hasOwn')">▶ 运行</button>
+                    <div class="czr_res" id="czr_obj_hasOwn">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>delete obj[key]</code><span>修改</span></h4>
+                <p>删除对象的某个属性</p>
+                <pre class="czr_code">delete czr_person.age;
+// czr_person 不再有 age 键</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_obj('del')">▶ 运行</button>
+                    <div class="czr_res" id="czr_obj_del">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>for (let k in obj)</code></h4>
+                <p>遍历对象所有可枚举属性</p>
+                <pre class="czr_code">for (let k in czr_person) {
+  // k 依次为 name, age, major
+}</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_obj('forin')">▶ 运行</button>
+                    <div class="czr_res" id="czr_obj_forin">结果</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ============ 字符串方法 ============ -->
+    <div class="czr_category">
+        <h2 class="czr_category_title">二、字符串（String）常用方法</h2>
+        <div class="czr_methods">
+
+            <div class="czr_method">
+                <h4><code>.length</code><span>属性</span></h4>
+                <p>获取字符串长度</p>
+                <pre class="czr_code">czr_str.length;
+// → 20（每个中文算 1 个长度）</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('length')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_length">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.toUpperCase()</code></h4>
+                <p>全部转大写</p>
+                <pre class="czr_code">'hello'.toUpperCase();
+// → 'HELLO'</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('upper')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_upper">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.toLowerCase()</code></h4>
+                <p>全部转小写</p>
+                <pre class="czr_code">'HELLO'.toLowerCase();
+// → 'hello'</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('lower')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_lower">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.indexOf(x)</code></h4>
+                <p>查找子串位置，找不到返回 -1</p>
+                <pre class="czr_code">czr_str.indexOf('陈');   // → 6
+czr_str.indexOf('X');   // → -1</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('indexOf')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_indexOf">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.includes(x)</code></h4>
+                <p>是否包含某子串</p>
+                <pre class="czr_code">czr_str.includes('1012'); // true
+czr_str.includes('9999'); // false</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('includes')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_includes">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.slice(s, e)</code></h4>
+                <p>截取子串（含头不含尾）</p>
+                <pre class="czr_code">czr_str.slice(6, 9);
+// → '陈卓然'</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('slice')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_slice">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.substring(a, b)</code></h4>
+                <p>截取子串（自动交换负值）</p>
+                <pre class="czr_code">czr_str.substring(6, 9);
+// → '陈卓然'，等价于 slice(6,9)</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('substr')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_substr">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.replace(a, b)</code><span>支持正则</span></h4>
+                <p>替换第一个匹配</p>
+                <pre class="czr_code">czr_str.replace('Hello', 'Hi');
+// → 'Hi 陈卓然 1012'</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('replace')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_replace">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.split(sep)</code></h4>
+                <p>按分隔符拆分为数组</p>
+                <pre class="czr_code">czr_str.split(' ');
+// → ['Hello', '陈卓然', '1012']</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('split')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_split">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.trim()</code></h4>
+                <p>去掉首尾空格</p>
+                <pre class="czr_code">'  陈卓然  '.trim();
+// → '陈卓然'</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('trim')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_trim">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.startsWith(x)</code></h4>
+                <p>是否以某子串开头</p>
+                <pre class="czr_code">czr_str.startsWith('Hello'); // true
+czr_str.startsWith('Hi');    // false</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('starts')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_starts">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.endsWith(x)</code></h4>
+                <p>是否以某子串结尾</p>
+                <pre class="czr_code">czr_str.endsWith('1012'); // true
+czr_str.endsWith('zzz');  // false</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('ends')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_ends">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.charAt(i)</code> / <code>[i]</code></h4>
+                <p>获取指定下标字符</p>
+                <pre class="czr_code">czr_str.charAt(6); // → '陈'
+czr_str[6];        // → '陈'（更现代）</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('charAt')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_charAt">结果</div>
+                </div>
+            </div>
+
+            <div class="czr_method">
+                <h4><code>.repeat(n)</code></h4>
+                <p>重复拼接 n 次</p>
+                <pre class="czr_code">czr_str.slice(6, 9).repeat(3);
+// → '陈卓然陈卓然陈卓然'</pre>
+                <div class="czr_row">
+                    <button class="czr_run" onclick="czr_str('repeat')">▶ 运行</button>
+                    <div class="czr_res" id="czr_str_repeat">结果</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 16-2.html · JavaScript 对象与字符串</p>
+</div>
+
+<script>
+    // 演示用原始数据（每次运行前会克隆对象）
+    var czr_ORIG_PERSON = { name: '陈卓然', age: 20, major: '高级网页设计' };
+    var czr_ORIG_STR    = 'Hello 陈卓然 1012';
+
+    function czr_objReset() {
+        return JSON.parse(JSON.stringify(czr_ORIG_PERSON)); // 深拷贝
+    }
+
+    // ============ 对象方法 ============
+    function czr_obj(czr_name) {
+        var czr_person = czr_objReset();
+        var czr_resEl = document.getElementById('czr_obj_' + czr_name);
+
+        switch (czr_name) {
+            case 'keys':
+                czr_resEl.textContent = 'Object.keys(czr_person)\n→ ' + JSON.stringify(Object.keys(czr_person));
+                break;
+            case 'values':
+                czr_resEl.textContent = 'Object.values(czr_person)\n→ ' + JSON.stringify(Object.values(czr_person));
+                break;
+            case 'entries':
+                czr_resEl.textContent = 'Object.entries(czr_person)\n→ ' + JSON.stringify(Object.entries(czr_person));
+                break;
+            case 'assign':
+                var czr_copy = Object.assign({}, czr_person);
+                czr_copy.age = 99;
+                czr_resEl.textContent =
+                    'Object.assign 浅拷贝后:\n' +
+                    '  czr_person.age = ' + czr_person.age + '\n' +
+                    '  czr_copy.age   = ' + czr_copy.age + '\n' +
+                    '原对象不受影响 ✓';
+                break;
+            case 'hasOwn':
+                czr_resEl.textContent =
+                    "czr_person.hasOwnProperty('name') → " + czr_person.hasOwnProperty('name') + '\n' +
+                    "czr_person.hasOwnProperty('addr') → " + czr_person.hasOwnProperty('addr');
+                break;
+            case 'del':
+                delete czr_person.age;
+                czr_resEl.textContent =
+                    'delete czr_person.age;\n结果: ' + JSON.stringify(czr_person) + '\n键列表: ' + JSON.stringify(Object.keys(czr_person));
+                break;
+            case 'forin':
+                var czr_out = [];
+                for (var czr_k in czr_person) {
+                    czr_out.push(czr_k + ' = ' + czr_person[czr_k]);
+                }
+                czr_resEl.textContent = czr_out.join('\n');
+                break;
+        }
+    }
+
+    // ============ 字符串方法 ============
+    function czr_str(czr_name) {
+        var czr_s = czr_ORIG_STR;
+        var czr_resEl = document.getElementById('czr_str_' + czr_name);
+        var czr_show = function (czr_label, czr_val) {
+            czr_resEl.textContent = '原字符串: "' + czr_s + '"\n' + czr_label + '\n→ ' + JSON.stringify(czr_val);
+        };
+
+        switch (czr_name) {
+            case 'length':  czr_show('czr_str.length', czr_s.length); break;
+            case 'upper':   czr_show("czr_str.toUpperCase()", czr_s.toUpperCase()); break;
+            case 'lower':   czr_show("czr_str.toLowerCase()", czr_s.toLowerCase()); break;
+            case 'indexOf': czr_resEl.textContent =
+                'czr_str.indexOf("陈") → ' + czr_s.indexOf('陈') + '\n' +
+                'czr_str.indexOf("X")  → ' + czr_s.indexOf('X'); break;
+            case 'includes': czr_resEl.textContent =
+                'czr_str.includes("1012") → ' + czr_s.includes('1012') + '\n' +
+                'czr_str.includes("9999") → ' + czr_s.includes('9999'); break;
+            case 'slice':   czr_show('czr_str.slice(6, 9)', czr_s.slice(6, 9)); break;
+            case 'substr':  czr_show('czr_str.substring(6, 9)', czr_s.substring(6, 9)); break;
+            case 'replace': czr_show('czr_str.replace("Hello","Hi")', czr_s.replace('Hello', 'Hi')); break;
+            case 'split':   czr_show('czr_str.split(" ")', czr_s.split(' ')); break;
+            case 'trim':    czr_resEl.textContent =
+                "'  陈卓然  '.trim()\n→ " + JSON.stringify('  陈卓然  '.trim()); break;
+            case 'starts':  czr_resEl.textContent =
+                'czr_str.startsWith("Hello") → ' + czr_s.startsWith('Hello') + '\n' +
+                'czr_str.startsWith("Hi")    → ' + czr_s.startsWith('Hi'); break;
+            case 'ends':    czr_resEl.textContent =
+                'czr_str.endsWith("1012") → ' + czr_s.endsWith('1012') + '\n' +
+                'czr_str.endsWith("zzz")  → ' + czr_s.endsWith('zzz'); break;
+            case 'charAt':  czr_resEl.textContent =
+                'czr_str.charAt(6) → ' + JSON.stringify(czr_s.charAt(6)) + '\n' +
+                'czr_str[6]        → ' + JSON.stringify(czr_s[6]); break;
+            case 'repeat':  czr_show('czr_str.slice(6,9).repeat(3)', czr_s.slice(6, 9).repeat(3)); break;
+        }
+    }
+</script>
+</body>
+</html>
