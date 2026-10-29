@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · 分类导航（招聘网站风格）</title>
+    <link rel="stylesheet" href="font/font_5244823_nkj1sa0pqh/iconfont.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: #f5f6f8;
+            color: #333;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .czr_wrap {
+            max-width: 560px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .czr_home {
+            display: inline-block;
+            padding: 8px 18px;
+            background: #ffffff;
+            border: 1px solid #e0e6ed;
+            border-radius: 20px;
+            color: #333;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: #eef4ff; border-color: #4ca9d9; color: #0e1b2a; }
+
+        /* ========== 顶部 AI 助手卡片 ========== */
+        .czr_hero {
+            position: relative;
+            padding: 28px 26px 30px;
+            background: linear-gradient(135deg, #2c4ad6 0%, #4c6ef5 40%, #5a8bff 75%, #6bb0ff 100%);
+            color: #ffffff;
+            overflow: hidden;
+            animation: czr_fade_down 0.7s ease both;
+        }
+        @keyframes czr_fade_down {
+            from { opacity: 0; transform: translateY(-20px) scaleY(0.96); }
+            to   { opacity: 1; transform: translateY(0) scaleY(1); }
+        }
+
+        /* 装饰圆 */
+        .czr_hero::before,
+        .czr_hero::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .czr_hero::before {
+            width: 180px; height: 180px;
+            top: -60px; right: -40px;
+        }
+        .czr_hero::after {
+            width: 80px; height: 80px;
+            bottom: -20px; right: 80px;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .czr_hero_inner {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .czr_hero_text h2 {
+            font-size: 22px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        .czr_hero_text p {
+            font-size: 14px;
+            opacity: 0.85;
+            letter-spacing: 0.5px;
+        }
+
+        .czr_hero_btn {
+            display: inline-block;
+            margin-top: 18px;
+            padding: 9px 22px;
+            background: #ffffff;
+            color: #2c4ad6;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 22px;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        .czr_hero_btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .czr_hero_art {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            animation: czr_float 4s ease-in-out infinite;
+        }
+        @keyframes czr_float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        .czr_ai_badge {
+            position: absolute;
+            top: 4px; left: -10px;
+            width: 44px; height: 44px;
+            background: linear-gradient(135deg, #ffffff, #eaf1ff);
+            color: #2c4ad6;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: rotate(-6deg);
+            z-index: 2;
+        }
+
+        .czr_doc_icon {
+            width: 90px; height: 90px;
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        .czr_doc_icon i {
+            font-size: 44px;
+            color: #2c4ad6;
+        }
+
+        /* ========== 分类标题栏 ========== */
+        .czr_section_header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 22px 26px 14px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .czr_section_header h3 {
+            font-size: 17px;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .czr_nav_arrows {
+            display: flex;
+            gap: 12px;
+        }
+        .czr_nav_arrows button {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            border: 1px solid #e0e6ed;
+            background: #ffffff;
+            color: #888;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+        .czr_nav_arrows button:hover {
+            background: #f0f6ff;
+            border-color: #4ca9d9;
+            color: #4ca9d9;
+        }
+        .czr_nav_arrows i { font-size: 14px; }
+
+        /* ========== 分类列表 ========== */
+        .czr_cat_list {
+            animation: czr_fade_up 0.8s ease 0.2s both;
+        }
+        @keyframes czr_fade_up {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .czr_cat_row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 17px 26px;
+            border-bottom: 1px solid #f0f2f5;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+        .czr_cat_row:last-child { border-bottom: none; }
+        .czr_cat_row:hover {
+            background: #f7faff;
+        }
+        .czr_cat_row:hover .czr_cat_arrow {
+            transform: translateX(3px);
+            color: #4ca9d9;
+        }
+
+        .czr_cat_left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .czr_cat_icon {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .czr_cat_icon i { font-size: 20px; }
+
+        /* 每个分类不同的颜色 */
+        .czr_cat_row:nth-child(1) .czr_cat_icon { background: #e8f1ff; color: #2c7be5; }
+        .czr_cat_row:nth-child(2) .czr_cat_icon { background: #fff1e6; color: #ff8c42; }
+        .czr_cat_row:nth-child(3) .czr_cat_icon { background: #e8f9f0; color: #1abc9c; }
+        .czr_cat_row:nth-child(4) .czr_cat_icon { background: #f3ecff; color: #8e5cd8; }
+        .czr_cat_row:nth-child(5) .czr_cat_icon { background: #fff0f0; color: #e74c3c; }
+        .czr_cat_row:nth-child(6) .czr_cat_icon { background: #fffbe6; color: #c9a227; }
+        .czr_cat_row:nth-child(7) .czr_cat_icon { background: #eafaf1; color: #27ae60; }
+        .czr_cat_row:nth-child(8) .czr_cat_icon { background: #fce4ec; color: #d6336c; }
+        .czr_cat_row:nth-child(9) .czr_cat_icon { background: #e3f9f4; color: #0ea5a0; }
+
+        .czr_cat_text {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+        .czr_cat_main {
+            font-size: 15px;
+            font-weight: bold;
+            color: #1a1a1a;
+        }
+        .czr_cat_sub {
+            font-size: 12px;
+            color: #8f9aae;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .czr_cat_sub span {
+            color: #4ca9d9;
+            margin: 0 4px;
+        }
+
+        .czr_cat_arrow {
+            color: #c8cdd6;
+            font-size: 16px;
+            transition: all 0.25s ease;
+            margin-left: 10px;
+            flex-shrink: 0;
+        }
+
+        .czr_footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-10-29，功能名称：招聘网站分类导航页（还原截图） -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+
+    <!-- 顶部 AI 助手卡片 -->
+    <div class="czr_hero">
+        <div class="czr_hero_inner">
+            <div class="czr_hero_text">
+                <h2>简历直达</h2>
+                <p>100+ 企业官网</p>
+                <a href="#" class="czr_hero_btn" onclick="return false;">▶ 启用 AI 助手</a>
+            </div>
+            <div class="czr_hero_art">
+                <div class="czr_doc_icon">
+                    <i class="iconfont icon-jianjie"></i>
+                </div>
+                <div class="czr_ai_badge">AI</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 标题栏 -->
+    <div class="czr_section_header">
+        <h3>全部分类</h3>
+        <div class="czr_nav_arrows">
+            <button title="上一页"><i class="iconfont icon-24gl-bookmarks2" style="transform: rotate(180deg); display:inline-block;"></i></button>
+            <button title="下一页"><i class="iconfont icon-24gl-bookmarks2"></i></button>
+        </div>
+    </div>
+
+    <!-- 分类列表 -->
+    <div class="czr_cat_list">
+
+        <div class="czr_cat_row">
+            <div class="czr_cat_left">
+                <div class="czr_cat_icon"><i class="iconfont icon-sousuo"></i></div>
+                <div class="czr_cat_text">
+                    <span class="czr_cat_main">互联网IT</span>
+                    <span class="czr_cat_sub">产品<span>·</span>运营<span>·</span>技术管理</span>
+                </div>
+            </div>
+            <i class="iconfont icon-zhuanfa czr_cat_arrow"></i>
+        </div>
+
+        <div class="czr_cat_row">
+            <div class="czr_cat_left">
+                <div class="czr_cat_icon"><i class="iconfont icon-iconfonticon5"></i></div>
+                <div class="czr_cat_text">
+                    <span class="czr_cat_main">通信 / 硬件</span>
+                    <span class="czr_cat_sub">电子<span>·</span>半导体</span>
+                </div>
+            </div>
+            <i class="iconfont icon-zhuanfa czr_cat_arrow"></i>
+        </div>
+
+        <div class="czr_cat_row">
+            <div class="czr_cat_left">
+                <div class="czr_cat_icon"><i class="iconfont icon-shouye"></i></div>
+                <div class="czr_cat_text">
+                    <span class="czr_cat_main">设计 / 传媒</span>
+                    <span class="czr_cat_sub">视觉<span>·</span>交互设计</span>
+                </div>
+            </div>
+            <i class="iconfont icon-zhuanfa czr_cat_arrow"></i>
+        </div>
+
+        <div class="czr_cat_row">
+            <div class="czr_cat_left">
+                <div class="czr_cat_icon"><i class="iconfont icon-denglu"></i></div>
+                <div class="czr_cat_text">
+                    <span class="czr_cat_main">人事行政财务</span>
+                    <span class="czr_cat_sub">行政<span>·</span>人力资源</span>
+                </div>
+            </div>
+            <i class="iconfont icon-zhuanfa czr_cat_arrow"></i>
+        </div>
+
+        <div class="czr_cat_row">
+            <div class="czr_cat_left">
+                <div class="czr_cat_icon"><i class="iconfont icon-baocun"></i></div>
+                <div class="czr_cat_text">
+                    <span class="czr_cat_main">金融 / 法务</span>
+                    <span class="czr_cat_sub">中后台<span>·</span>投融资</span>
+                </div>
+            </div>
+            <i class="iconfont icon-zhuanfa czr_cat_arrow"></i>
+        </div>
+
+        <div class="czr_cat_row">
+            <div class="czr_cat_left">
+                <div class="czr_cat_icon"><i class="iconfont icon-tongyihebingqingqiu"></i></div>
+                <div class="czr_cat_text">
+                    <span class="czr_cat_main">生产制造</span>
+                    <span class="czr_cat_sub">质量安全<span>·</span>生产营运</span>
+                </div>
+            </div>
+            <i class="iconfont icon-zhuanfa czr_cat_arrow"></i>
+        </div>
+
+        <div class="czr_cat_row">
+            <div class="czr_cat_left">
+                <div class="czr_cat_icon"><i class="iconfont icon-faxian"></i></div>
+                <div class="czr_cat_text">
+                    <span class="czr_cat_main">贸易商务</span>
+                    <span class="czr_cat_sub">公关媒介<span>·</span>会务会展</span>
+                </div>
+            </div>
+            <i class="iconfont icon-zhuanfa czr_cat_arrow"></i>
+        </div>
+
+        <div class="czr_cat_row">
+            <div class="czr_cat_left">
+                <div class="czr_cat_icon"><i class="iconfont icon-shuben"></i></div>
+                <div class="czr_cat_text">
+                    <span class="czr_cat_main">教育培训</span>
+                    <span class="czr_cat_sub">教务行政<span>·</span>教师</span>
+                </div>
+            </div>
+            <i class="iconfont icon-zhuanfa czr_cat_arrow"></i>
+        </div>
+
+        <div class="czr_cat_row">
+            <div class="czr_cat_left">
+                <div class="czr_cat_icon"><i class="iconfont icon-xiaoshuo"></i></div>
+                <div class="czr_cat_text">
+                    <span class="czr_cat_main">生物医疗</span>
+                    <span class="czr_cat_sub">护士 / 护理<span>·</span>医生 / 医技</span>
+                </div>
+            </div>
+            <i class="iconfont icon-zhuanfa czr_cat_arrow"></i>
+        </div>
+
+    </div>
+</div>
+
+<p class="czr_footer">陈卓然 · 1012 · 16-3.html · 还原截图 · 招聘网站分类页</p>
+
+<script>
+    // 列表项交错入场（JS 控制 animation-delay，避免 inline style 污染 HTML）
+    var czr_rows = document.querySelectorAll('.czr_cat_row');
+    for (var czr_i = 0; czr_i < czr_rows.length; czr_i++) {
+        czr_rows[czr_i].style.animationDelay = (czr_i * 50) + 'ms';
+        czr_rows[czr_i].style.animation = 'czr_fade_up 0.5s ease both';
+    }
+</script>
+</body>
+</html>

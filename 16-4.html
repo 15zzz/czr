@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · 点击排行（热榜）</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #0e1b2a 0px, #1f3a5f 500px, #0e1b2a 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .czr_wrap {
+            max-width: 520px;
+            margin: 0 auto;
+            perspective: 1200px;
+        }
+
+        .czr_home {
+            display: inline-block;
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        /* ========== 主卡片 ========== */
+        .czr_card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 32px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            transform-style: preserve-3d;
+            animation: czr_card_in 0.7s ease both;
+        }
+        @keyframes czr_card_in {
+            from { opacity: 0; transform: rotateX(-8deg) translateZ(-40px); }
+            to   { opacity: 1; transform: rotateX(0deg) translateZ(0); }
+        }
+
+        /* ========== 标题栏 ========== */
+        .czr_header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 22px 24px 16px;
+            border-bottom: 1px solid #f0f2f5;
+        }
+        .czr_header_icon {
+            width: 28px; height: 28px;
+            background: linear-gradient(135deg, #ff5252, #ff7a7a);
+            color: #fff;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .czr_header h1 {
+            font-size: 20px;
+            color: #1a1a1a;
+            letter-spacing: 1px;
+        }
+
+        /* ========== Tab 切换 ========== */
+        .czr_tabs {
+            display: flex;
+            gap: 16px;
+            padding: 14px 24px;
+            border-bottom: 6px solid #f0f2f5;
+        }
+        .czr_tab {
+            padding: 7px 20px;
+            font-size: 13px;
+            border-radius: 4px;
+            border: none;
+            background: #eef0f3;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+        .czr_tab:hover:not(.active) { background: #e4e8ee; color: #555; }
+        .czr_tab.active {
+            background: #ff5252;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(255, 82, 82, 0.35);
+            transform: translateY(-1px);
+        }
+
+        /* ========== 排行列表 ========== */
+        .czr_list {
+            position: relative;
+        }
+        .czr_list_via { display: none; }
+        .czr_list_via.active { display: block; animation: czr_tab_fade 0.4s ease; }
+        @keyframes czr_tab_fade {
+            from { opacity: 0; transform: translateY(8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .czr_item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 15px 24px;
+            border-bottom: 1px solid #f5f6f8;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+            animation: czr_item_in 0.5s ease both;
+            transform-style: preserve-3d;
+        }
+        .czr_list_via.active .czr_item { animation: czr_item_in 0.5s ease both; }
+        @keyframes czr_item_in {
+            from { opacity: 0; transform: translateX(-14px); }
+            to   { opacity: 1; transform: translateX(0); }
+        }
+
+        .czr_item:last-child { border-bottom: none; }
+        .czr_item:hover {
+            background: #fafbfd;
+        }
+        .czr_item:hover .czr_item_title { color: #ff5252; }
+        .czr_item:hover .czr_rank {
+            transform: rotate(-6deg) scale(1.15);
+        }
+
+        .czr_rank {
+            width: 28px; height: 28px;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #999;
+            background: #f0f2f5;
+            flex-shrink: 0;
+            transition: transform 0.25s ease;
+        }
+        /* 前三名高亮 */
+        .czr_rank.r1 { background: #ff5252; color: #fff; }
+        .czr_rank.r2 { background: #ff8c42; color: #fff; }
+        .czr_rank.r3 { background: #ffc107; color: #fff; }
+
+        .czr_item_body {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+        .czr_item_title {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.5;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: color 0.2s ease;
+        }
+        .czr_item_hot {
+            font-size: 12px;
+            color: #aab4c2;
+            flex-shrink: 0;
+            font-family: Consolas, "Courier New", monospace;
+            min-width: 70px;
+            text-align: right;
+        }
+        .czr_item_hot b {
+            color: #ff5252;
+            font-weight: normal;
+            font-size: 14px;
+        }
+
+        .czr_item.playing {
+            background: linear-gradient(90deg, #fff0f0, transparent);
+        }
+
+        .czr_footer {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        /* ========== 详情弹窗 ========== */
+        .czr_mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            animation: czr_mask_fade 0.25s ease;
+        }
+        .czr_mask.active { display: flex; }
+        @keyframes czr_mask_fade {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .czr_modal {
+            width: min(460px, 90%);
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            transform-style: preserve-3d;
+            animation: czr_modal_in 0.35s ease;
+        }
+        @keyframes czr_modal_in {
+            from { opacity: 0; transform: scale(0.86) rotateX(10deg); }
+            to   { opacity: 1; transform: scale(1) rotateX(0); }
+        }
+
+        .czr_modal_header {
+            padding: 20px 22px 14px;
+            border-bottom: 1px solid #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .czr_modal_rank {
+            width: 30px; height: 30px;
+            border-radius: 6px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 15px; font-weight: bold; color: #fff;
+            margin-right: 10px;
+        }
+        .czr_modal_title {
+            flex: 1;
+            font-size: 16px;
+            font-weight: bold;
+            color: #1a1a1a;
+            line-height: 1.5;
+        }
+        .czr_modal_close {
+            background: none;
+            border: none;
+            font-size: 22px;
+            color: #aaa;
+            cursor: pointer;
+            padding: 0;
+            width: 28px; height: 28px;
+            line-height: 24px;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .czr_modal_close:hover { color: #ff5252; transform: rotate(90deg); }
+
+        .czr_modal_body {
+            padding: 18px 22px 22px;
+        }
+        .czr_modal_desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 14px;
+        }
+        .czr_modal_meta {
+            display: flex;
+            gap: 18px;
+            font-size: 12px;
+            color: #aab4c2;
+        }
+        .czr_modal_meta b {
+            color: #ff5252;
+            font-weight: normal;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 14px;
+        }
+
+        .czr_modal_footer {
+            padding: 14px 22px;
+            border-top: 1px solid #f0f2f5;
+            display: flex;
+            gap: 10px;
+        }
+        .czr_modal_footer button {
+            flex: 1;
+            padding: 10px 0;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+            transition: all 0.2s ease;
+        }
+        .czr_btn_primary {
+            background: #ff5252;
+            color: #fff;
+        }
+        .czr_btn_primary:hover { background: #e63e3e; transform: translateY(-1px); }
+        .czr_btn_ghost {
+            background: #f0f2f5;
+            color: #555;
+        }
+        .czr_btn_ghost:hover { background: #e4e8ee; }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-10-29，功能名称：可交互点击排行热榜 -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+    <div class="czr_card">
+
+        <!-- 标题栏 -->
+        <div class="czr_header">
+            <div class="czr_header_icon">🔥</div>
+            <h1>点击排行</h1>
+        </div>
+
+        <!-- Tab 切换（可点击） -->
+        <div class="czr_tabs">
+            <button class="czr_tab active" onclick="czr_switch(this, 'live')">实时点击</button>
+            <button class="czr_tab" onclick="czr_switch(this, 'day')">24小时排行</button>
+        </div>
+
+        <!-- 实时点击列表 -->
+        <div class="czr_list">
+
+            <div class="czr_list_via active" id="czr_list_live"></div>
+            <div class="czr_list_via" id="czr_list_day"></div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 详情弹窗 -->
+<div class="czr_mask" id="czr_mask" onclick="czr_closeModal(event)">
+    <div class="czr_modal" onclick="event.stopPropagation()">
+        <div class="czr_modal_header">
+            <div style="display:flex; align-items:flex-start;">
+                <span class="czr_modal_rank" id="czr_m_rank">1</span>
+                <div class="czr_modal_title" id="czr_m_title">标题</div>
+            </div>
+            <button class="czr_modal_close" onclick="czr_closeModal()">✕</button>
+        </div>
+        <div class="czr_modal_body">
+            <div class="czr_modal_desc" id="czr_m_desc">摘要</div>
+            <div class="czr_modal_meta">
+                <span>🔥 点击数 <b id="czr_m_hot">0</b></span>
+                <span>📅 <span id="czr_m_date">今日</span></span>
+            </div>
+        </div>
+        <div class="czr_modal_footer">
+            <button class="czr_btn_ghost" onclick="czr_closeModal()">关闭</button>
+            <button class="czr_btn_primary" onclick="czr_openDetail()">查看原文 →</button>
+        </div>
+    </div>
+</div>
+
+<p class="czr_footer">陈卓然 · 1012 · 16-4.html · 可交互点击排行</p>
+
+<script>
+    // ========== 数据 ==========
+    var czr_live = [
+        { title: '灯塔水母：地球上唯一不死生物', hot: 356322, desc: '灯塔水母是一种小型水母，拥有逆转衰老的神秘能力，能从成熟体变回幼体，理论上可以无限循环。' },
+        { title: '阿里巴巴全资收购UC 俞永福称U', hot: 311246, desc: '阿里巴巴集团宣布完成对UC的全资收购，俞永福出任新的负责人，整合UC浏览器与阿里移动业务。' },
+        { title: '亚马逊惊现三米长巨滑舌鱼 遭遇豚', hot: 295883, desc: '亚马逊河流域发现罕见的三米长巨滑舌鱼，这一古老物种的现身引起生物学家的极大关注。' },
+        { title: '奉化男子上山抓野味 遭遇覆腹', hot: 266061, desc: '浙江奉化一名男子上山捕捉野味时遭遇意外，被野生动物袭击腹部，紧急送医治疗。' },
+        { title: '大白鲨深海失踪 或被大型生物', hot: 243936, desc: '追踪研究的一条大白鲨在深海突然消失，科学家推测可能遭遇了更大型的深海生物。' },
+        { title: '南非小牛目睹母亲被杀情绪激动', hot: 224346, desc: '南非野生动物保护区内，一头小牛目睹母亲被盗猎者杀害后，表现出异常激动的情绪。' },
+        { title: '余额宝周岁：收益率"过山车"', hot: 172694, desc: '余额宝上线一周年，收益率经历了从6%到不足3%的"过山车"式下跌，引发用户讨论。' },
+        { title: '"尸油入餐桌"纯属无稽之谈', hot: 128789, desc: '食品安全专家辟谣近期网络流传的"尸油入餐桌"说法，称其纯属无稽之谈。' }
+    ];
+
+    var czr_day = [
+        { title: '嫦娥五号带回月球样品首次公开', hot: 892301, desc: '国家航天局首次公开嫦娥五号从月球带回的珍贵样品，展示月壤和月岩的独特面貌。' },
+        { title: '国产航母山东舰最新画面曝光', hot: 756420, desc: '央视公开国产航母山东舰在南海训练的最新画面，展示其强大作战能力。' },
+        { title: '新冠疫苗研发取得重大突破', hot: 623185, desc: '国际科研团队在新冠疫苗研发上取得重大突破，新型mRNA疫苗有效率高达95%。' },
+        { title: '珠峰测量队完成最新高程测量', hot: 501228, desc: '中国珠峰测量队成功完成对珠穆朗玛峰的最新高程测量，精确数据即将公布。' },
+        { title: '大熊猫"圆仔"首次独立外出觅食', hot: 487563, desc: '台北动物园的大熊猫"圆仔"长到两岁，首次离开母亲独立外出觅食，萌态十足。' },
+        { title: '我国高铁运营里程居世界第一', hot: 412890, desc: '交通运输部宣布我国高铁运营里程突破3.6万公里，继续稳居世界第一。' },
+        { title: '5G 网络覆盖全国所有地级市', hot: 367445, desc: '工信部宣布5G网络已覆盖全国所有地级市及以上城市，推进数字经济发展。' },
+        { title: '天问一号传回火星最新影像', hot: 298031, desc: '天问一号探测器传回火星表面最新高分辨率影像，展示红色星球的壮丽地貌。' }
+    ];
+
+    // ========== 渲染 ==========
+    function czr_render(czr_data, czr_containerId, czr_dateLabel) {
+        var czr_list = document.getElementById(czr_containerId);
+        czr_list.innerHTML = '';
+
+        for (var czr_i = 0; czr_i < czr_data.length; czr_i++) {
+            var czr_d = czr_data[czr_i];
+            var czr_rankCls = czr_i === 0 ? 'r1' : czr_i === 1 ? 'r2' : czr_i === 2 ? 'r3' : '';
+
+            var czr_item = document.createElement('div');
+            czr_item.className = 'czr_item';
+            czr_item.style.animationDelay = (czr_i * 60) + 'ms';
+            czr_item.onclick = (function (czr_idx) {
+                return function () { czr_openModal(czr_data, czr_idx, czr_dateLabel); };
+            })(czr_i);
+
+            czr_item.innerHTML =
+                '<div class="czr_rank ' + czr_rankCls + '">' + (czr_i + 1) + '</div>' +
+                '<div class="czr_item_body">' +
+                    '<div class="czr_item_title">' + czr_d.title + '</div>' +
+                    '<div class="czr_item_hot"><b>' + czr_d.hot.toLocaleString() + '</b></div>' +
+                '</div>';
+
+            czr_list.appendChild(czr_item);
+        }
+    }
+
+    czr_render(czr_live, 'czr_list_live', '实时');
+    czr_render(czr_day,  'czr_list_day',  '24小时内');
+
+    // ========== Tab 切换 ==========
+    function czr_switch(czr_btn, czr_tab) {
+        // 按钮状态
+        var czr_tabs = document.querySelectorAll('.czr_tab');
+        for (var czr_i = 0; czr_i < czr_tabs.length; czr_i++) {
+            czr_tabs[czr_i].classList.remove('active');
+        }
+        czr_btn.classList.add('active');
+
+        // 切换列表
+        var czr_lists = document.querySelectorAll('.czr_list_via');
+        for (var czr_i = 0; czr_i < czr_lists.length; czr_i++) {
+            czr_lists[czr_i].classList.remove('active');
+        }
+        document.getElementById('czr_list_' + czr_tab).classList.add('active');
+    }
+
+    // ========== 弹窗 ==========
+    var czr_currentData = null;
+    var czr_currentIdx = 0;
+
+    function czr_openModal(czr_data, czr_idx, czr_dateLabel) {
+        czr_currentData = czr_data;
+        czr_currentIdx = czr_idx;
+        var czr_d = czr_data[czr_idx];
+
+        // 排名色
+        var czr_rankEl = document.getElementById('czr_m_rank');
+        czr_rankEl.textContent = (czr_idx + 1);
+        czr_rankEl.style.background = czr_idx === 0 ? '#ff5252'
+                                     : czr_idx === 1 ? '#ff8c42'
+                                     : czr_idx === 2 ? '#ffc107'
+                                     : '#aab4c2';
+
+        document.getElementById('czr_m_title').textContent = czr_d.title;
+        document.getElementById('czr_m_desc').textContent  = czr_d.desc;
+        document.getElementById('czr_m_hot').textContent    = czr_d.hot.toLocaleString();
+        document.getElementById('czr_m_date').textContent  = czr_dateLabel;
+
+        document.getElementById('czr_mask').classList.add('active');
+
+        // 背景"正在播放"高亮
+        var czr_lists = document.querySelectorAll('.czr_list_via');
+        for (var czr_i = 0; czr_i < czr_lists.length; czr_i++) {
+            var czr_children = czr_lists[czr_i].children;
+            for (var czr_j = 0; czr_j < czr_children.length; czr_j++) {
+                czr_children[czr_j].classList.remove('playing');
+            }
+        }
+        event.currentTarget.classList.add('playing');
+    }
+
+    function czr_closeModal(czr_e) {
+        if (czr_e && czr_e.target !== document.getElementById('czr_mask')) return;
+        document.getElementById('czr_mask').classList.remove('active');
+    }
+
+    function czr_openDetail() {
+        alert('即将打开原文：\n"' + czr_currentData[czr_currentIdx].title + '"\n\n（演示页面，暂未接入真实跳转）');
+        czr_closeModal();
+    }
+
+    // ESC 关闭弹窗
+    document.addEventListener('keydown', function (czr_e) {
+        if (czr_e.key === 'Escape') czr_closeModal();
+    });
+</script>
+</body>
+</html>
