@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · JavaScript 定时器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #0b1a2e 0px, #1a2e30 520px, #0b1a2e 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap { max-width: 1000px; margin: 0 auto; perspective: 1400px; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #79d6ce, #4ca9d9, #ffc46b, #79d6ce);
+            background-size: 300% 300%;
+            animation: czr_gradient 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes czr_gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .czr_subtitle {
+            font-size: 14px;
+            color: #9fb3cc;
+            margin-bottom: 28px;
+            line-height: 1.8;
+        }
+
+        .czr_grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .czr_card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 24px;
+            transform-style: preserve-3d;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+        }
+        .czr_card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 38px rgba(0, 0, 0, 0.4);
+        }
+
+        .czr_card_title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .czr_card_title .czr_tag {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-weight: normal;
+        }
+        .czr_tag.to { background: rgba(121, 214, 206, 0.2); color: #79d6ce; }
+        .czr_tag.ti { background: rgba(255, 196, 107, 0.2); color: #ffc46b; }
+
+        .czr_card_desc {
+            font-size: 12px;
+            color: #8fa6c2;
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        .czr_demo {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            min-height: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .czr_big {
+            font-size: 42px;
+            font-weight: bold;
+            font-family: Consolas, monospace;
+            color: #79d6ce;
+        }
+        .czr_big.ti { color: #ffc46b; }
+
+        .czr_msg {
+            font-size: 13px;
+            color: #a5b8cd;
+            min-height: 20px;
+        }
+        .czr_msg.ok { color: #79d6ce; }
+
+        .czr_log {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-family: Consolas, monospace;
+            font-size: 11px;
+            color: #a8ffd5;
+            min-height: 60px;
+            max-height: 100px;
+            overflow-y: auto;
+            line-height: 1.7;
+            margin-bottom: 14px;
+        }
+
+        .czr_btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .czr_btn {
+            padding: 8px 16px;
+            font-size: 12px;
+            font-family: inherit;
+            border: none;
+            border-radius: 18px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            color: #071722;
+            background: linear-gradient(135deg, #4ca9d9, #79d6ce);
+            font-weight: bold;
+        }
+        .czr_btn:hover { transform: translateY(-2px); box-shadow: 0 6px 14px rgba(76, 169, 217, 0.4); }
+        .czr_btn.danger { background: linear-gradient(135deg, #ff6b6b, #ff9f9f); }
+        .czr_btn.ti { background: linear-gradient(135deg, #ffc46b, #ff8a65); }
+        .czr_btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .czr_code_box {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid #4ca9d9;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-top: 14px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+        }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+
+        @media (max-width: 760px) {
+            .czr_grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-02，功能名称：JavaScript 两种定时器演示 -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+    <h1 class="czr_title">JavaScript 两种定时器</h1>
+    <p class="czr_subtitle">
+        <b>setTimeout()</b> 在指定延迟后执行<b>一次</b>回调；<b>setInterval()</b> 每隔指定时间<b>循环</b>执行回调。
+        分别可用 <b>clearTimeout()</b> 和 <b>clearInterval()</b> 取消。
+    </p>
+
+    <div class="czr_grid">
+
+        <!-- setTimeout -->
+        <div class="czr_card">
+            <div class="czr_card_title">
+                setTimeout
+                <span class="czr_tag to">一次性</span>
+            </div>
+            <div class="czr_card_desc">延迟指定毫秒后执行一次回调函数，适合定时任务、延迟加载、消息自动消失等。</div>
+
+            <div class="czr_demo">
+                <div class="czr_big" id="czr_to_count">3</div>
+                <div class="czr_msg" id="czr_to_msg">点击「开始倒计时」，3 秒后触发回调</div>
+            </div>
+
+            <div class="czr_log" id="czr_to_log">日志区：暂无</div>
+
+            <div class="czr_btns">
+                <button class="czr_btn" id="czr_to_start" onclick="czr_to_start()">▶ 开始倒计时（3s）</button>
+                <button class="czr_btn danger" id="czr_to_cancel" onclick="czr_to_cancel()" disabled>■ clearTimeout</button>
+            </div>
+
+            <div class="czr_code_box">var czr_t = setTimeout(function () {
+    console.log('3 秒到了，执行一次');
+}, 3000);
+// 取消：clearTimeout(czr_t);</div>
+        </div>
+
+        <!-- setInterval -->
+        <div class="czr_card">
+            <div class="czr_card_title">
+                setInterval
+                <span class="czr_tag ti">循环</span>
+            </div>
+            <div class="czr_card_desc">每隔指定毫秒重复执行回调函数，适合轮询、计时器、动画帧、实时数据刷新等。</div>
+
+            <div class="czr_demo">
+                <div class="czr_big ti" id="czr_ti_count">0</div>
+                <div class="czr_msg" id="czr_ti_msg">点击「开始」，每秒 +1，最多到 10</div>
+            </div>
+
+            <div class="czr_log" id="czr_ti_log">日志区：暂无</div>
+
+            <div class="czr_btns">
+                <button class="czr_btn ti" id="czr_ti_start" onclick="czr_ti_start()">▶ 开始（1s 间隔）</button>
+                <button class="czr_btn danger" id="czr_ti_cancel" onclick="czr_ti_cancel()" disabled>■ clearInterval</button>
+            </div>
+
+            <div class="czr_code_box">var czr_i = 0;
+var czr_t = setInterval(function () {
+    czr_i++;
+    console.log('第 ' + czr_i + ' 次');
+    if (czr_i >= 10) clearInterval(czr_t);
+}, 1000);</div>
+        </div>
+
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 17-5.html · 定时器演示</p>
+</div>
+
+<script>
+    // ========== setTimeout 演示 ==========
+    var czr_to_timer = null;
+    var czr_to_count = 3;
+
+    function czr_to_log(czr_text) {
+        var czr_box = document.getElementById('czr_to_log');
+        var czr_time = new Date().toLocaleTimeString();
+        czr_box.innerHTML = '[' + czr_time + '] ' + czr_text + '\n' + czr_box.innerHTML;
+    }
+
+    function czr_to_start() {
+        if (czr_to_timer) return;
+        czr_to_count = 3;
+        document.getElementById('czr_to_count').textContent = czr_to_count;
+        document.getElementById('czr_to_msg').textContent = '倒计时进行中...';
+        document.getElementById('czr_to_start').disabled = true;
+        document.getElementById('czr_to_cancel').disabled = false;
+        czr_to_log('▶ 启动 setTimeout，延迟 3000ms');
+
+        // 用 setInterval 做倒计时显示，但真正的 setTimeout 回调在最后触发
+        var czr_cd = setInterval(function () {
+            czr_to_count--;
+            document.getElementById('czr_to_count').textContent = czr_to_count;
+            if (czr_to_count <= 0) clearInterval(czr_cd);
+        }, 1000);
+
+        czr_to_timer = setTimeout(function () {
+            czr_to_timer = null;
+            document.getElementById('czr_to_msg').innerHTML = '<span class="ok">✓ 回调已触发！这是 3 秒后执行的一次性任务</span>';
+            czr_to_log('✓ setTimeout 回调执行完成');
+            document.getElementById('czr_to_start').disabled = false;
+            document.getElementById('czr_to_cancel').disabled = true;
+        }, 3000);
+    }
+
+    function czr_to_cancel() {
+        if (czr_to_timer) {
+            clearTimeout(czr_to_timer);
+            czr_to_timer = null;
+            czr_to_log('■ clearTimeout 已取消，回调不会执行');
+            document.getElementById('czr_to_msg').innerHTML = '<span class="ok">已取消，回调未执行</span>';
+            document.getElementById('czr_to_count').textContent = '—';
+            document.getElementById('czr_to_start').disabled = false;
+            document.getElementById('czr_to_cancel').disabled = true;
+        }
+    }
+
+    // ========== setInterval 演示 ==========
+    var czr_ti_timer = null;
+    var czr_ti_count = 0;
+
+    function czr_ti_log(czr_text) {
+        var czr_box = document.getElementById('czr_ti_log');
+        var czr_time = new Date().toLocaleTimeString();
+        czr_box.innerHTML = '[' + czr_time + '] ' + czr_text + '\n' + czr_box.innerHTML;
+    }
+
+    function czr_ti_start() {
+        if (czr_ti_timer) return;
+        czr_ti_count = 0;
+        document.getElementById('czr_ti_count').textContent = czr_ti_count;
+        document.getElementById('czr_ti_msg').textContent = '循环执行中...';
+        document.getElementById('czr_ti_start').disabled = true;
+        document.getElementById('czr_ti_cancel').disabled = false;
+        czr_ti_log('▶ 启动 setInterval，间隔 1000ms');
+
+        czr_ti_timer = setInterval(function () {
+            czr_ti_count++;
+            document.getElementById('czr_ti_count').textContent = czr_ti_count;
+            czr_ti_log('第 ' + czr_ti_count + ' 次回调执行');
+            if (czr_ti_count >= 10) {
+                clearInterval(czr_ti_timer);
+                czr_ti_timer = null;
+                document.getElementById('czr_ti_msg').innerHTML = '<span class="ok">✓ 已执行 10 次，自动 clearInterval 停止</span>';
+                czr_ti_log('■ 达到上限，clearInterval 自动停止');
+                document.getElementById('czr_ti_start').disabled = false;
+                document.getElementById('czr_ti_cancel').disabled = true;
+            }
+        }, 1000);
+    }
+
+    function czr_ti_cancel() {
+        if (czr_ti_timer) {
+            clearInterval(czr_ti_timer);
+            czr_ti_timer = null;
+            czr_ti_log('■ clearInterval 已手动取消，共执行 ' + czr_ti_count + ' 次');
+            document.getElementById('czr_ti_msg').innerHTML = '<span class="ok">已手动停止</span>';
+            document.getElementById('czr_ti_start').disabled = false;
+            document.getElementById('czr_ti_cancel').disabled = true;
+        }
+    }
+</script>
+</body>
+</html>

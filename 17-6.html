@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · Promise/async 包饺子流程</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1208 0px, #2e1a0b 520px, #1a1208 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap { max-width: 960px; margin: 0 auto; perspective: 1400px; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #ffc46b, #ff8a65, #ff6b6b, #ffc46b);
+            background-size: 300% 300%;
+            animation: czr_gradient 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes czr_gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .czr_subtitle {
+            font-size: 14px;
+            color: #c9b89a;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+
+        .czr_btn {
+            padding: 12px 32px;
+            font-size: 15px;
+            font-family: inherit;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            color: #1a1208;
+            background: linear-gradient(135deg, #ffc46b, #ff8a65);
+            font-weight: bold;
+            transition: all 0.25s ease;
+            margin-bottom: 24px;
+        }
+        .czr_btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(255, 138, 101, 0.45); }
+        .czr_btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* 流程图 */
+        .czr_flow {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .czr_step {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 18px 22px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            transition: all 0.4s ease;
+            transform-style: preserve-3d;
+        }
+        .czr_step.active {
+            border-color: #ffc46b;
+            background: rgba(255, 196, 107, 0.1);
+            box-shadow: 0 0 30px rgba(255, 196, 107, 0.25);
+            transform: scale(1.02);
+        }
+        .czr_step.done {
+            border-color: rgba(121, 214, 206, 0.5);
+            background: rgba(121, 214, 206, 0.08);
+        }
+
+        .czr_step_icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            background: rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+        .czr_step.active .czr_step_icon {
+            background: linear-gradient(135deg, #ffc46b, #ff8a65);
+            animation: czr_pulse 1s ease infinite;
+        }
+        @keyframes czr_pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+        }
+        .czr_step.done .czr_step_icon {
+            background: linear-gradient(135deg, #79d6ce, #4ca9d9);
+        }
+
+        .czr_step_info { flex: 1; min-width: 0; }
+        .czr_step_name {
+            font-size: 16px;
+            font-weight: bold;
+            color: #e8f1ff;
+            margin-bottom: 4px;
+        }
+        .czr_step_desc {
+            font-size: 12px;
+            color: #8fa6c2;
+        }
+        .czr_step.active .czr_step_desc { color: #ffc46b; }
+
+        .czr_step_meta {
+            text-align: right;
+            flex-shrink: 0;
+            min-width: 120px;
+        }
+        .czr_step_time {
+            font-size: 12px;
+            color: #8fa6c2;
+            font-family: Consolas, monospace;
+            margin-bottom: 4px;
+        }
+        .czr_step_status {
+            font-size: 12px;
+            padding: 2px 10px;
+            border-radius: 10px;
+            display: inline-block;
+        }
+        .czr_step_status.pending { background: rgba(255, 255, 255, 0.1); color: #8fa6c2; }
+        .czr_step_status.running { background: rgba(255, 196, 107, 0.2); color: #ffc46b; }
+        .czr_step_status.done { background: rgba(121, 214, 206, 0.2); color: #79d6ce; }
+
+        /* 并行组 */
+        .czr_parallel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .czr_parallel .czr_step { margin-bottom: 0; }
+
+        .czr_connector {
+            text-align: center;
+            color: #6c83a0;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+
+        /* 日志 */
+        .czr_log_box {
+            margin-top: 24px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .czr_log_head {
+            padding: 12px 18px;
+            font-size: 13px;
+            color: #ffc46b;
+            background: rgba(255, 196, 107, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .czr_log {
+            padding: 14px 18px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #a8ffd5;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .czr_log .czr_log_t { color: #8fa6c2; }
+        .czr_log .czr_log_ok { color: #79d6ce; }
+        .czr_log .czr_log_run { color: #ffc46b; }
+
+        /* 代码 */
+        .czr_code_card {
+            margin-top: 24px;
+            background: rgba(76, 169, 217, 0.06);
+            border: 1px solid rgba(76, 169, 217, 0.25);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+        .czr_code_card h3 {
+            font-size: 14px;
+            color: #79d6ce;
+            margin-bottom: 12px;
+        }
+        .czr_code_card pre {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid #4ca9d9;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-family: Consolas, monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .czr_final {
+            margin-top: 20px;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, rgba(121, 214, 206, 0.15), rgba(255, 196, 107, 0.15));
+            border: 1px solid rgba(121, 214, 206, 0.4);
+            border-radius: 14px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #ffc46b;
+            display: none;
+            animation: czr_final_in 0.6s ease;
+        }
+        .czr_final.show { display: block; }
+        @keyframes czr_final_in {
+            from { opacity: 0; transform: scale(0.8); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+
+        @media (max-width: 720px) {
+            .czr_parallel { grid-template-columns: 1fr; }
+            .czr_step { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-02，功能名称：Promise 与 async/await 异步流程演示（包饺子） -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+    <h1 class="czr_title">包饺子流程（Promise / async-await）</h1>
+    <p class="czr_subtitle">
+        流程：<b>买原料 → 取原料 → [和面 && 和馅 并行] → 包饺子 → 吃饺子</b>。
+        每个步骤用 <code style="color:#ffc46b;">setTimeout</code> 模拟耗时，通过 <code style="color:#ffc46b;">Promise</code> 包装，再用 <code style="color:#ffc46b;">async/await</code> 编排顺序与并行。
+    </p>
+
+    <button class="czr_btn" id="czr_start" onclick="czr_run()">▶ 开始包饺子</button>
+
+    <div class="czr_flow">
+
+        <!-- 1. 买原料 -->
+        <div class="czr_step" id="czr_step_buy">
+            <div class="czr_step_icon">🛒</div>
+            <div class="czr_step_info">
+                <div class="czr_step_name">买原料</div>
+                <div class="czr_step_desc">去超市采购面粉、肉、蔬菜等</div>
+            </div>
+            <div class="czr_step_meta">
+                <div class="czr_step_time">6 秒</div>
+                <span class="czr_step_status pending" id="czr_status_buy">等待中</span>
+            </div>
+        </div>
+
+        <div class="czr_connector">↓</div>
+
+        <!-- 2. 取原料 -->
+        <div class="czr_step" id="czr_step_fetch">
+            <div class="czr_step_icon">📦</div>
+            <div class="czr_step_info">
+                <div class="czr_step_name">取原料</div>
+                <div class="czr_step_desc">把买回来的原料分类摆放好</div>
+            </div>
+            <div class="czr_step_meta">
+                <div class="czr_step_time">2 秒</div>
+                <span class="czr_step_status pending" id="czr_status_fetch">等待中</span>
+            </div>
+        </div>
+
+        <div class="czr_connector">↓ 同时进行（Promise.all）</div>
+
+        <!-- 3. 并行：和面 + 和馅 -->
+        <div class="czr_parallel">
+            <div class="czr_step" id="czr_step_dough">
+                <div class="czr_step_icon">🌾</div>
+                <div class="czr_step_info">
+                    <div class="czr_step_name">和面</div>
+                    <div class="czr_step_desc">面粉加水揉成光滑面团</div>
+                </div>
+                <div class="czr_step_meta">
+                    <div class="czr_step_time">4 秒</div>
+                    <span class="czr_step_status pending" id="czr_status_dough">等待中</span>
+                </div>
+            </div>
+
+            <div class="czr_step" id="czr_step_fill">
+                <div class="czr_step_icon">🥩</div>
+                <div class="czr_step_info">
+                    <div class="czr_step_name">和馅</div>
+                    <div class="czr_step_desc">肉碎加调料搅拌上劲</div>
+                </div>
+                <div class="czr_step_meta">
+                    <div class="czr_step_time">5 秒</div>
+                    <span class="czr_step_status pending" id="czr_status_fill">等待中</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="czr_connector">↓ 两个都完成后</div>
+
+        <!-- 4. 包饺子 -->
+        <div class="czr_step" id="czr_step_wrap">
+            <div class="czr_step_icon">🥟</div>
+            <div class="czr_step_info">
+                <div class="czr_step_name">包饺子</div>
+                <div class="czr_step_desc">面皮包入馅料，捏出褶子</div>
+            </div>
+            <div class="czr_step_meta">
+                <div class="czr_step_time">5 秒</div>
+                <span class="czr_step_status pending" id="czr_status_wrap">等待中</span>
+            </div>
+        </div>
+
+        <div class="czr_connector">↓</div>
+
+        <!-- 5. 吃饺子 -->
+        <div class="czr_step" id="czr_step_eat">
+            <div class="czr_step_icon">😋</div>
+            <div class="czr_step_info">
+                <div class="czr_step_name">吃饺子</div>
+                <div class="czr_step_desc">煮熟后享用美味的饺子</div>
+            </div>
+            <div class="czr_step_meta">
+                <div class="czr_step_time">3 秒</div>
+                <span class="czr_step_status pending" id="czr_status_eat">等待中</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="czr_final" id="czr_final">🎉 饺子吃完啦！整个流程完成，一共用时 20 秒</div>
+
+    <!-- 日志 -->
+    <div class="czr_log_box">
+        <div class="czr_log_head">执行日志</div>
+        <div class="czr_log" id="czr_log">（点击「开始包饺子」查看执行日志）</div>
+    </div>
+
+    <!-- 代码 -->
+    <div class="czr_code_card">
+        <h3>核心代码（async/await + Promise.all）</h3>
+<pre>// 把 setTimeout 包装成 Promise
+function czr_delay(czr_msg, czr_ms) {
+    return new Promise(function (resolve) {
+        setTimeout(function () { resolve(czr_msg); }, czr_ms);
+    });
+}
+
+async function czr_run() {
+    await czr_delay('买原料', 6000);
+    await czr_delay('取原料', 2000);
+    // 并行：和面(4s) 和 和馅(5s)，总耗时取最大值 5s
+    await Promise.all([
+        czr_delay('和面', 4000),
+        czr_delay('和馅', 5000)
+    ]);
+    await czr_delay('包饺子', 5000);
+    await czr_delay('吃饺子', 3000);
+}</pre>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 17-6.html · Promise/async 异步流程</p>
+</div>
+
+<script>
+    // 把 setTimeout 包装成 Promise
+    function czr_delay(czr_key, czr_ms, czr_name) {
+        return new Promise(function (resolve) {
+            czr_setStatus(czr_key, 'running', czr_name + '进行中...');
+            czr_log(czr_name + ' 开始（' + czr_ms / 1000 + '秒）', 'run');
+            setTimeout(function () {
+                czr_setStatus(czr_key, 'done', czr_name + '完成 ✓');
+                czr_log(czr_name + ' 完成', 'ok');
+                resolve(czr_name);
+            }, czr_ms);
+        });
+    }
+
+    function czr_setStatus(czr_key, czr_state, czr_text) {
+        var czr_step = document.getElementById('czr_step_' + czr_key);
+        var czr_status = document.getElementById('czr_status_' + czr_key);
+        czr_step.classList.remove('active', 'done');
+        czr_status.classList.remove('pending', 'running', 'done');
+        if (czr_state === 'running') {
+            czr_step.classList.add('active');
+            czr_status.classList.add('running');
+        } else if (czr_state === 'done') {
+            czr_step.classList.add('done');
+            czr_status.classList.add('done');
+        } else {
+            czr_status.classList.add('pending');
+        }
+        czr_status.textContent = czr_text;
+    }
+
+    function czr_log(czr_text, czr_type) {
+        var czr_box = document.getElementById('czr_log');
+        var czr_time = new Date().toLocaleTimeString();
+        var czr_color = czr_type === 'ok' ? 'czr_log_ok' : czr_type === 'run' ? 'czr_log_run' : 'czr_log_t';
+        if (czr_box.textContent.indexOf('点击') === 0) czr_box.innerHTML = '';
+        czr_box.innerHTML = '<span class="czr_log_t">[' + czr_time + ']</span> <span class="' + czr_color + '">' + czr_text + '</span><br>' + czr_box.innerHTML;
+    }
+
+    async function czr_run() {
+        var czr_btn = document.getElementById('czr_start');
+        czr_btn.disabled = true;
+        czr_btn.textContent = '流程进行中...';
+        document.getElementById('czr_final').classList.remove('show');
+        document.getElementById('czr_log').innerHTML = '';
+
+        // 重置所有步骤
+        var czr_keys = ['buy', 'fetch', 'dough', 'fill', 'wrap', 'eat'];
+        for (var czr_i = 0; czr_i < czr_keys.length; czr_i++) {
+            czr_setStatus(czr_keys[czr_i], 'pending', '等待中');
+        }
+
+        czr_log('=== 开始包饺子流程 ===', 'ok');
+
+        // 1. 买原料
+        await czr_delay('buy', 6000, '买原料');
+
+        // 2. 取原料
+        await czr_delay('fetch', 2000, '取原料');
+
+        // 3. 并行：和面 + 和馅（Promise.all）
+        czr_log('和面 与 和馅 同时开始（Promise.all）', 'run');
+        await Promise.all([
+            czr_delay('dough', 4000, '和面'),
+            czr_delay('fill', 5000, '和馅')
+        ]);
+        czr_log('和面 和 和馅 都完成了，开始包饺子', 'ok');
+
+        // 4. 包饺子
+        await czr_delay('wrap', 5000, '包饺子');
+
+        // 5. 吃饺子
+        await czr_delay('eat', 3000, '吃饺子');
+
+        czr_log('=== 全部流程完成 ===', 'ok');
+        document.getElementById('czr_final').classList.add('show');
+        czr_btn.disabled = false;
+        czr_btn.textContent = '▶ 重新开始';
+    }
+</script>
+</body>
+</html>

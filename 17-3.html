@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · 商品列表</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #071722 0px, #102a35 520px, #0b1a2e 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap { max-width: 1120px; margin: 0 auto; perspective: 1400px; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #ffc46b, #ff8a65, #79d6ce, #ffc46b);
+            background-size: 300% 300%;
+            animation: czr_gradient 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes czr_gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .czr_subtitle {
+            font-size: 14px;
+            color: #9fb3cc;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+
+        .czr_status {
+            min-height: 22px;
+            margin-bottom: 18px;
+            font-size: 12px;
+            color: #8fa6c2;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .czr_status span {
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .czr_status span.czr_ok { color: #79d6ce; border-color: rgba(121, 214, 206, 0.5); }
+        .czr_status span.czr_bad { color: #ff9f9f; border-color: rgba(255, 107, 107, 0.5); }
+
+        .czr_grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 18px;
+            min-height: 120px;
+        }
+
+        .czr_card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            animation: czr_card_in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes czr_card_in {
+            from { opacity: 0; transform: rotateY(-10deg) translateY(20px) translateZ(-40px); }
+            to   { opacity: 1; transform: rotateY(0) translateY(0) translateZ(0); }
+        }
+        .czr_card:hover {
+            transform: rotateY(4deg) translateY(-8px);
+            border-color: rgba(255, 196, 107, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .czr_img_box {
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .czr_img_box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+        .czr_card:hover .czr_img_box img { transform: scale(1.08); }
+
+        .czr_discount {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #ff5252;
+            color: #fff;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .czr_body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
+        .czr_cat {
+            font-size: 11px;
+            color: #4ca9d9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+        .czr_name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #e8f1ff;
+            line-height: 1.45;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .czr_brand { font-size: 11px; color: #8fa6c2; margin-bottom: 10px; }
+        .czr_price_row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .czr_price {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffc46b;
+            font-family: Consolas, monospace;
+        }
+        .czr_price .czr_cur { font-size: 12px; }
+        .czr_old_price {
+            font-size: 12px;
+            color: #6c83a0;
+            text-decoration: line-through;
+            font-family: Consolas, monospace;
+        }
+        .czr_meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #8fa6c2;
+            margin-top: auto;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .czr_star { color: #ffc46b; }
+
+        .czr_loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px 20px;
+            color: #8fa6c2;
+            font-size: 13px;
+        }
+        .czr_spinner {
+            width: 34px;
+            height: 34px;
+            margin: 0 auto 16px;
+            border: 3px solid rgba(255, 255, 255, 0.12);
+            border-top-color: #79d6ce;
+            border-radius: 50%;
+            animation: czr_spin 0.9s linear infinite;
+        }
+        @keyframes czr_spin { to { transform: rotate(360deg); } }
+
+        .czr_error {
+            grid-column: 1 / -1;
+            padding: 40px 24px;
+            text-align: center;
+            background: rgba(255, 107, 107, 0.08);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 12px;
+            color: #ff9f9f;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-02，功能名称：商品列表（fetch 接口） -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+    <h1 class="czr_title">商品列表</h1>
+    <p class="czr_subtitle">数据来自远程接口 <code style="color:#79d6ce;">https://dummyjson.com/products?limit=8</code>，使用原生 <b>fetch()</b> 获取并渲染。点击卡片可查看详情。</p>
+
+    <div class="czr_status" id="czr_status"></div>
+
+    <div class="czr_grid" id="czr_grid">
+        <div class="czr_loading"><div class="czr_spinner"></div>正在加载商品数据...</div>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 17-3.html · 商品列表</p>
+</div>
+
+<script>
+    var czr_API = 'https://dummyjson.com/products?limit=8';
+
+    async function czr_load() {
+        var czr_grid = document.getElementById('czr_grid');
+        var czr_status = document.getElementById('czr_status');
+
+        czr_status.innerHTML = '<span>请求中...</span>';
+
+        try {
+            var czr_res = await fetch(czr_API);
+            if (!czr_res.ok) throw new Error('HTTP ' + czr_res.status);
+            var czr_data = await czr_res.json();
+
+            czr_status.innerHTML =
+                '<span class="czr_ok">✓ 加载成功</span>' +
+                '<span>共 ' + czr_data.total + ' 件商品</span>' +
+                '<span>本次 ' + czr_data.limit + ' 件</span>';
+
+            czr_grid.innerHTML = '';
+            var czr_list = czr_data.products || [];
+            for (var czr_i = 0; czr_i < czr_list.length; czr_i++) {
+                (function (czr_p) {
+                    var czr_card = document.createElement('a');
+                    czr_card.className = 'czr_card';
+                    czr_card.href = '17-3-detail.html?id=' + czr_p.id;
+                    czr_card.style.animationDelay = (czr_i * 60) + 'ms';
+
+                    var czr_oldPrice = czr_p.price;
+                    var czr_disc = czr_p.discountPercentage || 0;
+                    var czr_final = (czr_oldPrice * (1 - czr_disc / 100)).toFixed(2);
+
+                    var czr_html =
+                        '<div class="czr_img_box">' +
+                            (czr_disc > 0 ? '<div class="czr_discount">- ' + czr_disc.toFixed(0) + '%</div>' : '') +
+                            (czr_p.thumbnail ? '<img src="' + czr_p.thumbnail + '" alt="' + czr_p.title + '" loading="lazy">' : '') +
+                        '</div>' +
+                        '<div class="czr_body">' +
+                            '<div class="czr_cat">' + czr_p.category + '</div>' +
+                            '<div class="czr_name">' + czr_p.title + '</div>' +
+                            '<div class="czr_brand">' + (czr_p.brand || '未知品牌') + '</div>' +
+                            '<div class="czr_price_row">' +
+                                '<span class="czr_price"><span class="czr_cur">$</span>' + czr_final + '</span>' +
+                                (czr_disc > 0 ? '<span class="czr_old_price">$' + czr_oldPrice.toFixed(2) + '</span>' : '') +
+                            '</div>' +
+                            '<div class="czr_meta">' +
+                                '<span><span class="czr_star">★</span> ' + czr_p.rating + '</span>' +
+                                '<span>库存 ' + czr_p.stock + '</span>' +
+                            '</div>' +
+                        '</div>';
+                    czr_card.innerHTML = czr_html;
+                    czr_grid.appendChild(czr_card);
+                })(czr_list[czr_i]);
+            }
+        } catch (czr_err) {
+            czr_status.innerHTML = '<span class="czr_bad">✗ 加载失败</span><span>' + czr_err.message + '</span>';
+            czr_grid.innerHTML = '<div class="czr_error">数据加载失败：' + czr_err.message + '<br>请检查网络或稍后重试。</div>';
+        }
+    }
+
+    czr_load();
+</script>
+</body>
+</html>

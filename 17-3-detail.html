@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · 商品详情</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #071722 0px, #102a35 520px, #0b1a2e 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap { max-width: 1000px; margin: 0 auto; perspective: 1400px; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 16px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_back {
+            display: inline-block;
+            padding: 8px 18px;
+            background: rgba(76, 169, 217, 0.15);
+            border: 1px solid rgba(76, 169, 217, 0.4);
+            border-radius: 20px;
+            color: #79d6ce;
+            text-decoration: none;
+            font-size: 13px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_back:hover { background: rgba(76, 169, 217, 0.3); }
+
+        .czr_status {
+            min-height: 22px;
+            margin-bottom: 18px;
+            font-size: 12px;
+            color: #8fa6c2;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .czr_status span {
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .czr_status span.czr_ok { color: #79d6ce; border-color: rgba(121, 214, 206, 0.5); }
+        .czr_status span.czr_bad { color: #ff9f9f; border-color: rgba(255, 107, 107, 0.5); }
+
+        .czr_loading {
+            text-align: center;
+            padding: 80px 20px;
+            color: #8fa6c2;
+            font-size: 13px;
+        }
+        .czr_spinner {
+            width: 34px;
+            height: 34px;
+            margin: 0 auto 16px;
+            border: 3px solid rgba(255, 255, 255, 0.12);
+            border-top-color: #79d6ce;
+            border-radius: 50%;
+            animation: czr_spin 0.9s linear infinite;
+        }
+        @keyframes czr_spin { to { transform: rotate(360deg); } }
+
+        .czr_error {
+            padding: 40px 24px;
+            text-align: center;
+            background: rgba(255, 107, 107, 0.08);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 12px;
+            color: #ff9f9f;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        /* 详情主体 */
+        .czr_detail {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            animation: czr_in 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes czr_in {
+            from { opacity: 0; transform: rotateX(-8deg) translateZ(-40px); }
+            to   { opacity: 1; transform: rotateX(0) translateZ(0); }
+        }
+
+        .czr_detail_top {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+        }
+
+        .czr_gallery {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .czr_main_img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .czr_main_img img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.4s ease; }
+        .czr_main_img img:hover { transform: scale(1.05); }
+
+        .czr_thumbs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .czr_thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.25s ease;
+        }
+        .czr_thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .czr_thumb:hover { transform: scale(1.05); }
+        .czr_thumb.active { border-color: #ffc46b; }
+
+        .czr_info { padding: 24px 26px; }
+        .czr_cat {
+            display: inline-block;
+            font-size: 11px;
+            color: #071722;
+            background: #79d6ce;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .czr_name {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e8f1ff;
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+        .czr_brand { font-size: 13px; color: #8fa6c2; margin-bottom: 16px; }
+
+        .czr_price_row {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding: 14px 16px;
+            background: rgba(255, 196, 107, 0.08);
+            border-radius: 10px;
+        }
+        .czr_final {
+            font-size: 28px;
+            font-weight: bold;
+            color: #ffc46b;
+            font-family: Consolas, monospace;
+        }
+        .czr_final .czr_cur { font-size: 16px; }
+        .czr_old {
+            font-size: 14px;
+            color: #6c83a0;
+            text-decoration: line-through;
+            font-family: Consolas, monospace;
+        }
+        .czr_save {
+            font-size: 12px;
+            color: #79d6ce;
+            padding: 2px 10px;
+            background: rgba(121, 214, 206, 0.15);
+            border-radius: 10px;
+        }
+
+        .czr_rating_row {
+            display: flex;
+            gap: 18px;
+            font-size: 13px;
+            color: #9fb3cc;
+            margin-bottom: 16px;
+        }
+        .czr_stars { color: #ffc46b; letter-spacing: 2px; }
+
+        .czr_desc {
+            font-size: 13px;
+            color: #b8c9dd;
+            line-height: 1.9;
+            margin-bottom: 18px;
+        }
+
+        .czr_specs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px 20px;
+            font-size: 12px;
+        }
+        .czr_spec { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed rgba(255, 255, 255, 0.08); }
+        .czr_spec b { color: #8fa6c2; font-weight: normal; }
+        .czr_spec span { color: #e8f1ff; font-family: Consolas, monospace; }
+
+        .czr_section {
+            padding: 20px 26px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .czr_section h3 {
+            font-size: 14px;
+            color: #79d6ce;
+            margin-bottom: 14px;
+        }
+
+        .czr_review {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+        .czr_review_top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-size: 12px;
+        }
+        .czr_review_name { color: #e8f1ff; font-weight: bold; }
+        .czr_review_stars { color: #ffc46b; }
+        .czr_review_body { font-size: 12px; color: #b8c9dd; line-height: 1.7; }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+
+        @media (max-width: 720px) {
+            .czr_detail_top { grid-template-columns: 1fr; }
+            .czr_specs { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-02，功能名称：商品详情（fetch 接口） -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+<a href="17-3.html" class="czr_back">← 返回商品列表</a>
+
+<div class="czr_wrap">
+    <div class="czr_status" id="czr_status"></div>
+    <div id="czr_content">
+        <div class="czr_loading"><div class="czr_spinner"></div>正在加载商品详情...</div>
+    </div>
+    <p class="czr_footer">陈卓然 · 1012 · 17-3-detail.html · 商品详情</p>
+</div>
+
+<script>
+    function czr_getId() {
+        var czr_params = new URLSearchParams(window.location.search);
+        var czr_id = czr_params.get('id');
+        return czr_id || '1';
+    }
+
+    async function czr_load() {
+        var czr_id = czr_getId();
+        var czr_url = 'https://dummyjson.com/products/' + czr_id;
+        var czr_status = document.getElementById('czr_status');
+        var czr_content = document.getElementById('czr_content');
+
+        czr_status.innerHTML = '<span>请求中 ' + czr_url + ' ...</span>';
+
+        try {
+            var czr_res = await fetch(czr_url);
+            if (!czr_res.ok) throw new Error('HTTP ' + czr_res.status);
+            var czr_p = await czr_res.json();
+
+            czr_status.innerHTML = '<span class="czr_ok">✓ 加载成功</span><span>商品 ID: ' + czr_p.id + '</span>';
+
+            var czr_disc = czr_p.discountPercentage || 0;
+            var czr_old = czr_p.price;
+            var czr_final = (czr_old * (1 - czr_disc / 100)).toFixed(2);
+
+            var czr_stars = czr_stars_html(czr_p.rating);
+
+            var czr_html = '<div class="czr_detail"><div class="czr_detail_top">';
+
+            // 图片区
+            czr_html += '<div class="czr_gallery">';
+            czr_html += '<div class="czr_main_img"><img id="czr_main_img" src="' + (czr_p.images[0] || czr_p.thumbnail) + '" alt="' + czr_p.title + '"></div>';
+            if (czr_p.images && czr_p.images.length > 1) {
+                czr_html += '<div class="czr_thumbs">';
+                for (var czr_i = 0; czr_i < czr_p.images.length; czr_i++) {
+                    czr_html += '<div class="czr_thumb' + (czr_i === 0 ? ' active' : '') + '" onclick="czr_switchImg(this, \'' + czr_p.images[czr_i] + '\')"><img src="' + czr_p.images[czr_i] + '" alt=""></div>';
+                }
+                czr_html += '</div>';
+            }
+            czr_html += '</div>';
+
+            // 信息区
+            czr_html += '<div class="czr_info">';
+            czr_html += '<span class="czr_cat">' + czr_p.category + '</span>';
+            czr_html += '<h1 class="czr_name">' + czr_p.title + '</h1>';
+            czr_html += '<div class="czr_brand">品牌：' + (czr_p.brand || '—') + ' · SKU：' + czr_p.sku + '</div>';
+            czr_html += '<div class="czr_price_row">';
+            czr_html += '<span class="czr_final"><span class="czr_cur">$</span>' + czr_final + '</span>';
+            if (czr_disc > 0) {
+                czr_html += '<span class="czr_old">$' + czr_old.toFixed(2) + '</span>';
+                czr_html += '<span class="czr_save">省 $' + (czr_old - czr_final).toFixed(2) + '</span>';
+            }
+            czr_html += '</div>';
+            czr_html += '<div class="czr_rating_row">';
+            czr_html += '<span><span class="czr_stars">' + czr_stars + '</span> ' + czr_p.rating + '</span>';
+            czr_html += '<span>库存 ' + czr_p.stock + ' 件</span>';
+            czr_html += '<span>' + czr_p.availabilityStatus + '</span>';
+            czr_html += '</div>';
+            czr_html += '<div class="czr_desc">' + czr_p.description + '</div>';
+            czr_html += '<div class="czr_specs">';
+            czr_html += '<div class="czr_spec"><b>重量</b><span>' + czr_p.weight + ' g</span></div>';
+            czr_html += '<div class="czr_spec"><b>尺寸</b><span>' + czr_p.dimensions.width + '×' + czr_p.dimensions.height + '×' + czr_p.dimensions.depth + ' cm</span></div>';
+            czr_html += '<div class="czr_spec"><b>保修</b><span>' + czr_p.warrantyInformation + '</span></div>';
+            czr_html += '<div class="czr_spec"><b>配送</b><span>' + czr_p.shippingInformation + '</span></div>';
+            czr_html += '<div class="czr_spec"><b>退货政策</b><span>' + czr_p.returnPolicy + '</span></div>';
+            czr_html += '<div class="czr_spec"><b>起订量</b><span>' + czr_p.minimumOrderQuantity + ' 件</span></div>';
+            czr_html += '</div>';
+            czr_html += '</div></div>';
+
+            // 评论
+            if (czr_p.reviews && czr_p.reviews.length) {
+                czr_html += '<div class="czr_section"><h3>用户评价（' + czr_p.reviews.length + ' 条）</h3>';
+                for (var czr_j = 0; czr_j < czr_p.reviews.length; czr_j++) {
+                    var czr_r = czr_p.reviews[czr_j];
+                    czr_html += '<div class="czr_review">';
+                    czr_html += '<div class="czr_review_top"><span class="czr_review_name">' + czr_r.reviewerName + '</span><span class="czr_review_stars">' + czr_stars_html(czr_r.rating) + '</span></div>';
+                    czr_html += '<div class="czr_review_body">' + czr_r.comment + '</div>';
+                    czr_html += '</div>';
+                }
+                czr_html += '</div>';
+            }
+
+            czr_html += '</div>';
+            czr_content.innerHTML = czr_html;
+        } catch (czr_err) {
+            czr_status.innerHTML = '<span class="czr_bad">✗ 加载失败</span><span>' + czr_err.message + '</span>';
+            czr_content.innerHTML = '<div class="czr_error">商品详情加载失败：' + czr_err.message + '</div>';
+        }
+    }
+
+    function czr_stars_html(czr_rating) {
+        var czr_full = Math.round(czr_rating);
+        var czr_s = '';
+        for (var czr_i = 0; czr_i < 5; czr_i++) {
+            czr_s += czr_i < czr_full ? '★' : '☆';
+        }
+        return czr_s;
+    }
+
+    function czr_switchImg(czr_el, czr_src) {
+        document.getElementById('czr_main_img').src = czr_src;
+        var czr_all = document.querySelectorAll('.czr_thumb');
+        for (var czr_i = 0; czr_i < czr_all.length; czr_i++) {
+            czr_all[czr_i].classList.remove('active');
+        }
+        czr_el.classList.add('active');
+    }
+
+    czr_load();
+</script>
+</body>
+</html>

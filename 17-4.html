@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · 接口测试工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #0b1a2e 0px, #1a0e2e 520px, #0b1a2e 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap { max-width: 1120px; margin: 0 auto; perspective: 1400px; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title {
+            font-size: 30px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #ff8a65, #ffc46b, #79d6ce, #ff8a65);
+            background-size: 300% 300%;
+            animation: czr_gradient 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes czr_gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .czr_subtitle {
+            font-size: 14px;
+            color: #9fb3cc;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+
+        /* 请求区 */
+        .czr_request {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            transform-style: preserve-3d;
+            animation: czr_in 0.5s ease;
+        }
+        @keyframes czr_in {
+            from { opacity: 0; transform: rotateX(-8deg) translateZ(-40px); }
+            to   { opacity: 1; transform: rotateX(0) translateZ(0); }
+        }
+
+        .czr_url_row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .czr_method {
+            width: 110px;
+            padding: 10px 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #79d6ce;
+            font-family: Consolas, monospace;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            background-image: none;
+        }
+        .czr_method option { background: #1a2540; color: #e8f1ff; }
+
+        .czr_url_input {
+            flex: 1;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: #a8ffd5;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 13px;
+            outline: none;
+            transition: border-color 0.25s ease;
+        }
+        .czr_url_input:focus { border-color: #4ca9d9; }
+
+        .czr_send_btn {
+            padding: 10px 28px;
+            background: linear-gradient(135deg, #4ca9d9, #79d6ce);
+            border: none;
+            border-radius: 8px;
+            color: #071722;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+        .czr_send_btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(76, 169, 217, 0.4); }
+        .czr_send_btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* 预设 */
+        .czr_presets {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        .czr_presets label {
+            font-size: 12px;
+            color: #8fa6c2;
+            padding-top: 8px;
+        }
+        .czr_preset_btn {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            color: #9fb3cc;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: inherit;
+        }
+        .czr_preset_btn:hover { color: #e8f1ff; background: rgba(255, 255, 255, 0.12); }
+
+        /* 编辑区 */
+        .czr_editors {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+        .czr_editor_box h4 {
+            font-size: 12px;
+            color: #8fa6c2;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .czr_editor {
+            width: 100%;
+            min-height: 120px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 12px 14px;
+            color: #a8ffd5;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.25s ease;
+        }
+        .czr_editor:focus { border-color: #4ca9d9; }
+
+        /* 响应区 */
+        .czr_response {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .czr_resp_head {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            padding: 14px 20px;
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 12px;
+        }
+        .czr_pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #8fa6c2;
+        }
+        .czr_pill.ok { color: #79d6ce; border-color: rgba(121, 214, 206, 0.5); }
+        .czr_pill.bad { color: #ff9f9f; border-color: rgba(255, 107, 107, 0.5); }
+
+        .czr_resp_tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .czr_resp_tab {
+            padding: 12px 22px;
+            font-size: 13px;
+            color: #8fa6c2;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.25s ease;
+        }
+        .czr_resp_tab:hover { color: #e8f1ff; }
+        .czr_resp_tab.active {
+            color: #79d6ce;
+            border-bottom-color: #79d6ce;
+        }
+
+        .czr_resp_body {
+            padding: 16px 20px;
+            max-height: 420px;
+            overflow: auto;
+        }
+        .czr_resp_body pre {
+            margin: 0;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.8;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .czr_resp_body .czr_key { color: #ffc46b; }
+        .czr_resp_body .czr_str { color: #a8ffd5; }
+        .czr_resp_body .czr_num { color: #79d6ce; }
+        .czr_resp_body .czr_bool { color: #ff9f9f; }
+        .czr_resp_body .czr_null { color: #b08cff; }
+
+        .czr_empty {
+            text-align: center;
+            color: #6c83a0;
+            font-size: 13px;
+            padding: 40px 20px;
+        }
+        .czr_empty .czr_spinner {
+            width: 30px; height: 30px;
+            margin: 0 auto 12px;
+            border: 3px solid rgba(255, 255, 255, 0.12);
+            border-top-color: #79d6ce;
+            border-radius: 50%;
+            animation: czr_spin 0.9s linear infinite;
+        }
+        @keyframes czr_spin { to { transform: rotate(360deg); } }
+
+        .czr_err_box {
+            background: rgba(255, 107, 107, 0.08);
+            border-left: 3px solid #ff6b6b;
+            border-radius: 8px;
+            padding: 14px 16px;
+            color: #ff9f9f;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+
+        @media (max-width: 720px) {
+            .czr_editors { grid-template-columns: 1fr; }
+            .czr_url_row { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-02，功能名称：远程接口测试工具（GET/POST/PUT/DELETE） -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+    <h1 class="czr_title">接口测试工具</h1>
+    <p class="czr_subtitle">原生 <b>fetch()</b> 实现的轻量接口测试工具，支持 GET / POST / PUT / DELETE，可查看响应状态码、响应头、响应体，以及完整的错误提示。</p>
+
+    <!-- 请求区 -->
+    <div class="czr_request">
+        <div class="czr_url_row">
+            <select class="czr_method" id="czr_method">
+                <option>GET</option>
+                <option>POST</option>
+                <option>PUT</option>
+                <option>DELETE</option>
+            </select>
+            <input type="text" class="czr_url_input" id="czr_url" value="https://jsonplaceholder.typicode.com/posts" placeholder="请输入接口地址">
+            <button class="czr_send_btn" id="czr_send" onclick="czr_send()">发送</button>
+        </div>
+
+        <div class="czr_presets">
+            <label>快捷预设：</label>
+            <button class="czr_preset_btn" onclick="czr_preset('GET','https://jsonplaceholder.typicode.com/posts?_limit=5')">GET 文章列表</button>
+            <button class="czr_preset_btn" onclick="czr_preset('POST','https://jsonplaceholder.typicode.com/posts')">POST 新建文章</button>
+            <button class="czr_preset_btn" onclick="czr_preset('PUT','https://jsonplaceholder.typicode.com/posts/1')">PUT 修改文章</button>
+            <button class="czr_preset_btn" onclick="czr_preset('DELETE','https://jsonplaceholder.typicode.com/posts/1')">DELETE 删除文章</button>
+            <button class="czr_preset_btn" onclick="czr_preset('GET','https://jsonplaceholder.typicode.com/posts/99999')">GET 404 错误示例</button>
+        </div>
+
+        <div class="czr_editors">
+            <div class="czr_editor_box">
+                <h4>请求头 Headers (JSON)</h4>
+                <textarea class="czr_editor" id="czr_headers">{
+  "Content-Type": "application/json"
+}</textarea>
+            </div>
+            <div class="czr_editor_box">
+                <h4>请求体 Body (JSON，POST/PUT 时使用)</h4>
+                <textarea class="czr_editor" id="czr_body">{
+  "title": "陈卓然的测试文章",
+  "body": "这是通过 POST 发送的请求体内容",
+  "userId": 1012
+}</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- 响应区 -->
+    <div class="czr_response">
+        <div class="czr_resp_head" id="czr_resp_head">
+            <span class="czr_pill">尚未发送请求</span>
+        </div>
+        <div class="czr_resp_tabs">
+            <div class="czr_resp_tab active" onclick="czr_tab(this, 'body')">响应体</div>
+            <div class="czr_resp_tab" onclick="czr_tab(this, 'headers')">响应头</div>
+        </div>
+        <div class="czr_resp_body" id="czr_resp_body">
+            <div class="czr_empty">点击上方「发送」按钮发起请求</div>
+        </div>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 17-4.html · 接口测试工具</p>
+</div>
+
+<script>
+    var czr_respData = { body: null, headers: null };
+
+    function czr_preset(czr_m, czr_u) {
+        document.getElementById('czr_method').value = czr_m;
+        document.getElementById('czr_url').value = czr_u;
+        if (czr_m === 'POST' || czr_m === 'PUT') {
+            document.getElementById('czr_body').value = '{\n  "title": "陈卓然的测试文章",\n  "body": "这是通过 ' + czr_m + ' 发送的请求体内容",\n  "userId": 1012\n}';
+        } else {
+            document.getElementById('czr_body').value = '{}';
+        }
+    }
+
+    function czr_tab(czr_el, czr_name) {
+        var czr_tabs = document.querySelectorAll('.czr_resp_tab');
+        for (var czr_i = 0; czr_i < czr_tabs.length; czr_i++) {
+            czr_tabs[czr_i].classList.remove('active');
+        }
+        czr_el.classList.add('active');
+        var czr_box = document.getElementById('czr_resp_body');
+
+        if (czr_name === 'body') {
+            if (czr_respData.body !== null) {
+                czr_box.innerHTML = czr_respData.body;
+            } else {
+                czr_box.innerHTML = '<div class="czr_empty">暂无响应体</div>';
+            }
+        } else {
+            if (czr_respData.headers !== null) {
+                czr_box.innerHTML = '<pre>' + czr_respData.headers + '</pre>';
+            } else {
+                czr_box.innerHTML = '<div class="czr_empty">暂无响应头</div>';
+            }
+        }
+    }
+
+    function czr_highlightJson(czr_json) {
+        return czr_json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (czr_m) {
+            var czr_cls = 'czr_num';
+            if (/^"/.test(czr_m)) {
+                czr_cls = /:$/.test(czr_m) ? 'czr_key' : 'czr_str';
+            } else if (/true|false/.test(czr_m)) {
+                czr_cls = 'czr_bool';
+            } else if (/null/.test(czr_m)) {
+                czr_cls = 'czr_null';
+            }
+            return '<span class="' + czr_cls + '">' + czr_m + '</span>';
+        });
+    }
+
+    async function czr_send() {
+        var czr_method = document.getElementById('czr_method').value;
+        var czr_url = document.getElementById('czr_url').value.trim();
+        var czr_sendBtn = document.getElementById('czr_send');
+        var czr_head = document.getElementById('czr_resp_head');
+        var czr_bodyBox = document.getElementById('czr_resp_body');
+
+        czr_sendBtn.disabled = true;
+        czr_sendBtn.textContent = '发送中...';
+        czr_head.innerHTML = '<span class="czr_pill">请求中 ' + czr_method + ' ' + czr_url + ' ...</span>';
+        czr_bodyBox.innerHTML = '<div class="czr_empty"><div class="czr_spinner"></div>等待响应...</div>';
+
+        if (!czr_url) {
+            czr_head.innerHTML = '<span class="czr_pill bad">请填写接口地址</span>';
+            czr_sendBtn.disabled = false;
+            czr_sendBtn.textContent = '发送';
+            return;
+        }
+
+        // 解析 headers
+        var czr_headersObj = {};
+        try {
+            var czr_headersText = document.getElementById('czr_headers').value.trim();
+            if (czr_headersText) czr_headersObj = JSON.parse(czr_headersText);
+        } catch (czr_he) {
+            czr_head.innerHTML = '<span class="czr_pill bad">Headers JSON 格式错误</span>';
+            czr_bodyBox.innerHTML = '<div class="czr_err_box">' + czr_he.message + '</div>';
+            czr_sendBtn.disabled = false;
+            czr_sendBtn.textContent = '发送';
+            return;
+        }
+
+        // 组装 fetch 选项
+        var czr_opts = { method: czr_method, headers: czr_headersObj };
+        if (czr_method === 'POST' || czr_method === 'PUT') {
+            czr_opts.body = document.getElementById('czr_body').value.trim() || '{}';
+        }
+
+        var czr_start = performance.now();
+
+        try {
+            var czr_res = await fetch(czr_url, czr_opts);
+            var czr_cost = Math.round(performance.now() - czr_start);
+
+            // 读取响应头
+            var czr_headerLines = [];
+            czr_res.headers.forEach(function (czr_val, czr_key) {
+                czr_headerLines.push(czr_key + ': ' + czr_val);
+            });
+            czr_respData.headers = czr_headerLines.length ? czr_headerLines.join('\n') : '(无响应头)';
+
+            // 读取响应体
+            var czr_text = await czr_res.text();
+            var czr_parsed = null;
+            try {
+                czr_parsed = JSON.parse(czr_text);
+                czr_respData.body = '<pre>' + czr_highlightJson(JSON.stringify(czr_parsed, null, 2)) + '</pre>';
+            } catch (czr_pe) {
+                czr_respData.body = '<pre>' + (czr_text || '(空响应体)') + '</pre>';
+            }
+
+            var czr_statusCls = czr_res.ok ? 'ok' : 'bad';
+            czr_head.innerHTML =
+                '<span class="czr_pill ' + czr_statusCls + '">状态 ' + czr_res.status + ' ' + czr_res.statusText + '</span>' +
+                '<span class="czr_pill">耗时 ' + czr_cost + ' ms</span>' +
+                '<span class="czr_pill">大小 ' + czr_text.length + ' 字节</span>' +
+                '<span class="czr_pill">' + czr_method + ' ' + czr_url + '</span>';
+
+            // 切回响应体 tab
+            document.querySelectorAll('.czr_resp_tab')[0].classList.add('active');
+            document.querySelectorAll('.czr_resp_tab')[1].classList.remove('active');
+            czr_bodyBox.innerHTML = czr_respData.body;
+
+        } catch (czr_err) {
+            var czr_cost2 = Math.round(performance.now() - czr_start);
+            czr_head.innerHTML =
+                '<span class="czr_pill bad">请求失败</span>' +
+                '<span class="czr_pill">耗时 ' + czr_cost2 + ' ms</span>';
+            czr_respData.body = null;
+            czr_respData.headers = null;
+            czr_bodyBox.innerHTML =
+                '<div class="czr_err_box">' +
+                '<p style="font-size:15px;margin-bottom:10px;">请求出错</p>' +
+                '<p>' + czr_err.message + '</p>' +
+                '<p style="margin-top:12px;color:#8fa6c2;font-size:12px;">' +
+                '常见原因：<br>' +
+                '① 接口地址错误或不可用<br>' +
+                '② 目标服务器未开启跨域（CORS），缺少 Access-Control-Allow-Origin 响应头<br>' +
+                '③ 网络中断或超时<br>' +
+                '④ 请求方法（如 POST）未在请求头中声明 Content-Type' +
+                '</p></div>';
+        } finally {
+            czr_sendBtn.disabled = false;
+            czr_sendBtn.textContent = '发送';
+        }
+    }
+</script>
+</body>
+</html>
