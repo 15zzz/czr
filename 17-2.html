@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · fetch 获取接口数据</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #071722 0px, #102a35 520px, #0b1a2e 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap { max-width: 1120px; margin: 0 auto; perspective: 1400px; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #79d6ce, #4ca9d9, #ffc46b, #79d6ce);
+            background-size: 300% 300%;
+            animation: czr_gradient 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes czr_gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .czr_subtitle {
+            font-size: 14px;
+            color: #9fb3cc;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+
+        /* ========== 接口选择 ========== */
+        .czr_api_bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .czr_api_btn {
+            padding: 10px 18px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #9fb3cc;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 22px;
+            cursor: pointer;
+            transition: all 0.28s ease;
+        }
+        .czr_api_btn:hover { color: #e8f1ff; background: rgba(255, 255, 255, 0.12); }
+        .czr_api_btn.active {
+            color: #071722;
+            background: linear-gradient(135deg, #79d6ce, #4ca9d9);
+            border-color: transparent;
+            font-weight: bold;
+            box-shadow: 0 6px 18px rgba(76, 169, 217, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .czr_url_box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 14px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            color: #a8ffd5;
+            word-break: break-all;
+        }
+        .czr_url_box .czr_method {
+            flex-shrink: 0;
+            padding: 3px 10px;
+            border-radius: 5px;
+            background: #79d6ce;
+            color: #071722;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .czr_tool_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .czr_btn {
+            padding: 10px 20px;
+            font-size: 13px;
+            font-family: inherit;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            color: #ffffff;
+            background: linear-gradient(135deg, #4ca9d9, #79d6ce);
+        }
+        .czr_btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(76, 169, 217, 0.35); }
+        .czr_btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+        .czr_btn.ghost {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .czr_btn.ghost:hover { background: rgba(255, 255, 255, 0.18); box-shadow: none; }
+
+        /* ========== 状态栏 ========== */
+        .czr_status {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 18px;
+            min-height: 24px;
+        }
+        .czr_status span {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #8fa6c2;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .czr_status span.czr_ok { color: #79d6ce; border-color: rgba(121, 214, 206, 0.5); }
+        .czr_status span.czr_bad { color: #ff9f9f; border-color: rgba(255, 107, 107, 0.5); }
+
+        /* ========== 卡片列表 ========== */
+        .czr_list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            min-height: 80px;
+        }
+
+        .czr_item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: transform 0.32s ease, box-shadow 0.32s ease, border-color 0.32s ease, background 0.32s ease;
+            animation: czr_item_in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes czr_item_in {
+            from { opacity: 0; transform: rotateY(-8deg) translateY(16px) translateZ(-30px); }
+            to   { opacity: 1; transform: rotateY(0deg) translateY(0) translateZ(0); }
+        }
+        .czr_item:hover {
+            transform: rotateY(3deg) translateY(-6px);
+            border-color: rgba(121, 214, 206, 0.45);
+            box-shadow: 0 18px 36px rgba(0, 0, 0, 0.45);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .czr_item_top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .czr_avatar {
+            width: 34px;
+            height: 34px;
+            flex-shrink: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: #071722;
+            background: linear-gradient(135deg, #79d6ce, #4ca9d9);
+        }
+        .czr_item_title {
+            flex: 1;
+            min-width: 0;
+            font-size: 14px;
+            font-weight: bold;
+            color: #e8f1ff;
+            line-height: 1.5;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .czr_item_sub {
+            font-size: 12px;
+            color: #4ca9d9;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        .czr_item_body {
+            font-size: 12.5px;
+            color: #a5b8cd;
+            line-height: 1.8;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ========== 原始 JSON ========== */
+        .czr_raw {
+            margin-top: 24px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .czr_raw_head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 18px;
+            font-size: 13px;
+            color: #79d6ce;
+            cursor: pointer;
+            transition: background 0.25s ease;
+        }
+        .czr_raw_head:hover { background: rgba(255, 255, 255, 0.05); }
+        .czr_raw pre {
+            margin: 0;
+            padding: 4px 18px 16px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            color: #a8ffd5;
+            max-height: 320px;
+            overflow: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .czr_raw pre.czr_hide { display: none; }
+
+        /* ========== 代码说明 ========== */
+        .czr_code_card {
+            margin-top: 24px;
+            background: rgba(76, 169, 217, 0.08);
+            border: 1px solid rgba(76, 169, 217, 0.3);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+        .czr_code_card h3 {
+            font-size: 14px;
+            color: #79d6ce;
+            margin-bottom: 12px;
+        }
+        .czr_code_card pre {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid #4ca9d9;
+            border-radius: 8px;
+            padding: 14px 18px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.8;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        /* ========== 加载 / 错误 ========== */
+        .czr_loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8fa6c2;
+            font-size: 13px;
+            grid-column: 1 / -1;
+        }
+        .czr_spinner {
+            width: 34px;
+            height: 34px;
+            margin: 0 auto 16px;
+            border: 3px solid rgba(255, 255, 255, 0.12);
+            border-top-color: #79d6ce;
+            border-radius: 50%;
+            animation: czr_spin 0.9s linear infinite;
+        }
+        @keyframes czr_spin { to { transform: rotate(360deg); } }
+
+        .czr_error {
+            grid-column: 1 / -1;
+            padding: 40px 24px;
+            text-align: center;
+            background: rgba(255, 107, 107, 0.08);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+            border-radius: 12px;
+            color: #ff9f9f;
+            font-size: 13px;
+            line-height: 1.9;
+        }
+
+        /* ========== 详情弹窗 ========== */
+        .czr_mask {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.65);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 999;
+        }
+        .czr_mask.active { display: flex; }
+
+        .czr_modal {
+            width: min(600px, 94%);
+            max-height: 84vh;
+            overflow: auto;
+            background: #0f2231;
+            border: 1px solid rgba(121, 214, 206, 0.35);
+            border-radius: 14px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+            animation: czr_modal_in 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        @keyframes czr_modal_in {
+            from { opacity: 0; transform: rotateX(14deg) scale(0.9); }
+            to   { opacity: 1; transform: rotateX(0deg) scale(1); }
+        }
+        .czr_modal_head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 20px 22px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .czr_modal_head h3 {
+            font-size: 16px;
+            color: #79d6ce;
+            line-height: 1.5;
+        }
+        .czr_modal_close {
+            width: 30px;
+            height: 30px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            color: #9fb3cc;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .czr_modal_close:hover { background: rgba(255, 107, 107, 0.3); color: #ff9f9f; transform: rotate(90deg); }
+        .czr_modal_body { padding: 18px 22px 22px; }
+        .czr_modal_body pre {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid #79d6ce;
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.8;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-02，功能名称：fetch 获取接口数据并展示 -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+
+    <h1 class="czr_title">fetch 获取接口数据</h1>
+    <p class="czr_subtitle">
+        使用原生 <b>fetch()</b> 请求支持跨域访问的公开接口（JSONPlaceholder），
+        拿到响应后先用 <b>response.json()</b> 解析成对象，再动态渲染成卡片。全程无任何第三方库。
+    </p>
+
+    <!-- 接口选择 -->
+    <div class="czr_api_bar">
+        <button class="czr_api_btn active" onclick="czr_pick(this, 'users')">① 用户列表 users</button>
+        <button class="czr_api_btn" onclick="czr_pick(this, 'posts')">② 文章列表 posts</button>
+        <button class="czr_api_btn" onclick="czr_pick(this, 'comments')">③ 评论列表 comments</button>
+        <button class="czr_api_btn" onclick="czr_pick(this, 'bad')">④ 故意请求错误地址</button>
+    </div>
+
+    <div class="czr_url_box">
+        <span class="czr_method">GET</span>
+        <span id="czr_url">https://jsonplaceholder.typicode.com/users?_limit=10</span>
+    </div>
+
+    <div class="czr_tool_row">
+        <button class="czr_btn" id="czr_btn_load" onclick="czr_load()">▶ 发起 fetch 请求</button>
+        <button class="czr_btn ghost" onclick="czr_toggleRaw()">显示 / 隐藏原始 JSON</button>
+    </div>
+
+    <div class="czr_status" id="czr_status"></div>
+
+    <!-- 卡片列表 -->
+    <div class="czr_list" id="czr_list">
+        <div class="czr_loading">
+            <div class="czr_spinner"></div>
+            点击「发起 fetch 请求」加载数据
+        </div>
+    </div>
+
+    <!-- 原始 JSON -->
+    <div class="czr_raw">
+        <div class="czr_raw_head" onclick="czr_toggleRaw()">
+            <span>接口返回的原始 JSON 文本</span>
+            <span id="czr_raw_arrow">▼</span>
+        </div>
+        <pre id="czr_raw_out" class="czr_hide">暂无数据</pre>
+    </div>
+
+    <!-- 代码说明 -->
+    <div class="czr_code_card">
+        <h3>核心代码（原生 fetch + async/await）</h3>
+        <pre>async function czr_load() {
+    try {
+        var czr_res = await fetch(czr_url);          // 发起请求
+        if (!czr_res.ok) {                            // 判断 HTTP 状态码
+            throw new Error('HTTP ' + czr_res.status);
+        }
+        var czr_data = await czr_res.json();          // 把响应体解析成对象
+        czr_render(czr_data);                         // 渲染到页面
+    } catch (czr_err) {
+        czr_showError(czr_err.message);               // 捕获网络 / 解析异常
+    }
+}</pre>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 17-2.html · fetch 获取接口数据</p>
+</div>
+
+<!-- 详情弹窗 -->
+<div class="czr_mask" id="czr_mask" onclick="czr_closeModal(event)">
+    <div class="czr_modal" onclick="event.stopPropagation()">
+        <div class="czr_modal_head">
+            <h3 id="czr_modal_title">详情</h3>
+            <button class="czr_modal_close" onclick="czr_closeModal()">✕</button>
+        </div>
+        <div class="czr_modal_body">
+            <pre id="czr_modal_body">—</pre>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ========== 接口配置 ==========
+    var czr_apis = {
+        users: {
+            url: 'https://jsonplaceholder.typicode.com/users?_limit=10',
+            label: '用户列表',
+            avatar: 'name',
+            title: function (czr_d) { return czr_d.name; },
+            sub: function (czr_d) { return czr_d.email + ' · ' + czr_d.address.city; },
+            body: function (czr_d) { return '电话 ' + czr_d.phone + '　公司 ' + czr_d.company.name + '（' + czr_d.company.bs + '）'; }
+        },
+        posts: {
+            url: 'https://jsonplaceholder.typicode.com/posts?_limit=12',
+            label: '文章列表',
+            avatar: 'userId',
+            title: function (czr_d) { return czr_d.title; },
+            sub: function (czr_d) { return '作者 ID：' + czr_d.userId + ' · 文章编号 ' + czr_d.id; },
+            body: function (czr_d) { return czr_d.body; }
+        },
+        comments: {
+            url: 'https://jsonplaceholder.typicode.com/comments?_limit=12',
+            label: '评论列表',
+            avatar: 'postId',
+            title: function (czr_d) { return czr_d.name; },
+            sub: function (czr_d) { return czr_d.email + ' · 所属文章 ' + czr_d.postId; },
+            body: function (czr_d) { return czr_d.body; }
+        },
+        bad: {
+            url: 'https://jsonplaceholder.typicode.com/this-path-does-not-exist',
+            label: '错误示例',
+            avatar: function () { return '!'; },
+            title: function (czr_d) { return '错误'; },
+            sub: function () { return ''; },
+            body: function () { return ''; }
+        }
+    };
+
+    var czr_current = 'users';
+    var czr_rawData = null;
+
+    // ========== 切换接口 ==========
+    function czr_pick(czr_btn, czr_key) {
+        var czr_btns = document.querySelectorAll('.czr_api_btn');
+        for (var czr_i = 0; czr_i < czr_btns.length; czr_i++) {
+            czr_btns[czr_i].classList.remove('active');
+        }
+        czr_btn.classList.add('active');
+        czr_current = czr_key;
+        document.getElementById('czr_url').textContent = czr_apis[czr_key].url;
+        czr_reset();
+    }
+
+    function czr_reset() {
+        document.getElementById('czr_list').innerHTML =
+            '<div class="czr_loading"><div class="czr_spinner"></div>点击「发起 fetch 请求」加载数据</div>';
+        document.getElementById('czr_status').innerHTML = '';
+        document.getElementById('czr_raw_out').textContent = '暂无数据';
+        document.getElementById('czr_raw_out').className = 'czr_hide';
+        document.getElementById('czr_raw_arrow').textContent = '▼';
+    }
+
+    // ========== 发起请求 ==========
+    async function czr_load() {
+        var czr_cfg = czr_apis[czr_current];
+        var czr_listBox = document.getElementById('czr_list');
+        var czr_statusBox = document.getElementById('czr_status');
+        var czr_btn = document.getElementById('czr_btn_load');
+
+        czr_btn.disabled = true;
+        czr_statusBox.innerHTML = '<span>正在请求 ' + czr_cfg.url + ' ...</span>';
+        czr_listBox.innerHTML = '<div class="czr_loading"><div class="czr_spinner"></div>加载中，请稍候...</div>';
+
+        var czr_start = performance.now();
+
+        try {
+            var czr_res = await fetch(czr_cfg.url);
+            var czr_cost = Math.round(performance.now() - czr_start);
+
+            if (!czr_res.ok) {
+                throw new Error('HTTP ' + czr_res.status + ' ' + czr_res.statusText);
+            }
+
+            var czr_data = await czr_res.json();
+            czr_rawData = czr_data;
+
+            czr_statusBox.innerHTML =
+                '<span class="czr_ok">✓ 请求成功</span>' +
+                '<span class="czr_ok">状态码 ' + czr_res.status + '</span>' +
+                '<span>耗时 ' + czr_cost + ' ms</span>' +
+                '<span>记录数 ' + czr_data.length + ' 条</span>' +
+                '<span>数据类型 ' + (Array.isArray(czr_data) ? 'Array' : typeof czr_data) + '</span>';
+
+            document.getElementById('czr_raw_out').textContent = JSON.stringify(czr_data, null, 2);
+
+            czr_render(czr_data, czr_cfg);
+        } catch (czr_err) {
+            var czr_cost2 = Math.round(performance.now() - czr_start);
+            czr_statusBox.innerHTML =
+                '<span class="czr_bad">✗ 请求失败</span>' +
+                '<span>耗时 ' + czr_cost2 + ' ms</span>';
+            czr_listBox.innerHTML =
+                '<div class="czr_error">' +
+                '<p style="font-size:16px;margin-bottom:10px;">请求出错</p>' +
+                '<p>' + czr_err.message + '</p>' +
+                '<p style="margin-top:10px;color:#8fa6c2;font-size:12px;">' +
+                '常见原因：接口地址错误、网络不可用、接口未开启跨域（缺少 Access-Control-Allow-Origin 响应头）。' +
+                '</p></div>';
+            document.getElementById('czr_raw_out').textContent = '（请求失败，无数据）';
+        } finally {
+            czr_btn.disabled = false;
+        }
+    }
+
+    // ========== 渲染卡片 ==========
+    function czr_render(czr_data, czr_cfg) {
+        var czr_listBox = document.getElementById('czr_list');
+        czr_listBox.innerHTML = '';
+
+        for (var czr_i = 0; czr_i < czr_data.length; czr_i++) {
+            var czr_d = czr_data[czr_i];
+            var czr_item = document.createElement('div');
+            czr_item.className = 'czr_item';
+            czr_item.style.animationDelay = (czr_i * 40) + 'ms';
+
+            var czr_av = typeof czr_cfg.avatar === 'function'
+                ? czr_cfg.avatar(czr_d)
+                : String(czr_d[czr_cfg.avatar]);
+            czr_av = czr_av.substring(0, 2).toUpperCase();
+
+            czr_item.innerHTML =
+                '<div class="czr_item_top">' +
+                    '<div class="czr_avatar">' + czr_av + '</div>' +
+                    '<div class="czr_item_title">' + czr_cfg.title(czr_d) + '</div>' +
+                '</div>' +
+                '<div class="czr_item_sub">' + czr_cfg.sub(czr_d) + '</div>' +
+                '<div class="czr_item_body">' + czr_cfg.body(czr_d) + '</div>';
+
+            czr_item.onclick = (function (czr_obj) {
+                return function () { czr_openModal(czr_obj); };
+            })(czr_d);
+
+            czr_listBox.appendChild(czr_item);
+        }
+    }
+
+    // ========== 原始 JSON 折叠 ==========
+    function czr_toggleRaw() {
+        var czr_pre = document.getElementById('czr_raw_out');
+        var czr_arrow = document.getElementById('czr_raw_arrow');
+        if (czr_pre.classList.contains('czr_hide')) {
+            czr_pre.classList.remove('czr_hide');
+            czr_arrow.textContent = '▲';
+        } else {
+            czr_pre.classList.add('czr_hide');
+            czr_arrow.textContent = '▼';
+        }
+    }
+
+    // ========== 详情弹窗 ==========
+    function czr_openModal(czr_obj) {
+        document.getElementById('czr_modal_title').textContent = '单条记录的完整 JSON';
+        document.getElementById('czr_modal_body').textContent = JSON.stringify(czr_obj, null, 2);
+        document.getElementById('czr_mask').classList.add('active');
+    }
+
+    function czr_closeModal(czr_e) {
+        if (czr_e && czr_e.target.id !== 'czr_mask') return;
+        document.getElementById('czr_mask').classList.remove('active');
+    }
+
+    document.addEventListener('keydown', function (czr_e) {
+        if (czr_e.key === 'Escape') czr_closeModal();
+    });
+
+    // 进入页面自动加载一次
+    czr_load();
+</script>
+</body>
+</html>

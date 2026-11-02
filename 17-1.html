@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · JSON 数据格式</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #0b1a2e 0px, #2b1a40 520px, #0e1b2a 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .czr_wrap { max-width: 1120px; margin: 0 auto; perspective: 1400px; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, #ffc46b, #79d6ce, #4ca9d9, #ffc46b);
+            background-size: 300% 300%;
+            animation: czr_gradient 6s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        @keyframes czr_gradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .czr_subtitle {
+            font-size: 14px;
+            color: #9fb3cc;
+            margin-bottom: 26px;
+            line-height: 1.8;
+        }
+
+        /* ========== Tab ========== */
+        .czr_tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 26px;
+        }
+        .czr_tab {
+            padding: 10px 20px;
+            font-size: 13px;
+            font-family: inherit;
+            color: #9fb3cc;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 22px;
+            cursor: pointer;
+            transition: all 0.28s ease;
+        }
+        .czr_tab:hover { color: #e8f1ff; background: rgba(255, 255, 255, 0.12); }
+        .czr_tab.active {
+            color: #0b1a2e;
+            background: linear-gradient(135deg, #79d6ce, #4ca9d9);
+            border-color: transparent;
+            font-weight: bold;
+            box-shadow: 0 6px 18px rgba(76, 169, 217, 0.35);
+            transform: translateY(-2px);
+        }
+
+        /* ========== 面板（3D 入场） ========== */
+        .czr_panel { display: none; }
+        .czr_panel.active {
+            display: block;
+            animation: czr_panel_in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        @keyframes czr_panel_in {
+            from { opacity: 0; transform: rotateX(-12deg) translateZ(-60px); }
+            to   { opacity: 1; transform: rotateX(0deg) translateZ(0); }
+        }
+
+        .czr_card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 22px 24px;
+            margin-bottom: 20px;
+            transform-style: preserve-3d;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+        }
+        .czr_card:hover {
+            border-color: rgba(121, 214, 206, 0.4);
+            box-shadow: 0 14px 34px rgba(0, 0, 0, 0.35);
+            transform: rotateY(2deg) translateY(-3px);
+        }
+
+        .czr_card h3 {
+            font-size: 16px;
+            color: #79d6ce;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .czr_card h3 .czr_badge_no {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            color: #0b1a2e;
+            background: #79d6ce;
+            border-radius: 6px;
+        }
+
+        .czr_card p {
+            font-size: 13px;
+            color: #b8c9dd;
+            line-height: 1.9;
+            margin-bottom: 10px;
+        }
+
+        pre.czr_code {
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid #4ca9d9;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.75;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+        .czr_key { color: #ffc46b; }
+        .czr_str { color: #a8ffd5; }
+        .czr_num { color: #79d6ce; }
+        .czr_bool { color: #ff9f9f; }
+
+        /* ========== 规则列表 ========== */
+        .czr_rule_list { list-style: none; }
+        .czr_rule_list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+            font-size: 13px;
+            color: #b8c9dd;
+            line-height: 1.8;
+        }
+        .czr_rule_list li:last-child { border-bottom: none; }
+        .czr_rule_list li i.czr_dot {
+            flex-shrink: 0;
+            width: 18px;
+            height: 18px;
+            margin-top: 3px;
+            border-radius: 50%;
+            background: rgba(121, 214, 206, 0.2);
+            border: 1px solid #79d6ce;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-style: normal;
+            font-size: 10px;
+            color: #79d6ce;
+        }
+        .czr_rule_list code {
+            font-family: Consolas, "Courier New", monospace;
+            color: #ffc46b;
+            background: rgba(255, 196, 107, 0.1);
+            padding: 1px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* ========== 类型卡片 ========== */
+        .czr_type_grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 14px;
+        }
+        .czr_type_card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 18px;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            transition: all 0.32s ease;
+        }
+        .czr_type_card:hover {
+            transform: translateY(-6px) rotateX(6deg);
+            border-color: rgba(121, 214, 206, 0.5);
+            box-shadow: 0 16px 30px rgba(0, 0, 0, 0.4);
+        }
+        .czr_type_card.czr_on {
+            background: rgba(121, 214, 206, 0.12);
+            border-color: #79d6ce;
+        }
+        .czr_type_name {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffc46b;
+            margin-bottom: 8px;
+        }
+        .czr_type_card code.czr_type_val {
+            display: block;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            color: #a8ffd5;
+            margin-bottom: 8px;
+            word-break: break-all;
+        }
+        .czr_type_desc {
+            font-size: 12px;
+            color: #8fa6c2;
+            line-height: 1.7;
+        }
+
+        /* ========== 对比表 ========== */
+        .czr_compare {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        .czr_compare_col {
+            background: rgba(0, 0, 0, 0.28);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .czr_compare_col h4 {
+            font-size: 13px;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .czr_compare_col h4.ok { color: #79d6ce; }
+        .czr_compare_col h4.no { color: #ff9f9f; }
+
+        /* ========== 序列化工具 ========== */
+        .czr_tool_row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+        .czr_btn {
+            padding: 9px 18px;
+            font-size: 13px;
+            font-family: inherit;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            color: #ffffff;
+            background: linear-gradient(135deg, #4ca9d9, #79d6ce);
+        }
+        .czr_btn:hover { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(76, 169, 217, 0.35); }
+        .czr_btn.ghost {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .czr_btn.ghost:hover { background: rgba(255, 255, 255, 0.18); box-shadow: none; }
+
+        .czr_input {
+            width: 100%;
+            min-height: 130px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            padding: 14px 16px;
+            color: #a8ffd5;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.75;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.25s ease;
+        }
+        .czr_input:focus { border-color: #4ca9d9; }
+
+        .czr_out {
+            margin-top: 14px;
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid #79d6ce;
+            border-radius: 8px;
+            padding: 14px 16px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            word-break: break-all;
+            min-height: 46px;
+            line-height: 1.75;
+        }
+        .czr_out.czr_err { border-left-color: #ff6b6b; color: #ff9f9f; }
+        .czr_out_label {
+            font-size: 12px;
+            color: #8fa6c2;
+            margin-top: 14px;
+            margin-bottom: 6px;
+        }
+
+        /* ========== 树形视图 ========== */
+        .czr_tree_wrap {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        .czr_tree {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12.5px;
+            line-height: 1.9;
+            max-height: 380px;
+            overflow: auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 14px;
+            color: #b8c9dd;
+        }
+        .czr_node_key { color: #ffc46b; }
+        .czr_node_str { color: #a8ffd5; }
+        .czr_node_num { color: #79d6ce; }
+        .czr_node_bool { color: #ff9f9f; }
+        .czr_node_null { color: #b08cff; }
+        .czr_node_toggle {
+            cursor: pointer;
+            color: #4ca9d9;
+            user-select: none;
+            margin-right: 2px;
+        }
+        .czr_node_toggle:hover { color: #79d6ce; }
+        .czr_children { padding-left: 18px; border-left: 1px dashed rgba(255, 255, 255, 0.12); margin-left: 3px; }
+        .czr_children.czr_hide { display: none; }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+
+        @media (max-width: 720px) {
+            .czr_compare, .czr_tree_wrap { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-02，功能名称：JSON 数据格式演示 -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+
+    <h1 class="czr_title">JSON 数据格式演示</h1>
+    <p class="czr_subtitle">
+        JSON（JavaScript Object Notation）是一种轻量级的数据交换格式，采用完全独立于语言的文本格式，
+        是前后端数据传输最常用的载体。下面从语法规则、值类型、与 JS 对象的区别、序列化以及树形结构五个角度演示。
+    </p>
+
+    <!-- Tab 导航 -->
+    <div class="czr_tabs">
+        <button class="czr_tab active" onclick="czr_tab(this, 'rule')">① 语法规则</button>
+        <button class="czr_tab" onclick="czr_tab(this, 'type')">② 值类型</button>
+        <button class="czr_tab" onclick="czr_tab(this, 'diff')">③ 对象对比</button>
+        <button class="czr_tab" onclick="czr_tab(this, 'parse')">④ 序列化</button>
+        <button class="czr_tab" onclick="czr_tab(this, 'tree')">⑤ 树形视图</button>
+    </div>
+
+    <!-- ===== 1. 语法规则 ===== -->
+    <div class="czr_panel active" id="czr_panel_rule">
+        <div class="czr_card">
+            <h3><span class="czr_badge_no">1</span>JSON 的六条语法规则</h3>
+            <ul class="czr_rule_list">
+                <li><i class="czr_dot">1</i><span>数据以<b>键值对</b>形式组织，格式为 <code>"键": 值</code>，键与值之间用冒号分隔。</span></li>
+                <li><i class="czr_dot">2</i><span>键名<b>必须</b>使用<b>双引号</b>包裹，不能使用单引号，也不能省略引号。</span></li>
+                <li><i class="czr_dot">3</i><span>同一层级的键值对之间用<b>英文逗号</b>分隔，最后一个键值对后面<b>不能</b>加逗号。</span></li>
+                <li><i class="czr_dot">4</i><span>对象使用<b>花括号 <code>{}</code></b>，数组使用<b>方括号 <code>[]</code></b>，可层层嵌套。</span></li>
+                <li><i class="czr_dot">5</i><span>值只能是：字符串、数字、布尔值、null、对象、数组，<b>不能</b>是函数、undefined 或日期对象。</span></li>
+                <li><i class="czr_dot">6</i><span>JSON 是纯数据文本，<b>不含注释</b>，也不能使用变量，整体必须以一个值开始和结束。</span></li>
+            </ul>
+        </div>
+
+        <div class="czr_card">
+            <h3><span class="czr_badge_no">2</span>一个标准 JSON 示例</h3>
+<pre class="czr_code">{
+<span class="czr_key">"学号"</span>: <span class="czr_str">"1012"</span>,
+<span class="czr_key">"姓名"</span>: <span class="czr_str">"陈卓然"</span>,
+<span class="czr_key">"年龄"</span>: <span class="czr_num">20</span>,
+<span class="czr_key">"在读"</span>: <span class="czr_bool">true</span>,
+<span class="czr_key">"专业"</span>: {
+    <span class="czr_key">"名称"</span>: <span class="czr_str">"高级网页设计"</span>,
+    <span class="czr_key">"学分"</span>: <span class="czr_num">3.5</span>
+},
+<span class="czr_key">"技能"</span>: [<span class="czr_str">"HTML"</span>, <span class="czr_str">"CSS"</span>, <span class="czr_str">"JavaScript"</span>],
+<span class="czr_key">"备注"</span>: <span class="czr_bool">null</span>
+}</pre>
+            <p style="margin-top:12px;">上例包含对象嵌套对象（专业）、对象嵌套数组（技能），以及字符串、数字、布尔值和 null 四种基本值。</p>
+        </div>
+
+        <div class="czr_card">
+            <h3><span class="czr_badge_no">3</span>常见书写错误</h3>
+<pre class="czr_code"><span style="color:#ff6b6b;">✗ 错误（键没加双引号）</span>
+{ 学号: "1012" }
+
+<span style="color:#ff6b6b;">✗ 错误（用了单引号）</span>
+{ '姓名': '陈卓然' }
+
+<span style="color:#ff6b6b;">✗ 错误（末尾多了逗号）</span>
+{ "年龄": 20, }
+
+<span style="color:#ff6b6b;">✗ 错误（注释不是合法的 JSON）</span>
+{ "年龄": 20 /* 二十岁 */ }
+
+<span style="color:#79d6ce;">✓ 正确</span>
+{ "学号": "1012", "年龄": 20 }</pre>
+        </div>
+    </div>
+
+    <!-- ===== 2. 值类型 ===== -->
+    <div class="czr_panel" id="czr_panel_type">
+        <div class="czr_card">
+            <h3><span class="czr_badge_no">1</span>JSON 支持的六种值类型（点击卡片查看说明）</h3>
+            <div class="czr_type_grid" id="czr_type_grid"></div>
+        </div>
+        <div class="czr_card">
+            <h3><span class="czr_badge_no">2</span>被 JSON 排除的类型</h3>
+            <p>下面这些 JavaScript 中的值<b>不能</b>被 JSON 表示，序列化时会被丢弃或变成 null：</p>
+<pre class="czr_code"><span style="color:#ff9f9f;">undefined</span>      → 作为对象属性时被丢弃，作为数组元素时变成 null
+<span style="color:#ff9f9f;">function</span>       → 整个键值对被丢弃
+<span style="color:#ff9f9f;">Symbol</span>         → 键值对被丢弃
+<span style="color:#ff9f9f;">NaN / Infinity</span> → 序列化成 null
+<span style="color:#79d6ce;">Date</span>           → 序列化成 ISO 格式字符串（并非原生支持，靠 toJSON 转换）</pre>
+        </div>
+    </div>
+
+    <!-- ===== 3. 对象对比 ===== -->
+    <div class="czr_panel" id="czr_panel_diff">
+        <div class="czr_card">
+            <h3><span class="czr_badge_no">1</span>JSON 文本 vs JS 对象字面量</h3>
+            <p>两者写法相似，但 JSON 是<b>纯文本数据</b>，JS 对象是<b>内存中的引用数据</b>，区别如下：</p>
+            <div class="czr_compare">
+                <div class="czr_compare_col">
+                    <h4 class="ok">✓ 合法的 JSON</h4>
+<pre class="czr_code">{
+<span class="czr_key">"name"</span>: <span class="czr_str">"陈卓然"</span>,
+<span class="czr_key">"age"</span>: <span class="czr_num">20</span>,
+<span class="czr_key">"tags"</span>: [<span class="czr_str">"HTML"</span>]
+}</pre>
+                    <p style="margin-top:10px;font-size:12px;color:#8fa6c2;">
+                        键必须双引号 · 值只有六种类型 · 无逗号结尾 · 无注释
+                    </p>
+                </div>
+                <div class="czr_compare_col">
+                    <h4 class="no">✗ 不是 JSON（是 JS 对象）</h4>
+<pre class="czr_code"><span style="color:#ff9f9f;">const</span> czr_obj = {
+    name: <span class="czr_str">'陈卓然'</span>,
+    age: <span class="czr_num">20</span>,
+    say: <span style="color:#ff9f9f;">function</span> () {},
+    tmp: <span style="color:#ff9f9f;">undefined</span>
+};</pre>
+                    <p style="margin-top:10px;font-size:12px;color:#8fa6c2;">
+                        键可省略引号 · 可用单引号 · 可含函数/undefined/变量
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="czr_card">
+            <h3><span class="czr_badge_no">2</span>核心区别一览</h3>
+            <ul class="czr_rule_list">
+                <li><i class="czr_dot">1</i><span><b>本质</b>：JSON 是字符串（文本），JS 对象是内存中的数据结构。</span></li>
+                <li><i class="czr_dot">2</i><span><b>键名</b>：JSON 必须双引号；JS 对象可省略，也能用单引号或数字。</span></li>
+                <li><i class="czr_dot">3</i><span><b>值类型</b>：JSON 只允许 6 种；JS 对象还可包含函数、undefined、Symbol、Date、正则等。</span></li>
+                <li><i class="czr_dot">4</i><span><b>注释</b>：JSON 不允许任何注释；JS 对象可写 <code>//</code> 与 <code>/* */</code>。</span></li>
+                <li><i class="czr_dot">5</i><span><b>转换</b>：对象 → JSON 用 <code>JSON.stringify()</code>；JSON → 对象用 <code>JSON.parse()</code>。</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== 4. 序列化 ===== -->
+    <div class="czr_panel" id="czr_panel_parse">
+        <div class="czr_card">
+            <h3><span class="czr_badge_no">1</span>JSON.parse() —— 字符串转对象</h3>
+            <p>把 JSON 文本解析成真正的 JavaScript 对象，之后才能用点语法访问属性。</p>
+            <textarea class="czr_input" id="czr_parse_in">{"学号": "1012", "姓名": "陈卓然", "技能": ["HTML", "CSS", "JavaScript"]}</textarea>
+            <div class="czr_tool_row" style="margin-top:12px;">
+                <button class="czr_btn" onclick="czr_doParse()">▶ JSON.parse()</button>
+                <button class="czr_btn ghost" onclick="czr_fillParse()">填入错误示例</button>
+            </div>
+            <div class="czr_out_label">解析结果：</div>
+            <div class="czr_out" id="czr_parse_out">点击上方按钮查看结果</div>
+        </div>
+
+        <div class="czr_card">
+            <h3><span class="czr_badge_no">2</span>JSON.stringify() —— 对象转字符串</h3>
+            <p>把 JavaScript 对象序列化成 JSON 文本，第三个参数可控制缩进空格数。</p>
+<pre class="czr_code"><span style="color:#79d6ce;">var</span> czr_obj = { name: <span class="czr_str">"陈卓然"</span>, age: <span class="czr_num">20</span>, skills: [<span class="czr_str">"HTML"</span>, <span class="czr_str">"CSS"</span>] };
+JSON.stringify(czr_obj);      <span style="color:#6c83a0;">// 压缩成一行</span>
+JSON.stringify(czr_obj, <span style="color:#ff9f9f;">null</span>, <span class="czr_num">2</span>); <span style="color:#6c83a0;">// 缩进 2 个空格</span></pre>
+            <div class="czr_tool_row" style="margin-top:14px;">
+                <button class="czr_btn" onclick="czr_doStringify(0)">无缩进</button>
+                <button class="czr_btn ghost" onclick="czr_doStringify(2)">缩进 2 空格</button>
+                <button class="czr_btn ghost" onclick="czr_doStringify(4)">缩进 4 空格</button>
+            </div>
+            <div class="czr_out_label">序列化结果：</div>
+            <div class="czr_out" id="czr_stringify_out">点击上方按钮查看结果</div>
+        </div>
+    </div>
+
+    <!-- ===== 5. 树形视图 ===== -->
+    <div class="czr_panel" id="czr_panel_tree">
+        <div class="czr_card">
+            <h3><span class="czr_badge_no">1</span>JSON 树形查看器（点击 ▼ 折叠/展开）</h3>
+            <p>嵌套结构可以展开成树，点击左侧 ▼ 可折叠节点。左侧编辑 JSON 文本，点击「渲染树」即可重新生成。</p>
+            <div class="czr_tree_wrap">
+                <div>
+                    <textarea class="czr_input" id="czr_tree_in">{
+  "学校": "某某大学",
+  "班级": "1012",
+  "学生": [
+    { "姓名": "陈卓然", "年龄": 20, "技能": ["HTML", "CSS", "JS"] },
+    { "姓名": "李明", "年龄": 21, "技能": ["Vue"], "备注": null }
+  ],
+  "在线人数": 2,
+  "已结课": false
+}</textarea>
+                    <div class="czr_tool_row" style="margin-top:12px;">
+                        <button class="czr_btn" onclick="czr_renderTree()">▶ 渲染树</button>
+                        <button class="czr_btn ghost" onclick="czr_expandAll(true)">全部展开</button>
+                        <button class="czr_btn ghost" onclick="czr_expandAll(false)">全部折叠</button>
+                    </div>
+                </div>
+                <div class="czr_tree" id="czr_tree_out"></div>
+            </div>
+        </div>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 17-1.html · JSON 数据格式演示</p>
+</div>
+
+<script>
+    // ========== Tab 切换 ==========
+    function czr_tab(czr_btn, czr_name) {
+        var czr_tabs = document.querySelectorAll('.czr_tab');
+        for (var czr_i = 0; czr_i < czr_tabs.length; czr_i++) {
+            czr_tabs[czr_i].classList.remove('active');
+        }
+        czr_btn.classList.add('active');
+
+        var czr_panels = document.querySelectorAll('.czr_panel');
+        for (var czr_j = 0; czr_j < czr_panels.length; czr_j++) {
+            czr_panels[czr_j].classList.remove('active');
+        }
+        document.getElementById('czr_panel_' + czr_name).classList.add('active');
+    }
+
+    // ========== 值类型卡片 ==========
+    var czr_types = [
+        { name: '字符串 string', val: '"陈卓然"', desc: '文本内容，必须用双引号包裹，可包含转义字符如 \\n、\\"' },
+        { name: '数字 number', val: '20 / 3.14 / -5', desc: '整数、小数、负数均可，不支持 NaN 与 Infinity' },
+        { name: '布尔 boolean', val: 'true / false', desc: '只有两种取值，不能写成 "true"（那是字符串）' },
+        { name: '空值 null', val: 'null', desc: '表示空或无，注意只认小写 null，NULL 与 Null 都不合法' },
+        { name: '对象 object', val: '{ "k": "v" }', desc: '无序键值对集合，用花括号包裹，可嵌套其他类型' },
+        { name: '数组 array', val: '[1, "a", true]', desc: '有序值列表，用方括号包裹，元素可为任意合法 JSON 值' }
+    ];
+
+    (function czr_buildTypes() {
+        var czr_grid = document.getElementById('czr_type_grid');
+        for (var czr_i = 0; czr_i < czr_types.length; czr_i++) {
+            var czr_t = czr_types[czr_i];
+            var czr_el = document.createElement('div');
+            czr_el.className = 'czr_type_card';
+            czr_el.innerHTML =
+                '<div class="czr_type_name">' + czr_t.name + '</div>' +
+                '<code class="czr_type_val">' + czr_t.val + '</code>' +
+                '<div class="czr_type_desc">' + czr_t.desc + '</div>';
+            czr_el.onclick = (function (czr_node, czr_index) {
+                return function () {
+                    var czr_all = document.querySelectorAll('.czr_type_card');
+                    for (var czr_k = 0; czr_k < czr_all.length; czr_k++) {
+                        czr_all[czr_k].classList.remove('czr_on');
+                    }
+                    czr_node.classList.add('czr_on');
+                };
+            })(czr_el, czr_i);
+            czr_grid.appendChild(czr_el);
+        }
+    })();
+
+    // ========== JSON.parse 演示 ==========
+    function czr_doParse() {
+        var czr_in = document.getElementById('czr_parse_in').value;
+        var czr_out = document.getElementById('czr_parse_out');
+        try {
+            var czr_obj = JSON.parse(czr_in);
+            var czr_lines = [];
+            czr_lines.push('✓ 解析成功，类型：' + (Array.isArray(czr_obj) ? '数组' : typeof czr_obj));
+            czr_lines.push('');
+            czr_lines.push('可访问的属性：');
+            var czr_keys = Object.keys(czr_obj);
+            for (var czr_i = 0; czr_i < czr_keys.length; czr_i++) {
+                var czr_v = czr_obj[czr_keys[czr_i]];
+                czr_lines.push('  obj.' + czr_keys[czr_i] + ' = ' + JSON.stringify(czr_v));
+            }
+            czr_lines.push('');
+            czr_lines.push('格式化输出：');
+            czr_lines.push(JSON.stringify(czr_obj, null, 2));
+            czr_out.className = 'czr_out';
+            czr_out.textContent = czr_lines.join('\n');
+        } catch (czr_e) {
+            czr_out.className = 'czr_out czr_err';
+            czr_out.textContent = '✗ 解析失败：' + czr_e.message + '\n\nJSON 格式不合法时会抛出 SyntaxError，可使用 try...catch 捕获。';
+        }
+    }
+
+    function czr_fillParse() {
+        document.getElementById('czr_parse_in').value = "{ '学号': '1012', 姓名: '陈卓然', }";
+        var czr_out = document.getElementById('czr_parse_out');
+        czr_out.className = 'czr_out czr_err';
+        czr_out.textContent = '已填入一段错误 JSON（单引号 + 键无引号 + 末尾逗号），点击解析按钮看报错效果。';
+    }
+
+    // ========== JSON.stringify 演示 ==========
+    var czr_demoObj = {
+        学号: '1012',
+        姓名: '陈卓然',
+        年龄: 20,
+        在读: true,
+        技能: ['HTML', 'CSS', 'JavaScript'],
+        专业: { 名称: '高级网页设计', 学分: 3.5 },
+        备注: null,
+        未定义: undefined,
+        打招呼: function () { return 'hi'; }
+    };
+
+    function czr_doStringify(czr_space) {
+        var czr_out = document.getElementById('czr_stringify_out');
+        var czr_json = JSON.stringify(czr_demoObj, null, czr_space);
+        czr_out.className = 'czr_out';
+        czr_out.textContent =
+            '原始对象共 ' + Object.keys(czr_demoObj).length + ' 个键，序列化后：\n\n' + czr_json +
+            '\n\n注意：undefined 与 function 两个键已被自动丢弃。';
+    }
+
+    // ========== 树形视图 ==========
+    function czr_makeNode(czr_key, czr_value) {
+        var czr_line = document.createElement('div');
+        var czr_keyHtml = czr_key === null ? '' : '<span class="czr_node_key">"' + czr_key + '"</span>: ';
+
+        if (czr_value === null) {
+            czr_line.innerHTML = czr_keyHtml + '<span class="czr_node_null">null</span>';
+            return czr_line;
+        }
+        if (Array.isArray(czr_value)) {
+            var czr_toggle = document.createElement('span');
+            czr_toggle.className = 'czr_node_toggle';
+            czr_toggle.textContent = '▼';
+            czr_line.appendChild(czr_toggle);
+            var czr_head = document.createElement('span');
+            czr_head.innerHTML = czr_keyHtml + '<span class="czr_node_key">Array(' + czr_value.length + ')</span>';
+            czr_line.appendChild(czr_head);
+
+            var czr_box = document.createElement('div');
+            czr_box.className = 'czr_children';
+            for (var czr_i = 0; czr_i < czr_value.length; czr_i++) {
+                czr_box.appendChild(czr_makeNode('[' + czr_i + ']', czr_value[czr_i]));
+            }
+            czr_toggle.onclick = function () { czr_box.classList.toggle('czr_hide'); czr_toggle.textContent = czr_box.classList.contains('czr_hide') ? '▶' : '▼'; };
+            czr_line.appendChild(czr_box);
+            return czr_line;
+        }
+        if (typeof czr_value === 'object') {
+            var czr_toggle2 = document.createElement('span');
+            czr_toggle2.className = 'czr_node_toggle';
+            czr_toggle2.textContent = '▼';
+            czr_line.appendChild(czr_toggle2);
+            var czr_head2 = document.createElement('span');
+            czr_head2.innerHTML = czr_keyHtml + '<span class="czr_node_key">Object</span>';
+            czr_line.appendChild(czr_head2);
+
+            var czr_box2 = document.createElement('div');
+            czr_box2.className = 'czr_children';
+            var czr_objKeys = Object.keys(czr_value);
+            for (var czr_j = 0; czr_j < czr_objKeys.length; czr_j++) {
+                czr_box2.appendChild(czr_makeNode(czr_objKeys[czr_j], czr_value[czr_objKeys[czr_j]]));
+            }
+            czr_toggle2.onclick = function () { czr_box2.classList.toggle('czr_hide'); czr_toggle2.textContent = czr_box2.classList.contains('czr_hide') ? '▶' : '▼'; };
+            czr_line.appendChild(czr_box2);
+            return czr_line;
+        }
+
+        var czr_cls = typeof czr_value === 'string' ? 'czr_node_str'
+                    : typeof czr_value === 'number' ? 'czr_node_num'
+                    : 'czr_node_bool';
+        var czr_show = typeof czr_value === 'string' ? '"' + czr_value + '"' : String(czr_value);
+        czr_line.innerHTML = czr_keyHtml + '<span class="' + czr_cls + '">' + czr_show + '</span>';
+        return czr_line;
+    }
+
+    function czr_renderTree() {
+        var czr_out = document.getElementById('czr_tree_out');
+        var czr_text = document.getElementById('czr_tree_in').value;
+        czr_out.innerHTML = '';
+        try {
+            var czr_obj = JSON.parse(czr_text);
+            czr_out.style.color = '#b8c9dd';
+            czr_out.appendChild(czr_makeNode(null, czr_obj));
+        } catch (czr_e) {
+            czr_out.style.color = '#ff9f9f';
+            czr_out.textContent = '✗ JSON 解析失败：' + czr_e.message;
+        }
+    }
+
+    function czr_expandAll(czr_open) {
+        var czr_boxes = document.querySelectorAll('#czr_tree_out .czr_children');
+        var czr_toggles = document.querySelectorAll('#czr_tree_out .czr_node_toggle');
+        for (var czr_i = 0; czr_i < czr_boxes.length; czr_i++) {
+            if (czr_open) czr_boxes[czr_i].classList.remove('czr_hide');
+            else czr_boxes[czr_i].classList.add('czr_hide');
+        }
+        for (var czr_j = 0; czr_j < czr_toggles.length; czr_j++) {
+            czr_toggles[czr_j].textContent = czr_open ? '▼' : '▶';
+        }
+    }
+
+    // 首次进入渲染树
+    czr_renderTree();
+</script>
+</body>
+</html>
