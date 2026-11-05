@@ -65,7 +65,7 @@
             margin-bottom: 10px;
         }
 
-        .czr_chart { width: 100%; height: 360px; }
+        .czr_chart { width: 100%; height: 380px; }
 
         .czr_footer {
             margin-top: 30px;
@@ -76,21 +76,21 @@
     </style>
 </head>
 <body>
-<!-- 姓名：陈卓然，日期：2026-11-05，功能名称：ECharts 两图展示（柱状 + 环形） -->
+<!-- 姓名：陈卓然，日期：2026-11-05，功能名称：ECharts 两图（堆叠折线 + 环形饼图） -->
 
 <a href="index.html" class="czr_home">← 返回首页</a>
 
 <div class="czr_wrap">
     <h1 class="czr_title">ECharts 数据可视化</h1>
-    <p class="czr_sub">本页通过本地 <code style="color:#79d6ce;">cdn/echarts.min.js</code> 引入 ECharts，展示柱状图和环形图两种常见图表。</p>
+    <p class="czr_sub">本页通过本地 <code style="color:#79d6ce;">cdn/echarts.min.js</code> 引入 ECharts，展示官方示例 line-stack（堆叠折线）与 pie-doughnut（环形饼图）。</p>
 
     <div class="czr_grid">
         <div class="czr_chart_box">
-            <div class="czr_chart_title">① 近 7 天 PV / UV 访问量</div>
+            <div class="czr_chart_title">① Stacked Line — 堆叠折线图（官方示例 line-stack）</div>
             <div class="czr_chart" id="czr_chart1"></div>
         </div>
         <div class="czr_chart_box">
-            <div class="czr_chart_title">② 学生设备类型分布</div>
+            <div class="czr_chart_title">② Pie Doughnut — 环形饼图（官方示例 pie-doughnut）</div>
             <div class="czr_chart" id="czr_chart2"></div>
         </div>
     </div>
@@ -99,15 +99,41 @@
 </div>
 
 <script>
-    // ========== 图表 1：柱状图 ==========
+    // ========== 图表 1：堆叠折线图 (line-stack) ==========
     var czr_chart1 = echarts.init(document.getElementById('czr_chart1'), null, { renderer: 'canvas' });
     czr_chart1.setOption({
-        tooltip: { trigger: 'axis', backgroundColor: '#0b1a2e', borderColor: '#4ca9d9', textStyle: { color: '#e8f1ff' } },
-        legend: { textStyle: { color: '#b8c9dd' }, top: 0 },
-        grid: { top: 40, left: 46, right: 20, bottom: 36 },
+        title: {
+            text: 'Stacked Line',
+            left: 'center',
+            top: 0,
+            textStyle: { color: '#e8f1ff', fontSize: 14, fontWeight: 'normal' }
+        },
+        tooltip: {
+            trigger: 'axis',
+            backgroundColor: '#0b1a2e',
+            borderColor: '#4ca9d9',
+            textStyle: { color: '#e8f1ff' }
+        },
+        legend: {
+            top: 28,
+            textStyle: { color: '#b8c9dd' },
+            data: ['Email', 'Union Ads', 'Video Ads', 'Direct', 'Search Engine']
+        },
+        grid: {
+            left: '3%',
+            right: '4%',
+            bottom: '3%',
+            top: 70,
+            containLabel: true
+        },
+        toolbox: {
+            feature: { saveAsImage: {} },
+            iconStyle: { borderColor: '#b8c9dd' }
+        },
         xAxis: {
             type: 'category',
-            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+            boundaryGap: false,
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
             axisLine: { lineStyle: { color: '#4ca9d9' } },
             axisLabel: { color: '#b8c9dd' }
         },
@@ -117,58 +143,106 @@
             axisLabel: { color: '#b8c9dd' },
             splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } }
         },
+        color: ['#79d6ce', '#ffc46b', '#ff8a65', '#b08cff', '#4ca9d9'],
         series: [
             {
-                name: 'PV', type: 'bar', barWidth: 14,
-                itemStyle: {
-                    borderRadius: [4, 4, 0, 0],
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: '#79d6ce' }, { offset: 1, color: '#4ca9d9' }
-                    ])
-                },
-                data: [120, 182, 191, 234, 290, 330, 310],
-                animationDelay: function (czr_i) { return czr_i * 60; }
+                name: 'Email',
+                type: 'line',
+                stack: 'Total',
+                areaStyle: { opacity: 0.3 },
+                emphasis: { focus: 'series' },
+                data: [120, 132, 101, 134, 90, 230, 210]
             },
             {
-                name: 'UV', type: 'bar', barWidth: 14,
-                itemStyle: {
-                    borderRadius: [4, 4, 0, 0],
-                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                        { offset: 0, color: '#ffc46b' }, { offset: 1, color: '#ff8a65' }
-                    ])
-                },
-                data: [62, 80, 86, 110, 148, 170, 162],
-                animationDelay: function (czr_i) { return czr_i * 60 + 40; }
+                name: 'Union Ads',
+                type: 'line',
+                stack: 'Total',
+                areaStyle: { opacity: 0.3 },
+                emphasis: { focus: 'series' },
+                data: [220, 182, 191, 234, 290, 330, 310]
+            },
+            {
+                name: 'Video Ads',
+                type: 'line',
+                stack: 'Total',
+                areaStyle: { opacity: 0.3 },
+                emphasis: { focus: 'series' },
+                data: [150, 232, 201, 154, 190, 330, 410]
+            },
+            {
+                name: 'Direct',
+                type: 'line',
+                stack: 'Total',
+                areaStyle: { opacity: 0.3 },
+                emphasis: { focus: 'series' },
+                data: [320, 332, 301, 334, 390, 330, 320]
+            },
+            {
+                name: 'Search Engine',
+                type: 'line',
+                stack: 'Total',
+                areaStyle: { opacity: 0.3 },
+                emphasis: { focus: 'series' },
+                data: [820, 932, 901, 934, 1290, 1330, 1320]
             }
         ]
     });
 
-    // ========== 图表 2：环形图 ==========
+    // ========== 图表 2：环形饼图 (pie-doughnut) ==========
     var czr_chart2 = echarts.init(document.getElementById('czr_chart2'), null, { renderer: 'canvas' });
     czr_chart2.setOption({
-        tooltip: { trigger: 'item', backgroundColor: '#0b1a2e', borderColor: '#ffc46b', textStyle: { color: '#e8f1ff' }, formatter: '{b}<br/>占比 {c}% ({d}%)' },
-        legend: { textStyle: { color: '#b8c9dd' }, top: 0, bottom: 0, orient: 'vertical', left: 0, itemWidth: 12, itemHeight: 12 },
-        color: ['#79d6ce', '#4ca9d9', '#ffc46b', '#ff8a65', '#b08cff', '#a8ffd5'],
-        series: [{
-            name: '设备分布',
-            type: 'pie',
-            radius: ['45%', '72%'],
-            center: ['62%', '54%'],
-            avoidLabelOverlap: true,
-            itemStyle: { borderRadius: 6, borderColor: '#0b1a2e', borderWidth: 2 },
-            label: { show: true, color: '#b8c9dd', formatter: '{d}%' },
-            labelLine: { lineStyle: { color: '#b8c9dd' } },
-            data: [
-                { value: 42, name: 'Windows 笔记本' },
-                { value: 24, name: 'Mac 电脑' },
-                { value: 18, name: 'iPhone' },
-                { value: 10, name: 'Android 手机' },
-                { value: 4,  name: 'iPad / 平板' },
-                { value: 2,  name: '其他' }
-            ]
-        }]
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: '#0b1a2e',
+            borderColor: '#ffc46b',
+            textStyle: { color: '#e8f1ff' },
+            formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+            top: '5%',
+            left: 'center',
+            textStyle: { color: '#b8c9dd' }
+        },
+        color: ['#79d6ce', '#4ca9d9', '#ffc46b', '#ff8a65', '#b08cff'],
+        series: [
+            {
+                name: 'Access From',
+                type: 'pie',
+                radius: ['40%', '70%'],
+                center: ['50%', '55%'],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 8,
+                    borderColor: '#0b1a2e',
+                    borderWidth: 2
+                },
+                label: {
+                    show: false,
+                    position: 'center'
+                },
+                emphasis: {
+                    label: {
+                        show: true,
+                        fontSize: 40,
+                        fontWeight: 'bold',
+                        color: '#e8f1ff'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: [
+                    { value: 1048, name: 'Search Engine' },
+                    { value: 735,  name: 'Direct' },
+                    { value: 580,  name: 'Email' },
+                    { value: 484,  name: 'Union Ads' },
+                    { value: 300,  name: 'Video Ads' }
+                ]
+            }
+        ]
     });
 
+    // 响应式
     window.addEventListener('resize', function () {
         czr_chart1.resize();
         czr_chart2.resize();
