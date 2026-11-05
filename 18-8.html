@@ -93,6 +93,14 @@
             padding: 14px;
             overflow: hidden;
             flex: 1;
+            animation: czr_panel_enter 0.7s ease-out both;
+        }
+        .czr_col:nth-child(1) .czr_panel { animation-delay: 0.08s; }
+        .czr_col:nth-child(2) .czr_panel { animation-delay: 0.16s; }
+        .czr_col:nth-child(3) .czr_panel { animation-delay: 0.24s; }
+        @keyframes czr_panel_enter {
+            from { opacity: 0; transform: rotateX(-3deg) translateZ(-24px) translateY(18px); }
+            to { opacity: 1; transform: rotateX(0deg) translateZ(0px) translateY(0px); }
         }
         .czr_panel::before {
             content: '';

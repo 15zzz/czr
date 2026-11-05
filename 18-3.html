@@ -47,6 +47,13 @@
             width: 100%;
             min-width: 880px;
             height: auto;
+            transform-origin: center;
+            animation: czr_svg_float 5s ease-in-out infinite;
+        }
+
+        @keyframes czr_svg_float {
+            0%, 100% { transform: rotateX(0deg) rotateY(-1deg) translateZ(0px); }
+            50% { transform: rotateX(3deg) rotateY(1deg) translateZ(18px); }
         }
 
         .czr_legend {
