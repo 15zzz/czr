@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · ECharts 双图展示</title>
+    <script src="cdn/echarts.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #071722 0px, #102a35 520px, #0b1a2e 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .czr_wrap { max-width: 1200px; margin: 0 auto; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title { font-size: 26px; color: #79d6ce; margin-bottom: 6px; font-weight: bold; }
+        .czr_sub { font-size: 13px; color: #8fa6c2; margin-bottom: 20px; }
+
+        .czr_grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        @media (max-width: 780px) { .czr_grid { grid-template-columns: 1fr; } }
+
+        .czr_chart_box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 14px;
+            transform-style: preserve-3d;
+            animation: czr_card_in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .czr_chart_box:nth-child(2) { animation-delay: 0.15s; }
+        @keyframes czr_card_in {
+            from { opacity: 0; transform: rotateY(-8deg) translateY(20px) translateZ(-40px); }
+            to   { opacity: 1; transform: rotateY(0) translateY(0) translateZ(0); }
+        }
+
+        .czr_chart_title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #ffc46b;
+            padding-left: 6px;
+            border-left: 3px solid #ffc46b;
+            margin-bottom: 10px;
+        }
+
+        .czr_chart { width: 100%; height: 360px; }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-05，功能名称：ECharts 两图展示（柱状 + 环形） -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+    <h1 class="czr_title">ECharts 数据可视化</h1>
+    <p class="czr_sub">本页通过本地 <code style="color:#79d6ce;">cdn/echarts.min.js</code> 引入 ECharts，展示柱状图和环形图两种常见图表。</p>
+
+    <div class="czr_grid">
+        <div class="czr_chart_box">
+            <div class="czr_chart_title">① 近 7 天 PV / UV 访问量</div>
+            <div class="czr_chart" id="czr_chart1"></div>
+        </div>
+        <div class="czr_chart_box">
+            <div class="czr_chart_title">② 学生设备类型分布</div>
+            <div class="czr_chart" id="czr_chart2"></div>
+        </div>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 18-4.html · ECharts 双图</p>
+</div>
+
+<script>
+    // ========== 图表 1：柱状图 ==========
+    var czr_chart1 = echarts.init(document.getElementById('czr_chart1'), null, { renderer: 'canvas' });
+    czr_chart1.setOption({
+        tooltip: { trigger: 'axis', backgroundColor: '#0b1a2e', borderColor: '#4ca9d9', textStyle: { color: '#e8f1ff' } },
+        legend: { textStyle: { color: '#b8c9dd' }, top: 0 },
+        grid: { top: 40, left: 46, right: 20, bottom: 36 },
+        xAxis: {
+            type: 'category',
+            data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+            axisLine: { lineStyle: { color: '#4ca9d9' } },
+            axisLabel: { color: '#b8c9dd' }
+        },
+        yAxis: {
+            type: 'value',
+            axisLine: { show: false },
+            axisLabel: { color: '#b8c9dd' },
+            splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } }
+        },
+        series: [
+            {
+                name: 'PV', type: 'bar', barWidth: 14,
+                itemStyle: {
+                    borderRadius: [4, 4, 0, 0],
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#79d6ce' }, { offset: 1, color: '#4ca9d9' }
+                    ])
+                },
+                data: [120, 182, 191, 234, 290, 330, 310],
+                animationDelay: function (czr_i) { return czr_i * 60; }
+            },
+            {
+                name: 'UV', type: 'bar', barWidth: 14,
+                itemStyle: {
+                    borderRadius: [4, 4, 0, 0],
+                    color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                        { offset: 0, color: '#ffc46b' }, { offset: 1, color: '#ff8a65' }
+                    ])
+                },
+                data: [62, 80, 86, 110, 148, 170, 162],
+                animationDelay: function (czr_i) { return czr_i * 60 + 40; }
+            }
+        ]
+    });
+
+    // ========== 图表 2：环形图 ==========
+    var czr_chart2 = echarts.init(document.getElementById('czr_chart2'), null, { renderer: 'canvas' });
+    czr_chart2.setOption({
+        tooltip: { trigger: 'item', backgroundColor: '#0b1a2e', borderColor: '#ffc46b', textStyle: { color: '#e8f1ff' }, formatter: '{b}<br/>占比 {c}% ({d}%)' },
+        legend: { textStyle: { color: '#b8c9dd' }, top: 0, bottom: 0, orient: 'vertical', left: 0, itemWidth: 12, itemHeight: 12 },
+        color: ['#79d6ce', '#4ca9d9', '#ffc46b', '#ff8a65', '#b08cff', '#a8ffd5'],
+        series: [{
+            name: '设备分布',
+            type: 'pie',
+            radius: ['45%', '72%'],
+            center: ['62%', '54%'],
+            avoidLabelOverlap: true,
+            itemStyle: { borderRadius: 6, borderColor: '#0b1a2e', borderWidth: 2 },
+            label: { show: true, color: '#b8c9dd', formatter: '{d}%' },
+            labelLine: { lineStyle: { color: '#b8c9dd' } },
+            data: [
+                { value: 42, name: 'Windows 笔记本' },
+                { value: 24, name: 'Mac 电脑' },
+                { value: 18, name: 'iPhone' },
+                { value: 10, name: 'Android 手机' },
+                { value: 4,  name: 'iPad / 平板' },
+                { value: 2,  name: '其他' }
+            ]
+        }]
+    });
+
+    window.addEventListener('resize', function () {
+        czr_chart1.resize();
+        czr_chart2.resize();
+    });
+</script>
+</body>
+</html>

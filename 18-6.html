@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · Mermaid 流程图 & ER 图</title>
+    <script src="cdn/mermaid.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #0b1a2e 0px, #1a0e2e 520px, #0b1a2e 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .czr_wrap { max-width: 1200px; margin: 0 auto; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title { font-size: 26px; color: #79d6ce; margin-bottom: 6px; font-weight: bold; }
+        .czr_sub { font-size: 13px; color: #8fa6c2; margin-bottom: 20px; line-height: 1.8; }
+
+        .czr_card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 20px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            animation: czr_card_in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .czr_card:nth-child(2) { animation-delay: 0.15s; }
+        @keyframes czr_card_in {
+            from { opacity: 0; transform: rotateX(-6deg) translateZ(-30px); }
+            to   { opacity: 1; transform: rotateX(0) translateZ(0); }
+        }
+
+        .czr_card h2 {
+            font-size: 16px;
+            color: #ffc46b;
+            margin-bottom: 14px;
+            padding-left: 8px;
+            border-left: 3px solid #ffc46b;
+        }
+
+        .czr_mermaid svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        /* Mermaid 暗色主题微调 */
+        .czr_mermaid .node, .czr_mermaid .edgeLabel,
+        .czr_mermaid text { fill: #e8f1ff !important; }
+        .czr_mermaid rect, .czr_mermaid circle, .czr_mermaid polygon,
+        .czr_mermaid ellipse, .czr_mermaid rhombus {
+            fill: rgba(76, 169, 217, 0.18) !important;
+            stroke: #4ca9d9 !important;
+        }
+        .czr_mermaid .stroke-foreground { stroke: #79d6ce !important; }
+        .czr_mermaid .edgePath path { stroke: #79d6ce !important; }
+
+        .czr_code_box {
+            margin-top: 14px;
+            background: rgba(0, 0, 0, 0.4);
+            border-left: 3px solid #b08cff;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 12px;
+            line-height: 1.75;
+            color: #a8ffd5;
+            white-space: pre-wrap;
+            display: none;
+        }
+        .czr_code_box.show { display: block; }
+
+        .czr_btn_toggle {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #9fb3cc;
+            padding: 6px 14px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 12px;
+            font-family: inherit;
+            margin-bottom: 10px;
+        }
+        .czr_btn_toggle:hover { color: #e8f1ff; background: rgba(255, 255, 255, 0.14); }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-05，功能名称：Mermaid 流程图 & ER 图 -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+    <h1 class="czr_title">Mermaid 流程图 & ER 图</h1>
+    <p class="czr_sub">
+        本地引入 <code style="color:#79d6ce;">cdn/mermaid.min.js</code>，渲染智能客服系统的处理流程图与 ER 图。
+    </p>
+
+    <!-- 流程图 -->
+    <div class="czr_card">
+        <h2>① 智能客服系统处理流程图</h2>
+        <button class="czr_btn_toggle" onclick="document.getElementById('czr_flow_code').classList.toggle('show')">
+            查看源码
+        </button>
+        <div class="czr_mermaid" id="czr_flow">graph TD
+    A[用户发起对话] --> B{是否需要登录?}
+    B -->|是| C[身份认证 / Token 校验]
+    B -->|否| D[直接进入会话]
+    C --> D
+    D --> E[NLU 意图识别]
+    E --> F{意图类型}
+    F -->|FAQ 查询| G[知识库检索]
+    F -->|业务办理| H[业务路由分发]
+    F -->|闲聊| I[LLM 自由生成]
+    F -->|转人工| J[坐席分配]
+    G --> K{RAG 检索增强}
+    K -->|命中| L[拼接上下文]
+    K -->|未命中| M[兜底回复]
+    H --> N[调用后端 API]
+    N --> O[返回结果]
+    L --> P[大模型生成回答]
+    I --> P
+    J --> Q[转接坐席]
+    P --> R[返回用户]
+    O --> R
+    M --> R
+    Q --> R
+    R --> S[用户反馈]
+    S -->|好评| T[记录日志]
+    S -->|差评| U[迭代优化]
+    T --> V[结束]
+    U --> V[/结束/]</div>
+        <pre class="czr_code_box" id="czr_flow_code">graph TD
+    A[用户发起对话] --> B{是否需要登录?}
+    B -->|是| C[身份认证]
+    B -->|否| D[直接进入会话]
+    C --> D
+    D --> E[NLU 意图识别]
+    E --> F{意图类型}
+    F -->|FAQ| G[知识库检索]
+    F -->|业务| H[业务路由]
+    F -->|闲聊| I[LLM 生成]
+    G --> K{RAG 增强}
+    K -->|命中| L[拼接上下文]
+    K -->|未命中| M[兜底回复]
+    L --> P[生成回答]
+    I --> P
+    P --> R[返回用户]</pre>
+    </div>
+
+    <!-- ER 图 -->
+    <div class="czr_card">
+        <h2>② 智能客服系统 ER 图</h2>
+        <button class="czr_btn_toggle" onclick="document.getElementById('czr_er_code').classList.toggle('show')">
+            查看源码
+        </button>
+        <div class="czr_mermaid" id="czr_er">erDiagram
+    CUSTOMER ||--o{ SESSION : 发起
+    SESSION ||--|{ MESSAGE : 包含
+    SESSION ||--o{ CONTEXT : 关联
+    MESSAGE ||--o{ FEEDBACK : 有
+    MESSAGE ||--o{ INTENT : 识别为
+    KNOWLEDGE_BASE ||--o{ KNOWLEDGE_ITEM : 包含
+    KNOWLEDGE_ITEM {
+        string kbase_id PK
+        string title
+        string content
+        string category
+        string tags
+        datetime updated_at
+    }
+    INTENT {
+        string intent_id PK
+        string name
+        float confidence
+        string slot_json
+    }
+    CUSTOMER {
+        string user_id PK
+        string nickname
+        string avatar
+        string login_status
+        datetime last_active
+    }
+    SESSION {
+        string session_id PK
+        string user_id FK
+        datetime start_time
+        datetime end_time
+        string channel
+        string status
+    }
+    MESSAGE {
+        string msg_id PK
+        string session_id FK
+        string role
+        string content
+        string content_type
+        float embedding_vector
+        datetime created_at
+    }
+    FEEDBACK {
+        string feedback_id PK
+        string msg_id FK
+        int rating
+        string comment
+        datetime created_at
+    }
+    CONTEXT {
+        string ctx_id PK
+        string session_id FK
+        string memory_json
+        int turn_count
+    }</div>
+        <pre class="czr_code_box" id="czr_er_code">erDiagram
+    CUSTOMER ||--o{ SESSION : 发起
+    SESSION ||--|{ MESSAGE : 包含
+    MESSAGE ||--o{ FEEDBACK : 有
+    MESSAGE ||--o{ INTENT : 识别为
+    KNOWLEDGE_BASE ||--o{ KNOWLEDGE_ITEM
+    KNOWLEDGE_ITEM { string kbase_id PK string title string content }
+    CUSTOMER { string user_id PK string nickname }
+    SESSION { string session_id PK string user_id FK datetime start_time }
+    MESSAGE { string msg_id PK string role string content }
+    FEEDBACK { string feedback_id PK int rating }
+    INTENT { string intent_id PK string name float confidence }</pre>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 18-6.html · Mermaid 流程图 & ER 图</p>
+</div>
+
+<script>
+    // Mermaid 10.x 初始化
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'base',
+        themeVariables: {
+            primaryColor: 'rgba(76, 169, 217, 0.22)',
+            primaryTextColor: '#e8f1ff',
+            primaryBorderColor: '#4ca9d9',
+            lineColor: '#79d6ce',
+            secondaryColor: 'rgba(121, 214, 206, 0.18)',
+            tertiaryColor: 'rgba(255, 196, 107, 0.18)',
+            background: 'transparent',
+            fontSize: '13px',
+            fontFamily: '"Microsoft YaHei", Arial'
+        },
+        flowchart: { curve: 'basis', htmlLabels: true },
+        securityLevel: 'loose'
+    });
+
+    // 等待 Mermaid 完成渲染后调整
+    mermaid.run({ querySelector: '.czr_mermaid' }).catch(function (czr_err) {
+        console.warn('Mermaid render error:', czr_err);
+    });
+</script>
+</body>
+</html>

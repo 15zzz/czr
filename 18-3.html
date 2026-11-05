@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · SVG 知识库智能客服架构</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #0b1a2e 0px, #1a0e2e 520px, #0b1a2e 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .czr_wrap { max-width: 1200px; margin: 0 auto; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title { font-size: 26px; color: #79d6ce; margin-bottom: 6px; font-weight: bold; }
+        .czr_sub { font-size: 13px; color: #8fa6c2; margin-bottom: 24px; line-height: 1.8; }
+
+        .czr_svg_box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .czr_svg_box svg {
+            display: block;
+            width: 100%;
+            min-width: 880px;
+            height: auto;
+        }
+
+        .czr_legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 16px;
+            font-size: 12px;
+            color: #b8c9dd;
+        }
+        .czr_legend span { display: inline-flex; align-items: center; gap: 6px; }
+        .czr_legend i {
+            width: 14px; height: 14px;
+            display: inline-block;
+            border-radius: 3px;
+        }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-05，功能名称：SVG 知识库智能客服系统架构图 -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+    <h1 class="czr_title">基于知识库的智能客服系统架构（科研方向）</h1>
+    <p class="czr_sub">
+        以 <b>RAG（检索增强生成）</b> 为核心，融合意图识别、向量检索、多源知识融合与大模型生成，
+        覆盖<b>知识采集 → 预处理 → 向量化 → 存储 → 检索 → 重排 → 生成 → 反馈优化</b>全链路。
+    </p>
+
+    <div class="czr_svg_box">
+        <svg viewBox="0 0 1160 820" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="czr_g_in" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#4ca9d9"/>
+                    <stop offset="100%" stop-color="#79d6ce"/>
+                </linearGradient>
+                <linearGradient id="czr_g_ai" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#ff8a65"/>
+                    <stop offset="100%" stop-color="#ffc46b"/>
+                </linearGradient>
+                <linearGradient id="czr_g_rag" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#b08cff"/>
+                    <stop offset="100%" stop-color="#79d6ce"/>
+                </linearGradient>
+                <linearGradient id="czr_g_kb" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#ffc46b"/>
+                    <stop offset="100%" stop-color="#ff8a65"/>
+                </linearGradient>
+                <linearGradient id="czr_g_out" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#79d6ce"/>
+                    <stop offset="100%" stop-color="#4ca9d9"/>
+                </linearGradient>
+                <linearGradient id="czr_g_feed" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0%" stop-color="#ff6b6b"/>
+                    <stop offset="100%" stop-color="#b08cff"/>
+                </linearGradient>
+                <marker id="czr_arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#79d6ce"/>
+                </marker>
+                <marker id="czr_arr_or" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                    <path d="M 0 0 L 10 5 L 0 10 z" fill="#ffc46b"/>
+                </marker>
+                <filter id="czr_shadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000" flood-opacity="0.35"/>
+                </filter>
+            </defs>
+
+            <!-- 背景 -->
+            <rect x="0" y="0" width="1160" height="820" fill="transparent"/>
+
+            <!-- ========== 标题 ========== -->
+            <text x="580" y="36" text-anchor="middle" font-family="Microsoft YaHei, Arial" font-size="18" font-weight="bold" fill="#79d6ce">知识库驱动的智能客服系统架构（科研方向 · RAG）</text>
+            <text x="580" y="56" text-anchor="middle" font-family="Consolas, monospace" font-size="11" fill="#6c83a0">陈卓然 · 1012 · SVG Architecture Diagram</text>
+
+            <!-- ========== 用户输入层 ========== -->
+            <g filter="url(#czr_shadow)">
+                <rect x="30" y="100" width="200" height="70" rx="10" fill="url(#czr_g_in)"/>
+                <text x="130" y="128" text-anchor="middle" font-size="14" font-weight="bold" fill="#071223">用户输入</text>
+                <text x="130" y="148" text-anchor="middle" font-size="11" fill="#071223">文本 / 语音 / 图片</text>
+            </g>
+
+            <g filter="url(#czr_shadow)">
+                <rect x="270" y="100" width="140" height="70" rx="10" fill="url(#czr_g_in)"/>
+                <text x="340" y="128" text-anchor="middle" font-size="13" font-weight="bold" fill="#071223">预处理</text>
+                <text x="340" y="148" text-anchor="middle" font-size="10.5" fill="#071223">ASR / OCR / 分词</text>
+            </g>
+
+            <!-- ========== 意图识别 ========== -->
+            <g filter="url(#czr_shadow)">
+                <rect x="450" y="100" width="200" height="70" rx="10" fill="url(#czr_g_ai)"/>
+                <text x="550" y="128" text-anchor="middle" font-size="14" font-weight="bold" fill="#071223">意图识别 NLU</text>
+                <text x="550" y="148" text-anchor="middle" font-size="10.5" fill="#071223">BERT / 分类模型 / Slot 填充</text>
+            </g>
+
+            <!-- ========== RAG 核心区 ========== -->
+            <rect x="400" y="200" width="580" height="320" rx="14" fill="rgba(176,140,255,0.06)" stroke="#b08cff" stroke-width="1.5" stroke-dasharray="6 4"/>
+            <text x="690" y="222" text-anchor="middle" font-size="13" fill="#b08cff" font-weight="bold">RAG 检索增强生成核心</text>
+
+            <!-- RAG 内部 -->
+            <g filter="url(#czr_shadow)">
+                <rect x="420" y="240" width="160" height="70" rx="10" fill="url(#czr_g_rag)"/>
+                <text x="500" y="268" text-anchor="middle" font-size="13" font-weight="bold" fill="#071223">Query 改写</text>
+                <text x="500" y="288" text-anchor="middle" font-size="10.5" fill="#071223">HyDE / 多视角生成</text>
+            </g>
+
+            <g filter="url(#czr_shadow)">
+                <rect x="610" y="240" width="160" height="70" rx="10" fill="url(#czr_g_rag)"/>
+                <text x="690" y="268" text-anchor="middle" font-size="13" font-weight="bold" fill="#071223">向量化 Encoder</text>
+                <text x="690" y="288" text-anchor="middle" font-size="10.5" fill="#071223">BGE / text-embedding</text>
+            </g>
+
+            <g filter="url(#czr_shadow)">
+                <rect x="800" y="240" width="160" height="70" rx="10" fill="url(#czr_g_rag)"/>
+                <text x="880" y="268" text-anchor="middle" font-size="13" font-weight="bold" fill="#071223">向量检索</text>
+                <text x="880" y="288" text-anchor="middle" font-size="10.5" fill="#071223">HNSW / FAISS / ANN</text>
+            </g>
+
+            <g filter="url(#czr_shadow)">
+                <rect x="420" y="340" width="160" height="70" rx="10" fill="url(#czr_g_rag)"/>
+                <text x="500" y="368" text-anchor="middle" font-size="13" font-weight="bold" fill="#071223">多路召回</text>
+                <text x="500" y="388" text-anchor="middle" font-size="10.5" fill="#071223">向量 + 关键词 + 图谱</text>
+            </g>
+
+            <g filter="url(#czr_shadow)">
+                <rect x="610" y="340" width="160" height="70" rx="10" fill="url(#czr_g_rag)"/>
+                <text x="690" y="368" text-anchor="middle" font-size="13" font-weight="bold" fill="#071223">重排 Rerank</text>
+                <text x="690" y="388" text-anchor="middle" font-size="10.5" fill="#071223">Cross Encoder / Reranker</text>
+            </g>
+
+            <g filter="url(#czr_shadow)">
+                <rect x="800" y="340" width="160" height="70" rx="10" fill="url(#czr_g_rag)"/>
+                <text x="880" y="368" text-anchor="middle" font-size="13" font-weight="bold" fill="#071223">上下文组装</text>
+                <text x="880" y="388" text-anchor="middle" font-size="10.5" fill="#071223">Prompt Template + 记忆</text>
+            </g>
+
+            <!-- ========== 知识库 ========== -->
+            <g filter="url(#czr_shadow)">
+                <rect x="420" y="440" width="220" height="70" rx="10" fill="url(#czr_g_kb)"/>
+                <text x="530" y="468" text-anchor="middle" font-size="13" font-weight="bold" fill="#071223">向量数据库</text>
+                <text x="530" y="488" text-anchor="middle" font-size="10.5" fill="#071223">Milvus / Pinecone / Chroma</text>
+            </g>
+
+            <g filter="url(#czr_shadow)">
+                <rect x="660" y="440" width="140" height="70" rx="10" fill="url(#czr_g_kb)"/>
+                <text x="730" y="468" text-anchor="middle" font-size="13" font-weight="bold" fill="#071223">知识库</text>
+                <text x="730" y="488" text-anchor="middle" font-size="10.5" fill="#071223">FAQ / 文档</text>
+            </g>
+
+            <g filter="url(#czr_shadow)">
+                <rect x="820" y="440" width="140" height="70" rx="10" fill="url(#czr_g_kb)"/>
+                <text x="890" y="468" text-anchor="middle" font-size="13" font-weight="bold" fill="#071223">知识图谱</text>
+                <text x="890" y="488" text-anchor="middle" font-size="10.5" fill="#071223">Neo4j / 实体关系</text>
+            </g>
+
+            <!-- ========== LLM 生成 ========== -->
+            <g filter="url(#czr_shadow)">
+                <rect x="1000" y="240" width="130" height="170" rx="10" fill="url(#czr_g_ai)"/>
+                <text x="1065" y="290" text-anchor="middle" font-size="14" font-weight="bold" fill="#071223">大语言</text>
+                <text x="1065" y="312" text-anchor="middle" font-size="14" font-weight="bold" fill="#071223">模型</text>
+                <text x="1065" y="340" text-anchor="middle" font-size="10.5" fill="#071223">LLM / API</text>
+                <text x="1065" y="358" text-anchor="middle" font-size="10.5" fill="#071223">微调 / LoRA</text>
+                <text x="1065" y="376" text-anchor="middle" font-size="10.5" fill="#071223">Prompt</text>
+                <text x="1065" y="394" text-anchor="middle" font-size="10.5" fill="#071223">Engineering</text>
+            </g>
+
+            <!-- ========== 输出层 ========== -->
+            <g filter="url(#czr_shadow)">
+                <rect x="1000" y="450" width="130" height="70" rx="10" fill="url(#czr_g_out)"/>
+                <text x="1065" y="478" text-anchor="middle" font-size="14" font-weight="bold" fill="#071223">生成回答</text>
+                <text x="1065" y="498" text-anchor="middle" font-size="10.5" fill="#071223">文本 / 多模态</text>
+            </g>
+
+            <!-- ========== 反馈循环 ========== -->
+            <g filter="url(#czr_shadow)">
+                <path d="M 30 540 Q 30 680 300 680 L 860 680 Q 960 680 960 580" fill="none" stroke="#ff6b6b" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#czr_arr_or)"/>
+                <rect x="860" y="560" width="120" height="40" rx="8" fill="url(#czr_g_feed)"/>
+                <text x="920" y="585" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">用户反馈 / 评估</text>
+                <rect x="30" y="560" width="160" height="40" rx="8" fill="url(#czr_g_feed)"/>
+                <text x="110" y="585" text-anchor="middle" font-size="12" font-weight="bold" fill="#fff">知识采集与更新</text>
+            </g>
+
+            <!-- ========== 数据流箭头 ========== -->
+            <path d="M 230 135 L 270 135" stroke="#79d6ce" stroke-width="1.8" marker-end="url(#czr_arr)"/>
+            <path d="M 410 135 L 450 135" stroke="#79d6ce" stroke-width="1.8" marker-end="url(#czr_arr)"/>
+            <path d="M 550 170 L 550 238" stroke="#ffc46b" stroke-width="1.8" marker-end="url(#czr_arr_or)"/>
+            <path d="M 580 275 L 610 275" stroke="#b08cff" stroke-width="1.8" marker-end="url(#czr_arr)"/>
+            <path d="M 770 275 L 800 275" stroke="#b08cff" stroke-width="1.8" marker-end="url(#czr_arr)"/>
+            <path d="M 580 375 L 610 375" stroke="#b08cff" stroke-width="1.8" marker-end="url(#czr_arr)"/>
+            <path d="M 770 375 L 800 375" stroke="#b08cff" stroke-width="1.8" marker-end="url(#czr_arr)"/>
+
+            <!-- 检索 → 知识库 -->
+            <path d="M 880 310 L 880 438" stroke="#ffc46b" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#czr_arr_or)"/>
+            <!-- 重排 → 知识库 -->
+            <path d="M 690 410 L 690 438" stroke="#ffc46b" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#czr_arr_or)"/>
+
+            <!-- 上下文组装 → LLM -->
+            <path d="M 960 375 L 1000 375" stroke="#79d6ce" stroke-width="2" marker-end="url(#czr_arr)"/>
+            <!-- LLM → 输出 -->
+            <path d="M 1065 410 L 1065 448" stroke="#79d6ce" stroke-width="2" marker-end="url(#czr_arr)"/>
+
+            <!-- ========== 图例 ========== -->
+            <rect x="40" y="740" width="1080" height="60" rx="8" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.08)"/>
+            <rect x="60" y="758" width="18" height="18" rx="3" fill="url(#czr_g_in)"/>
+            <text x="86" y="772" font-size="11" fill="#b8c9dd">接入 / 输入层</text>
+            <rect x="210" y="758" width="18" height="18" rx="3" fill="url(#czr_g_ai)"/>
+            <text x="236" y="772" font-size="11" fill="#b8c9dd">AI / NLU 模块</text>
+            <rect x="350" y="758" width="18" height="18" rx="3" fill="url(#czr_g_rag)"/>
+            <text x="376" y="772" font-size="11" fill="#b8c9dd">RAG 检索增强核心</text>
+            <rect x="520" y="758" width="18" height="18" rx="3" fill="url(#czr_g_kb)"/>
+            <text x="546" y="772" font-size="11" fill="#b8c9dd">知识存储</text>
+            <rect x="660" y="758" width="18" height="18" rx="3" fill="url(#czr_g_out)"/>
+            <text x="686" y="772" font-size="11" fill="#b8c9dd">输出层</text>
+            <rect x="800" y="758" width="18" height="18" rx="3" fill="url(#czr_g_feed)"/>
+            <text x="826" y="772" font-size="11" fill="#b8c9dd">反馈 / 迭代优化</text>
+            <text x="1000" y="772" font-size="10" fill="#6c83a0">陈卓然 · 1012 · 18-3.svg</text>
+
+            <!-- 科研标签 -->
+            <text x="40" y="800" font-size="10.5" fill="#b08cff" font-style="italic">科研方向：RAG / Hybrid Retrieval / Cross-Encoder Rerank / Prompt Engineering / RLHF / Multi-Modal Embedding / Agent 工具调用</text>
+        </svg>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 18-3.html · SVG 智能客服架构</p>
+</div>
+</body>
+</html>

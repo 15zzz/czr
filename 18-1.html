@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · Canvas 动画</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: #050a15;
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .czr_wrap { max-width: 1200px; margin: 0 auto; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #79d6ce;
+            margin-bottom: 20px;
+        }
+
+        .czr_canvas_box {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            overflow: hidden;
+            background: #0a1020;
+            margin-bottom: 14px;
+        }
+
+        .czr_canvas_box canvas {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .czr_hint {
+            font-size: 12px;
+            color: #8fa6c2;
+            margin-bottom: 30px;
+        }
+        .czr_hint b { color: #ffc46b; }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-05，功能名称：Canvas 动画粒子文字 -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+    <h1 class="czr_title">Canvas 粒子文字动画</h1>
+    <p class="czr_hint">
+        鼠标移动会带动粒子散开，松开后粒子聚合成文字。点击下方按钮切换显示内容。
+        当前内容：<b id="czr_text_now">陈卓然</b>
+    </p>
+
+    <div class="czr_canvas_box">
+        <canvas id="czr_cvs"></canvas>
+    </div>
+
+    <div style="text-align:center;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+        <button onclick="czr_set('陈卓然')" style="padding:8px 20px;background:#79d6ce;color:#071722;border:none;border-radius:20px;cursor:pointer;font-weight:bold;">陈卓然</button>
+        <button onclick="czr_set('1012')" style="padding:8px 20px;background:#ffc46b;color:#071722;border:none;border-radius:20px;cursor:pointer;font-weight:bold;">1012</button>
+        <button onclick="czr_set('Canvas')" style="padding:8px 20px;background:#ff8a65;color:#071722;border:none;border-radius:20px;cursor:pointer;font-weight:bold;">Canvas</button>
+        <button onclick="czr_set('✨ 你好世界 ✨')" style="padding:8px 20px;background:#b08cff;color:#fff;border:none;border-radius:20px;cursor:pointer;font-weight:bold;">你好世界</button>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 18-1.html · Canvas 动画</p>
+</div>
+
+<script>
+    var czr_canvas = document.getElementById('czr_cvs');
+    var czr_ctx = czr_canvas.getContext('2d');
+
+    // 高 DPI 适配
+    var czr_dpr = window.devicePixelRatio || 1;
+    function czr_resize() {
+        var czr_w = czr_canvas.clientWidth;
+        var czr_h = Math.max(420, Math.min(czr_w * 0.45, 560));
+        czr_canvas.style.height = czr_h + 'px';
+        czr_canvas.width = czr_w * czr_dpr;
+        czr_canvas.height = czr_h * czr_dpr;
+        czr_ctx.setTransform(czr_dpr, 0, 0, czr_dpr, 0, 0);
+        czr_wpx = czr_w;
+        czr_hpx = czr_h;
+        czr_build('陈卓然');
+    }
+    var czr_wpx = 800, czr_hpx = 500;
+    window.addEventListener('resize', czr_resize);
+
+    // 粒子
+    var czr_particles = [];
+    var czr_targets = [];
+    var czr_text = '陈卓然';
+
+    // 鼠标
+    var czr_mx = -9999, czr_my = -9999;
+    czr_canvas.addEventListener('mousemove', function (czr_e) {
+        var czr_r = czr_canvas.getBoundingClientRect();
+        czr_mx = czr_e.clientX - czr_r.left;
+        czr_my = czr_e.clientY - czr_r.top;
+    });
+    czr_canvas.addEventListener('mouseleave', function () { czr_mx = -9999; czr_my = -9999; });
+
+    // 构建目标点：把文字画到离屏 canvas，扫描像素
+    function czr_build(czr_str) {
+        czr_text = czr_str;
+        document.getElementById('czr_text_now').textContent = czr_str;
+
+        var czr_off = document.createElement('canvas');
+        var czr_oc = czr_off.getContext('2d');
+        czr_off.width = czr_wpx;
+        czr_off.height = czr_hpx;
+        czr_off.style.width = czr_wpx + 'px';
+        czr_off.style.height = czr_hpx + 'px';
+
+        czr_oc.fillStyle = '#0a1020';
+        czr_oc.fillRect(0, 0, czr_off.width, czr_off.height);
+
+        var czr_fontSize = Math.max(80, Math.min(czr_wpx / 6, 160));
+        czr_oc.fillStyle = '#fff';
+        czr_oc.textAlign = 'center';
+        czr_oc.textBaseline = 'middle';
+        czr_oc.font = 'bold ' + czr_fontSize + 'px "Microsoft YaHei", Arial, sans-serif';
+        czr_oc.fillText(czr_str, czr_wpx / 2, czr_hpx / 2);
+
+        var czr_data = czr_oc.getImageData(0, 0, czr_off.width, czr_off.height).data;
+
+        czr_targets = [];
+        var czr_step = 6; // 采样步长，决定粒子密度
+        for (var czr_y = 0; czr_y < czr_off.height; czr_y += czr_step) {
+            for (var czr_x = 0; czr_x < czr_off.width; czr_x += czr_step) {
+                var czr_i = (czr_y * czr_off.width + czr_x) * 4;
+                if (czr_data[czr_i + 3] > 128) {
+                    czr_targets.push({ x: czr_x, y: czr_y });
+                }
+            }
+        }
+
+        // 调整粒子数组大小
+        while (czr_particles.length < czr_targets.length) {
+            czr_particles.push({
+                x: Math.random() * czr_wpx,
+                y: Math.random() * czr_hpx,
+                vx: 0, vy: 0,
+                c: czr_randColor()
+            });
+        }
+        if (czr_particles.length > czr_targets.length) {
+            czr_particles = czr_particles.slice(0, czr_targets.length);
+        }
+    }
+
+    function czr_randColor() {
+        var czr_palette = ['#79d6ce', '#4ca9d9', '#ffc46b', '#ff8a65', '#b08cff', '#a8ffd5'];
+        return czr_palette[Math.floor(Math.random() * czr_palette.length)];
+    }
+
+    // 主循环
+    function czr_tick() {
+        czr_ctx.fillStyle = 'rgba(10, 16, 32, 0.25)'; // 拖尾效果
+        czr_ctx.fillRect(0, 0, czr_wpx, czr_hpx);
+
+        var czr_mouseR2 = 140 * 140;
+
+        for (var czr_i = 0; czr_i < czr_particles.length; czr_i++) {
+            var czr_p = czr_particles[czr_i];
+            var czr_t = czr_targets[czr_i];
+
+            // 鼠标排斥
+            var czr_dx = czr_p.x - czr_mx;
+            var czr_dy = czr_p.y - czr_my;
+            var czr_d2 = czr_dx * czr_dx + czr_dy * czr_dy;
+            if (czr_d2 < czr_mouseR2) {
+                var czr_f = (1 - czr_d2 / czr_mouseR2) * 2.5;
+                czr_p.vx += czr_dx * czr_f * 0.01;
+                czr_p.vy += czr_dy * czr_f * 0.01;
+            }
+
+            // 向目标聚集
+            czr_p.vx += (czr_t.x - czr_p.x) * 0.03;
+            czr_p.vy += (czr_t.y - czr_p.y) * 0.03;
+
+            // 阻尼
+            czr_p.vx *= 0.82;
+            czr_p.vy *= 0.82;
+
+            czr_p.x += czr_p.vx;
+            czr_p.y += czr_p.vy;
+
+            // 绘制
+            czr_ctx.fillStyle = czr_p.c;
+            czr_ctx.beginPath();
+            czr_ctx.arc(czr_p.x, czr_p.y, 1.8 * czr_dpr, 0, Math.PI * 2);
+            czr_ctx.fill();
+        }
+
+        requestAnimationFrame(czr_tick);
+    }
+
+    function czr_set(czr_s) { czr_build(czr_s); }
+
+    czr_resize();
+    czr_tick();
+</script>
+</body>
+</html>

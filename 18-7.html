@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · Three.js 两个图表</title>
+    <script src="cdn/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: linear-gradient(135deg, #040a14 0px, #1a0e2e 520px, #040a14 100%);
+            color: #e8f1ff;
+            min-height: 100vh;
+            padding: 30px 20px;
+        }
+
+        .czr_wrap { max-width: 1200px; margin: 0 auto; }
+
+        .czr_home {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: #e8f1ff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .czr_home:hover { background: rgba(255, 255, 255, 0.2); transform: translateX(-4px); }
+
+        .czr_title { font-size: 26px; color: #79d6ce; margin-bottom: 6px; font-weight: bold; }
+        .czr_sub { font-size: 13px; color: #8fa6c2; margin-bottom: 20px; }
+
+        .czr_grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+        @media (max-width: 780px) { .czr_grid { grid-template-columns: 1fr; } }
+
+        .czr_scene_box {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            overflow: hidden;
+            padding: 14px;
+            animation: czr_in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+        }
+        .czr_scene_box:nth-child(2) { animation-delay: 0.15s; }
+        @keyframes czr_in {
+            from { opacity: 0; transform: rotateX(-6deg) translateY(20px); }
+            to   { opacity: 1; transform: rotateX(0) translateY(0); }
+        }
+
+        .czr_scene_title {
+            font-size: 14px;
+            color: #ffc46b;
+            font-weight: bold;
+            padding-left: 8px;
+            border-left: 3px solid #ffc46b;
+            margin-bottom: 10px;
+        }
+
+        .czr_canvas_wrap {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #050a15;
+        }
+        .czr_canvas_wrap canvas { display: block; width: 100% !important; height: 100% !important; }
+
+        .czr_hint {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #8fa6c2;
+            line-height: 1.7;
+        }
+
+        .czr_footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c83a0;
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-05，功能名称：Three.js 3D 柱状图 + 3D 粒子环形 -->
+
+<a href="index.html" class="czr_home">← 返回首页</a>
+
+<div class="czr_wrap">
+    <h1 class="czr_title">Three.js 3D 可视化</h1>
+    <p class="czr_sub">本地引入 <code style="color:#79d6ce;">cdn/three.min.js</code>，实现两个轻量级 3D 场景：3D 柱状图 和 3D 粒子数据环。</p>
+
+    <div class="czr_grid">
+        <div class="czr_scene_box">
+            <div class="czr_scene_title">① 3D 柱状图（近 12 月访问量）</div>
+            <div class="czr_canvas_wrap" id="czr_scene1"></div>
+            <p class="czr_hint">鼠标拖拽旋转视角，滚轮缩放。不同颜色代表不同月份，柱高代表访问量。</p>
+        </div>
+        <div class="czr_scene_box">
+            <div class="czr_scene_title">② 3D 粒子数据环（设备占比）</div>
+            <div class="czr_canvas_wrap" id="czr_scene2"></div>
+            <p class="czr_hint">粒子绕 Y 轴缓慢旋转，五种颜色代表五种设备类型，粒子数量代表占比。</p>
+        </div>
+    </div>
+
+    <p class="czr_footer">陈卓然 · 1012 · 18-7.html · Three.js 双场景</p>
+</div>
+
+<script>
+    var czr_sceneEl1 = document.getElementById('czr_scene1');
+    var czr_sceneEl2 = document.getElementById('czr_scene2');
+
+    // ========== 场景 1：3D 柱状图 ==========
+    (function czr_scene1() {
+        var czr_container = czr_sceneEl1;
+        var czr_w = czr_container.clientWidth;
+        var czr_h = czr_container.clientHeight;
+
+        var czr_scene = new THREE.Scene();
+        czr_scene.background = new THREE.Color(0x050a15);
+        czr_scene.fog = new THREE.Fog(0x050a15, 10, 40);
+
+        var czr_camera = new THREE.PerspectiveCamera(45, czr_w / czr_h, 0.1, 100);
+        czr_camera.position.set(7, 8, 10);
+        czr_camera.lookAt(0, 0, 0);
+
+        var czr_renderer = new THREE.WebGLRenderer({ antialias: true });
+        czr_renderer.setPixelRatio(window.devicePixelRatio || 1);
+        czr_renderer.setSize(czr_w, czr_h);
+        czr_renderer.shadowMap.enabled = true;
+        czr_container.appendChild(czr_renderer.domElement);
+
+        // 光照
+        var czr_ambient = new THREE.AmbientLight(0xffffff, 0.55);
+        czr_scene.add(czr_ambient);
+        var czr_dir = new THREE.DirectionalLight(0x79d6ce, 0.9);
+        czr_dir.position.set(6, 10, 4);
+        czr_dir.castShadow = true;
+        czr_scene.add(czr_dir);
+        var czr_purple = new THREE.PointLight(0xb08cff, 0.8, 25);
+        czr_purple.position.set(-6, 4, -4);
+        czr_scene.add(czr_purple);
+
+        // 地面
+        var czr_groundGeo = new THREE.PlaneGeometry(16, 16);
+        var czr_groundMat = new THREE.MeshStandardMaterial({
+            color: 0x102a35, transparent: true, opacity: 0.5, metalness: 0.2, roughness: 0.8
+        });
+        var czr_ground = new THREE.Mesh(czr_groundGeo, czr_groundMat);
+        czr_ground.rotation.x = -Math.PI / 2;
+        czr_ground.position.y = -0.01;
+        czr_ground.receiveShadow = true;
+        czr_scene.add(czr_ground);
+
+        // 12 根柱子
+        var czr_data = [82, 132, 118, 165, 190, 245, 278, 292, 255, 210, 188, 156];
+        var czr_colors = [
+            0x4ca9d9, 0x79d6ce, 0xa8ffd5, 0xffc46b, 0xff8a65, 0xff6b6b,
+            0xb08cff, 0x9b8cff, 0x4ca9d9, 0x79d6ce, 0xffc46b, 0xff8a65
+        ];
+        var czr_bars = [];
+        var czr_barW = 0.85;
+        var czr_space = 0.25;
+        var czr_totalLen = czr_data.length * (czr_barW + czr_space);
+        var czr_startX = -czr_totalLen / 2 + czr_barW / 2;
+
+        for (var czr_i = 0; czr_i < czr_data.length; czr_i++) {
+            var czr_h = czr_data[czr_i] / 60; // 归一化
+            var czr_geo = new THREE.BoxGeometry(czr_barW, czr_h, czr_barW);
+            var czr_mat = new THREE.MeshStandardMaterial({
+                color: czr_colors[czr_i], metalness: 0.3, roughness: 0.55,
+                transparent: true, opacity: 0.92
+            });
+            var czr_bar = new THREE.Mesh(czr_geo, czr_mat);
+            czr_bar.position.set(czr_startX + czr_i * (czr_barW + czr_space), czr_h / 2, 0);
+            czr_bar.castShadow = true;
+            czr_bar.receiveShadow = true;
+            czr_bar.userData.baseY = czr_h / 2;
+            czr_scene.add(czr_bar);
+            czr_bars.push(czr_bar);
+        }
+
+        // 自定义鼠标旋转
+        var czr_dragging = false;
+        var czr_lastX = 0, czr_lastY = 0;
+        var czr_yaw = 0.5, czr_pitch = 0.4;
+        var czr_dist = 14;
+
+        czr_container.addEventListener('mousedown', function (e) {
+            czr_dragging = true; czr_lastX = e.clientX; czr_lastY = e.clientY;
+        });
+        window.addEventListener('mouseup', function () { czr_dragging = false; });
+        window.addEventListener('mousemove', function (e) {
+            if (!czr_dragging) return;
+            czr_yaw -= (e.clientX - czr_lastX) * 0.01;
+            czr_pitch -= (e.clientY - czr_lastY) * 0.01;
+            czr_pitch = Math.max(-1.2, Math.min(1.2, czr_pitch));
+            czr_lastX = e.clientX; czr_lastY = e.clientY;
+        });
+        czr_container.addEventListener('wheel', function (e) {
+            e.preventDefault();
+            czr_dist += e.deltaY * 0.01;
+            czr_dist = Math.max(6, Math.min(30, czr_dist));
+        }, { passive: false });
+
+        function czr_animate() {
+            requestAnimationFrame(czr_animate);
+            czr_camera.position.x = czr_dist * Math.cos(czr_pitch) * Math.cos(czr_yaw);
+            czr_camera.position.y = czr_dist * Math.sin(czr_pitch);
+            czr_camera.position.z = czr_dist * Math.cos(czr_pitch) * Math.sin(czr_yaw);
+            czr_camera.lookAt(0, 2, 0);
+            czr_renderer.render(czr_scene, czr_camera);
+        }
+        czr_animate();
+
+        // Resize
+        new ResizeObserver(function () {
+            var czr_w2 = czr_container.clientWidth;
+            var czr_h2 = czr_container.clientHeight;
+            czr_camera.aspect = czr_w2 / czr_h2;
+            czr_camera.updateProjectionMatrix();
+            czr_renderer.setSize(czr_w2, czr_h2);
+        }).observe(czr_container);
+    })();
+
+    // ========== 场景 2：3D 粒子环 ==========
+    (function czr_scene2() {
+        var czr_container = czr_sceneEl2;
+        var czr_w = czr_container.clientWidth;
+        var czr_h = czr_container.clientHeight;
+
+        var czr_scene = new THREE.Scene();
+        czr_scene.background = new THREE.Color(0x050a15);
+
+        var czr_camera = new THREE.PerspectiveCamera(50, czr_w / czr_h, 0.1, 200);
+        czr_camera.position.set(0, 2, 16);
+
+        var czr_renderer = new THREE.WebGLRenderer({ antialias: true });
+        czr_renderer.setPixelRatio(window.devicePixelRatio || 1);
+        czr_renderer.setSize(czr_w, czr_h);
+        czr_container.appendChild(czr_renderer.domElement);
+
+        // 设备类型：颜色 + 数量 + 半径组
+        var czr_deviceData = [
+            { name: 'Windows',   color: 0x79d6ce, count: 420, radius: 3.8 },
+            { name: 'Mac',       color: 0x4ca9d9, count: 240, radius: 4.4 },
+            { name: 'iPhone',    color: 0xffc46b, count: 180, radius: 5.0 },
+            { name: 'Android',   color: 0xff8a65, count: 120, radius: 5.6 },
+            { name: '其他',       color: 0xb08cff, count:  60, radius: 6.2 }
+        ];
+
+        var czr_pointGeo = new THREE.BufferGeometry();
+        var czr_positions = [];
+        var czr_colors = [];
+        var czr_angles = [];
+        var czr_baseRadii = [];
+        var czr_speeds = [];
+
+        for (var czr_k = 0; czr_k < czr_deviceData.length; czr_k++) {
+            var czr_d = czr_deviceData[czr_k];
+            var czr_colorObj = new THREE.Color(czr_d.color);
+            for (var czr_i = 0; czr_i < czr_d.count; czr_i++) {
+                var czr_a = Math.random() * Math.PI * 2;
+                var czr_r = czr_d.radius + (Math.random() - 0.5) * 0.5;
+                var czr_x = Math.cos(czr_a) * czr_r;
+                var czr_z = Math.sin(czr_a) * czr_r;
+                var czr_y = (Math.random() - 0.5) * 0.4;
+                czr_positions.push(czr_x, czr_y, czr_z);
+                czr_colors.push(czr_colorObj.r, czr_colorObj.g, czr_colorObj.b);
+                czr_angles.push(czr_a);
+                czr_baseRadii.push(czr_r);
+                czr_speeds.push(0.0004 + Math.random() * 0.0004);
+            }
+        }
+
+        czr_pointGeo.setAttribute('position', new THREE.Float32BufferAttribute(czr_positions, 3));
+        czr_pointGeo.setAttribute('color', new THREE.Float32BufferAttribute(czr_colors, 3));
+
+        var czr_pointMat = new THREE.PointsMaterial({
+            size: 0.18, vertexColors: true, transparent: true, opacity: 0.92,
+            sizeAttenuation: true, depthWrite: false
+        });
+
+        var czr_points = new THREE.Points(czr_pointGeo, czr_pointMat);
+        czr_scene.add(czr_points);
+
+        // 中央光球
+        var czr_coreGeo = new THREE.SphereGeometry(0.6, 32, 32);
+        var czr_coreMat = new THREE.MeshBasicMaterial({
+            color: 0xffc46b, transparent: true, opacity: 0.7
+        });
+        var czr_core = new THREE.Mesh(czr_coreGeo, czr_coreMat);
+        czr_scene.add(czr_core);
+
+        var czr_posAttr = czr_pointGeo.attributes.position;
+        var czr_frame = 0;
+
+        function czr_animate() {
+            requestAnimationFrame(czr_animate);
+            czr_frame += 1;
+
+            // 粒子自旋转（每个半径组有微小差异）
+            for (var czr_i = 0; czr_i < czr_positions.length / 3; czr_i++) {
+                czr_angles[czr_i] += czr_speeds[czr_i];
+                var czr_x = Math.cos(czr_angles[czr_i]) * czr_baseRadii[czr_i];
+                var czr_z = Math.sin(czr_angles[czr_i]) * czr_baseRadii[czr_i];
+                czr_posAttr.array[czr_i * 3]     = czr_x;
+                czr_posAttr.array[czr_i * 3 + 2] = czr_z;
+            }
+            czr_posAttr.needsUpdate = true;
+
+            czr_points.rotation.y += 0.002;
+            czr_points.rotation.x = Math.sin(czr_frame * 0.003) * 0.1;
+            czr_core.scale.setScalar(1 + Math.sin(czr_frame * 0.06) * 0.1);
+
+            czr_renderer.render(czr_scene, czr_camera);
+        }
+        czr_animate();
+
+        new ResizeObserver(function () {
+            var czr_w2 = czr_container.clientWidth;
+            var czr_h2 = czr_container.clientHeight;
+            czr_camera.aspect = czr_w2 / czr_h2;
+            czr_camera.updateProjectionMatrix();
+            czr_renderer.setSize(czr_w2, czr_h2);
+        }).observe(czr_container);
+    })();
+</script>
+</body>
+</html>

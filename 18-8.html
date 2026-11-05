@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1012 陈卓然 · 数据大屏</title>
+    <script src="cdn/echarts.min.js"></script>
+    <script src="cdn/three.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+            background: #020811;
+            color: #e8f1ff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== 大屏顶部 ========== */
+        .czr_top {
+            height: 64px;
+            background: linear-gradient(180deg, rgba(76, 169, 217, 0.18), rgba(76, 169, 217, 0.04));
+            border-bottom: 1px solid rgba(76, 169, 217, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .czr_top::before, .czr_top::after {
+            content: '';
+            position: absolute;
+            top: 0; bottom: 0;
+            width: 200px;
+            background: linear-gradient(90deg, transparent, rgba(76, 169, 217, 0.12));
+        }
+        .czr_top::before { left: 0; }
+        .czr_top::after { right: 0; transform: scaleX(-1); }
+
+        .czr_top h1 {
+            font-size: 26px;
+            letter-spacing: 6px;
+            background: linear-gradient(90deg, #79d6ce, #4ca9d9, #ffc46b, #79d6ce);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: czr_titleGrad 6s ease infinite;
+        }
+        @keyframes czr_titleGrad {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .czr_top_time {
+            position: absolute;
+            right: 24px;
+            font-size: 13px;
+            color: #79d6ce;
+            font-family: Consolas, monospace;
+        }
+        .czr_top_home {
+            position: absolute;
+            left: 24px;
+            color: #79d6ce;
+            text-decoration: none;
+            font-size: 13px;
+            border: 1px solid rgba(76, 169, 217, 0.4);
+            padding: 4px 14px;
+            border-radius: 16px;
+        }
+        .czr_top_home:hover { background: rgba(76, 169, 217, 0.2); }
+
+        /* ========== 大屏主体三列 ========== */
+        .czr_dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1.6fr 1fr;
+            gap: 14px;
+            padding: 14px;
+            min-height: calc(100vh - 64px);
+        }
+
+        .czr_col {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .czr_panel {
+            background: linear-gradient(135deg, rgba(76, 169, 217, 0.06), rgba(0, 0, 0, 0.4));
+            border: 1px solid rgba(76, 169, 217, 0.22);
+            border-radius: 10px;
+            position: relative;
+            padding: 14px;
+            overflow: hidden;
+            flex: 1;
+        }
+        .czr_panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 10px;
+            pointer-events: none;
+            box-shadow: inset 0 0 30px rgba(76, 169, 217, 0.08);
+        }
+        .czr_panel::after {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px;
+            width: 16px; height: 16px;
+            border-top: 2px solid #79d6ce;
+            border-left: 2px solid #79d6ce;
+        }
+
+        .czr_panel_title {
+            font-size: 13px;
+            font-weight: bold;
+            color: #79d6ce;
+            padding-bottom: 8px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid rgba(76, 169, 217, 0.2);
+            letter-spacing: 1px;
+        }
+        .czr_panel_title::before {
+            content: '◆';
+            color: #ffc46b;
+            font-size: 9px;
+            margin-right: 6px;
+        }
+
+        /* ========== 指标卡 ========== */
+        .czr_metrics {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .czr_metric {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .czr_metric_val {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffc46b;
+            font-family: Consolas, monospace;
+        }
+        .czr_metric_val.up { color: #79d6ce; }
+        .czr_metric_val.down { color: #ff8a65; }
+        .czr_metric_lab {
+            font-size: 11px;
+            color: #8fa6c2;
+            margin-top: 2px;
+        }
+        .czr_metric_delta {
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        /* ========== 图表 ========== */
+        .czr_chart { width: 100%; height: 100%; min-height: 180px; }
+        .czr_panel .czr_chart { height: calc(100% - 36px); }
+        .czr_panel { min-height: 200px; }
+
+        /* ========== 排行 ========== */
+        .czr_rank_list {
+            list-style: none;
+            padding: 0;
+        }
+        .czr_rank_list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 7px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.06);
+            font-size: 12px;
+        }
+        .czr_rank_list li:last-child { border-bottom: none; }
+        .czr_rank_no {
+            width: 20px; height: 20px;
+            border-radius: 4px;
+            display: inline-flex; align-items: center; justify-content: center;
+            font-size: 11px; font-weight: bold;
+            background: rgba(76, 169, 217, 0.25);
+            color: #4ca9d9;
+        }
+        .czr_rank_list li:nth-child(1) .czr_rank_no { background: #ffc46b; color: #071722; }
+        .czr_rank_list li:nth-child(2) .czr_rank_no { background: #79d6ce; color: #071722; }
+        .czr_rank_list li:nth-child(3) .czr_rank_no { background: #ff8a65; color: #071722; }
+        .czr_rank_name { flex: 1; color: #b8c9dd; }
+        .czr_rank_bar {
+            width: 90px; height: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .czr_rank_bar span {
+            display: block; height: 100%;
+            background: linear-gradient(90deg, #4ca9d9, #79d6ce);
+            border-radius: 3px;
+        }
+        .czr_rank_val {
+            width: 54px;
+            text-align: right;
+            font-family: Consolas, monospace;
+            font-size: 11px;
+            color: #ffc46b;
+        }
+
+        /* ========== 中央 3D 地球 ========== */
+        .czr_earth_box {
+            position: relative;
+            width: 100%;
+            height: calc(100% - 36px);
+            min-height: 280px;
+        }
+        .czr_earth_box canvas { display: block; width: 100% !important; height: 100% !important; }
+
+        /* 响应式 */
+        @media (max-width: 1100px) {
+            .czr_dashboard { grid-template-columns: 1fr; }
+            .czr_top h1 { font-size: 20px; letter-spacing: 3px; }
+        }
+    </style>
+</head>
+<body>
+<!-- 姓名：陈卓然，日期：2026-11-05，功能名称：Three.js + ECharts 三列数据大屏 -->
+
+<div class="czr_top">
+    <a href="index.html" class="czr_top_home">← 返回首页</a>
+    <h1>电商运营实时数据大屏</h1>
+    <span class="czr_top_time" id="czr_clock">--:--:--</span>
+</div>
+
+<div class="czr_dashboard">
+
+    <!-- ========== 左列 ========== -->
+    <div class="czr_col">
+
+        <!-- 指标卡 -->
+        <div class="czr_panel">
+            <div class="czr_panel_title">核心指标</div>
+            <div class="czr_metrics">
+                <div class="czr_metric">
+                    <div class="czr_metric_val up">¥ 892k</div>
+                    <div class="czr_metric_lab">今日 GMV</div>
+                    <div class="czr_metric_delta" style="color:#79d6ce;">▲ 12.4%</div>
+                </div>
+                <div class="czr_metric">
+                    <div class="czr_metric_val">12,843</div>
+                    <div class="czr_metric_lab">订单量</div>
+                    <div class="czr_metric_delta" style="color:#79d6ce;">▲ 8.1%</div>
+                </div>
+                <div class="czr_metric">
+                    <div class="czr_metric_val down">4,562</div>
+                    <div class="czr_metric_lab">访客 UV</div>
+                    <div class="czr_metric_delta" style="color:#ff8a65;">▼ 3.2%</div>
+                </div>
+                <div class="czr_metric">
+                    <div class="czr_metric_val">24.8%</div>
+                    <div class="czr_metric_lab">转化率</div>
+                    <div class="czr_metric_delta" style="color:#79d6ce;">▲ 0.6%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 折线图 -->
+        <div class="czr_panel">
+            <div class="czr_panel_title">24 小时实时访问趋势</div>
+            <div class="czr_chart" id="czr_left_chart1"></div>
+        </div>
+
+        <!-- 饼图 -->
+        <div class="czr_panel">
+            <div class="czr_panel_title">商品品类占比</div>
+            <div class="czr_chart" id="czr_left_chart2"></div>
+        </div>
+
+    </div>
+
+    <!-- ========== 中列 ========== -->
+    <div class="czr_col">
+
+        <!-- 3D 地球（地理信息） -->
+        <div class="czr_panel" style="flex:1.4;">
+            <div class="czr_panel_title">全球业务分布（3D 地球）</div>
+            <div class="czr_earth_box" id="czr_earth"></div>
+        </div>
+
+        <!-- 柱状图 -->
+        <div class="czr_panel">
+            <div class="czr_panel_title">Top 10 省份销售额</div>
+            <div class="czr_chart" id="czr_center_chart"></div>
+        </div>
+
+    </div>
+
+    <!-- ========== 右列 ========== -->
+    <div class="czr_col">
+
+        <!-- 排行榜 -->
+        <div class="czr_panel" style="flex:1.1;">
+            <div class="czr_panel_title">热销商品排行</div>
+            <ul class="czr_rank_list" id="czr_rank"></ul>
+        </div>
+
+        <!-- 环形图 -->
+        <div class="czr_panel">
+            <div class="czr_panel_title">支付方式分布</div>
+            <div class="czr_chart" id="czr_right_chart1"></div>
+        </div>
+
+        <!-- 折线图 -->
+        <div class="czr_panel">
+            <div class="czr_panel_title">库存周转率趋势</div>
+            <div class="czr_chart" id="czr_right_chart2"></div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    // ========== 时钟 ==========
+    function czr_clock() {
+        var czr_d = new Date();
+        var czr_s = czr_d.getFullYear() + '-' +
+            String(czr_d.getMonth() + 1).padStart(2, '0') + '-' +
+            String(czr_d.getDate()).padStart(2, '0') + '  ' +
+            String(czr_d.getHours()).padStart(2, '0') + ':' +
+            String(czr_d.getMinutes()).padStart(2, '0') + ':' +
+            String(czr_d.getSeconds()).padStart(2, '0');
+        document.getElementById('czr_clock').textContent = czr_s;
+    }
+    czr_clock(); setInterval(czr_clock, 1000);
+
+    // ========== ECharts 通用暗色主题 ==========
+    var czr_echartTheme = {
+        textStyle: { color: '#b8c9dd', fontFamily: '"Microsoft YaHei", Arial' },
+        title: { textStyle: { color: '#79d6ce' } },
+        legend: { textStyle: { color: '#b8c9dd' } },
+        tooltip: { backgroundColor: '#0b1a2e', borderColor: '#4ca9d9', textStyle: { color: '#e8f1ff' } },
+        grid: { left: 40, right: 20, top: 30, bottom: 30, containLabel: true },
+        xAxis: { axisLine: { lineStyle: { color: '#4ca9d9' } }, axisLabel: { color: '#b8c9dd' }, splitLine: { show: false } },
+        yAxis: { axisLine: { show: false }, axisLabel: { color: '#b8c9dd' }, splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } } }
+    };
+
+    // ========== 左：24 小时折线 ==========
+    var czr_c1 = echarts.init(document.getElementById('czr_left_chart1'));
+    czr_c1.setOption(Object.assign({}, czr_echartTheme, {
+        tooltip: { trigger: 'axis' },
+        legend: { top: 0, data: ['UV', 'PV'] },
+        xAxis: { type: 'category', data: Array.from({length:24}, function(_,i){return i+':00';}) },
+        yAxis: { type: 'value' },
+        series: [
+            { name: 'UV', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
+              lineStyle: { color: '#79d6ce', width: 2 }, itemStyle: { color: '#79d6ce' },
+              areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  {offset:0, color:'rgba(121,214,206,0.3)'},{offset:1, color:'rgba(121,214,206,0)'}])},
+              data: [20,15,10,8,6,12,45,120,210,180,165,155,170,190,200,215,230,250,280,300,260,200,130,70] },
+            { name: 'PV', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
+              lineStyle: { color: '#ffc46b', width: 2 }, itemStyle: { color: '#ffc46b' },
+              areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  {offset:0, color:'rgba(255,196,107,0.25)'},{offset:1, color:'rgba(255,196,107,0)'}])},
+              data: [80,60,40,30,25,55,220,540,980,820,730,690,760,850,920,980,1050,1180,1320,1450,1280,960,620,340] }
+        ]
+    }));
+
+    // ========== 左：品类饼图 ==========
+    var czr_c2 = echarts.init(document.getElementById('czr_left_chart2'));
+    czr_c2.setOption(Object.assign({}, czr_echartTheme, {
+        tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+        legend: { bottom: 0, textStyle: { color: '#b8c9dd', fontSize: 11 }, itemWidth: 10, itemHeight: 10 },
+        color: ['#79d6ce', '#4ca9d9', '#ffc46b', '#ff8a65', '#b08cff', '#a8ffd5'],
+        series: [{
+            type: 'pie', radius: ['35%', '65%'], center: ['50%', '45%'],
+            itemStyle: { borderColor: '#020811', borderWidth: 2, borderRadius: 3 },
+            label: { color: '#b8c9dd', fontSize: 11, formatter: '{d}%' },
+            labelLine: { show: true, lineStyle: { color: '#4ca9d9' } },
+            data: [
+                { value: 3200, name: '数码' }, { value: 2800, name: '服饰' },
+                { value: 2100, name: '食品' }, { value: 1600, name: '家居' },
+                { value: 900,  name: '美妆' }, { value: 500,  name: '其他' }
+            ]
+        }]
+    }));
+
+    // ========== 中：省份柱状图 ==========
+    var czr_cc = echarts.init(document.getElementById('czr_center_chart'));
+    czr_cc.setOption(Object.assign({}, czr_echartTheme, {
+        tooltip: { trigger: 'axis' },
+        grid: { left: 60, right: 20, top: 10, bottom: 20 },
+        xAxis: { type: 'value' },
+        yAxis: { type: 'category',
+                 data: ['上海','广东','北京','浙江','江苏','山东','四川','湖北','福建','河南'].reverse() },
+        series: [{
+            type: 'bar', barWidth: 14,
+            itemStyle: {
+                borderRadius: [0, 4, 4, 0],
+                color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [
+                    { offset: 0, color: '#4ca9d9' }, { offset: 1, color: '#ffc46b' }
+                ])
+            },
+            data: [850, 760, 720, 680, 650, 590, 520, 480, 440, 400].reverse()
+        }]
+    }));
+
+    // ========== 右：排行榜 ==========
+    var czr_rankData = [
+        { name: 'iPhone 15 Pro Max',  val: 9820, pct: 100 },
+        { name: 'MacBook Air M3',      val: 8210, pct: 84 },
+        { name: '戴森 V15 吸尘器',      val: 7420, pct: 76 },
+        { name: 'iPad Pro 12.9"',       val: 6830, pct: 70 },
+        { name: 'Sony WH-1000XM5',      val: 5920, pct: 60 },
+        { name: 'Kindle Paperwhite',    val: 4180, pct: 43 },
+        { name: '小米手环 8 Pro',       val: 3460, pct: 35 }
+    ];
+    var czr_rankEl = document.getElementById('czr_rank');
+    for (var czr_i = 0; czr_i < czr_rankData.length; czr_i++) {
+        var czr_r = czr_rankData[czr_i];
+        var czr_li = document.createElement('li');
+        czr_li.innerHTML =
+            '<span class="czr_rank_no">' + (czr_i + 1) + '</span>' +
+            '<span class="czr_rank_name">' + czr_r.name + '</span>' +
+            '<span class="czr_rank_bar"><span style="width:' + czr_r.pct + '%"></span></span>' +
+            '<span class="czr_rank_val">' + czr_r.val.toLocaleString() + '</span>';
+        czr_rankEl.appendChild(czr_li);
+    }
+
+    // ========== 右：支付方式 ==========
+    var czr_c3 = echarts.init(document.getElementById('czr_right_chart1'));
+    czr_c3.setOption(Object.assign({}, czr_echartTheme, {
+        tooltip: { trigger: 'item' },
+        legend: { top: 0, textStyle: { color: '#b8c9dd', fontSize: 11 }, itemWidth: 10, itemHeight: 10 },
+        color: ['#79d6ce', '#4ca9d9', '#ffc46b', '#b08cff'],
+        series: [{
+            type: 'pie', radius: ['40%', '70%'], center: ['50%', '55%'],
+            label: { color: '#b8c9dd', fontSize: 11, formatter: '{b}\n{d}%' },
+            itemStyle: { borderColor: '#020811', borderWidth: 2 },
+            data: [
+                { value: 4200, name: '支付宝' },
+                { value: 3600, name: '微信' },
+                { value: 1500, name: '银联' },
+                { value: 700,  name: '其他' }
+            ]
+        }]
+    }));
+
+    // ========== 右：库存周转率 ==========
+    var czr_c4 = echarts.init(document.getElementById('czr_right_chart2'));
+    czr_c4.setOption(Object.assign({}, czr_echartTheme, {
+        tooltip: { trigger: 'axis' },
+        grid: { left: 40, right: 20, top: 20, bottom: 30 },
+        xAxis: { type: 'category', data: ['周一','周二','周三','周四','周五','周六','周日'] },
+        yAxis: { type: 'value', min: 0, max: 12 },
+        series: [{
+            type: 'bar', barWidth: 18,
+            itemStyle: {
+                borderRadius: [6, 6, 0, 0],
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {offset:0, color:'#ff8a65'}, {offset:1, color:'#ffc46b'}
+                ])
+            },
+            data: [8.2, 9.1, 7.8, 10.5, 11.2, 9.6, 8.8]
+        }]
+    }));
+
+    // ========== 中央 3D 地球（Three.js） ==========
+    (function czr_earth() {
+        var czr_container = document.getElementById('czr_earth');
+        var czr_w = czr_container.clientWidth;
+        var czr_h = czr_container.clientHeight;
+
+        var czr_scene = new THREE.Scene();
+        czr_scene.background = new THREE.Color(0x020811);
+
+        var czr_camera = new THREE.PerspectiveCamera(45, czr_w / czr_h, 0.1, 500);
+        czr_camera.position.set(0, 0, 14);
+
+        var czr_renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        czr_renderer.setPixelRatio(window.devicePixelRatio || 1);
+        czr_renderer.setSize(czr_w, czr_h);
+        czr_container.appendChild(czr_renderer.domElement);
+
+        // 光照
+        czr_scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+        var czr_sun = new THREE.DirectionalLight(0xffc46b, 1.0);
+        czr_sun.position.set(10, 6, 8);
+        czr_scene.add(czr_sun);
+
+        // 地球
+        var czr_geo = new THREE.SphereGeometry(4.5, 64, 64);
+        var czr_mat = new THREE.MeshPhongMaterial({
+            color: 0x0e3a5f, emissive: 0x0a1f35,
+            specular: 0x4ca9d9, shininess: 18,
+            transparent: true, opacity: 0.95
+        });
+        var czr_earth = new THREE.Mesh(czr_geo, czr_mat);
+        czr_scene.add(czr_earth);
+
+        // 经纬线点（模拟地球）
+        var czr_grid = new THREE.Group();
+        var czr_gPts = [];
+        for (var czr_lat = -80; czr_lat <= 80; czr_lat += 20) {
+            var czr_a = czr_lat * Math.PI / 180;
+            for (var czr_lon = 0; czr_lon < 360; czr_lon += 20) {
+                var czr_b = czr_lon * Math.PI / 180;
+                var czr_r = 4.5;
+                czr_gPts.push(new THREE.Vector3(
+                    czr_r * Math.cos(czr_a) * Math.cos(czr_b),
+                    czr_r * Math.sin(czr_a),
+                    czr_r * Math.cos(czr_a) * Math.sin(czr_b)
+                ));
+            }
+        }
+        var czr_gridGeo = new THREE.BufferGeometry().setFromPoints(czr_gPts);
+        var czr_gridMat = new THREE.PointsMaterial({
+            color: 0x4ca9d9, size: 0.05, transparent: true, opacity: 0.7
+        });
+        czr_grid.add(new THREE.Points(czr_gridGeo, czr_gridMat));
+        czr_scene.add(czr_grid);
+
+        // 城市节点（按经纬度投射到球面）
+        var czr_cities = [
+            { name: '上海',    lat: 31.23, lon: 121.47, val: 9820, color: 0xffc46b },
+            { name: '北京',    lat: 39.90, lon: 116.40, val: 7600, color: 0xff8a65 },
+            { name: '深圳',    lat: 22.54, lon: 114.06, val: 7420, color: 0x79d6ce },
+            { name: '广州',    lat: 23.13, lon: 113.26, val: 5920, color: 0x4ca9d9 },
+            { name: '成都',    lat: 30.57, lon: 104.07, val: 4180, color: 0xb08cff },
+            { name: '杭州',    lat: 30.28, lon: 120.16, val: 3460, color: 0xffc46b },
+            { name: '东京',    lat: 35.68, lon: 139.69, val: 2800, color: 0x79d6ce },
+            { name: '纽约',    lat: 40.71, lon: -74.01, val: 2100, color: 0x4ca9d9 },
+            { name: '伦敦',    lat: 51.51, lon: -0.13,  val: 1500, color: 0xffc46b },
+            { name: '悉尼',    lat: -33.87, lon: 151.21, val: 900,  color: 0xb08cff }
+        ];
+
+        var czr_cityGroup = new THREE.Group();
+        czr_cities.forEach(function (czr_c) {
+            var czr_r = 4.7;
+            var czr_latR = czr_c.lat * Math.PI / 180;
+            var czr_lonR = czr_c.lon * Math.PI / 180;
+            var czr_x = czr_r * Math.cos(czr_latR) * Math.cos(czr_lonR);
+            var czr_y = czr_r * Math.sin(czr_latR);
+            var czr_z = czr_r * Math.cos(czr_latR) * Math.sin(czr_lonR);
+
+            var czr_size = 0.18 + (czr_c.val / 9820) * 0.42;
+            var czr_geo2 = new THREE.SphereGeometry(czr_size, 16, 16);
+            var czr_mat2 = new THREE.MeshBasicMaterial({ color: czr_c.color });
+            var czr_cityMesh = new THREE.Mesh(czr_geo2, czr_mat2);
+            czr_cityMesh.position.set(czr_x, czr_y, czr_z);
+            czr_cityGroup.add(czr_cityMesh);
+
+            // 光晕环
+            var czr_ringGeo = new THREE.RingGeometry(czr_size + 0.05, czr_size + 0.12, 24);
+            var czr_ringMat = new THREE.MeshBasicMaterial({
+                color: czr_c.color, transparent: true, opacity: 0.7, side: THREE.DoubleSide
+            });
+            var czr_ring = new THREE.Mesh(czr_ringGeo, czr_ringMat);
+            czr_ring.position.copy(czr_cityMesh.position);
+            czr_ring.lookAt(0, 0, 0);
+            czr_cityGroup.add(czr_ring);
+        });
+        czr_scene.add(czr_cityGroup);
+
+        // 交互：鼠标拖拽旋转
+        var czr_yaw = 0.5, czr_pitch = 0, czr_autoRot = true;
+        var czr_dragging = false, czr_lastX = 0, czr_lastY = 0;
+
+        czr_container.addEventListener('mousedown', function (e) {
+            czr_dragging = true; czr_autoRot = false; czr_lastX = e.clientX; czr_lastY = e.clientY;
+        });
+        window.addEventListener('mouseup', function () { czr_dragging = false; });
+        window.addEventListener('mousemove', function (e) {
+            if (!czr_dragging) return;
+            czr_yaw -= (e.clientX - czr_lastX) * 0.008;
+            czr_pitch -= (e.clientY - czr_lastY) * 0.008;
+            czr_pitch = Math.max(-1.2, Math.min(1.2, czr_pitch));
+            czr_lastX = e.clientX; czr_lastY = e.clientY;
+        });
+
+        function czr_animate() {
+            requestAnimationFrame(czr_animate);
+            if (czr_autoRot) czr_yaw += 0.0015;
+            czr_earth.rotation.y = czr_yaw;
+            czr_grid.rotation.y = czr_yaw;
+            czr_cityGroup.rotation.y = czr_yaw;
+            czr_cityGroup.rotation.x = czr_pitch;
+            czr_renderer.render(czr_scene, czr_camera);
+        }
+        czr_animate();
+
+        new ResizeObserver(function () {
+            var czr_w2 = czr_container.clientWidth;
+            var czr_h2 = czr_container.clientHeight;
+            czr_camera.aspect = czr_w2 / czr_h2;
+            czr_camera.updateProjectionMatrix();
+            czr_renderer.setSize(czr_w2, czr_h2);
+        }).observe(czr_container);
+    })();
+
+    // ========== Resize 所有 ECharts ==========
+    window.addEventListener('resize', function () {
+        czr_c1.resize(); czr_c2.resize(); czr_cc.resize();
+        czr_c3.resize(); czr_c4.resize();
+    });
+</script>
+</body>
+</html>
